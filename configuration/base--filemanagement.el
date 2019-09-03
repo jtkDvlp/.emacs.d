@@ -1,0 +1,145 @@
+(use-package
+  counsel-projectile
+  :diminish projectile-mode
+
+  :config
+  (setq
+   projectile-completion-system 'ivy
+   projectile-file-exists-remote-cache-expire 300
+   projectile-file-exists-local-cache-expire nil
+   projectile-enable-idle-timer t
+   projectile-mode-line-prefix " ")
+  (counsel-projectile-mode)
+  (add-to-list 'projectile-globally-ignored-directories "node_modules")
+  (add-to-list 'projectile-globally-ignored-directories "dist")
+
+  :bind
+  (("C-x f" . counsel-find-file)
+   ("C-x F" . counsel-projectile-find-file)
+
+   ("C-x C-f" . counsel-recentf)
+   ("C-x C-S-F" . projectile-recentf)
+
+   ("C-x d" . dired)
+   ("C-x D" . counsel-projectile-find-dir)
+
+   ("C-x x f" . counsel-projectile-switch-project)
+   ("C-x x F" . counsel-projectile)))
+
+(use-package
+  treemacs
+  :config 
+  (setq treemacs-collapse-dirs                 (if (executable-find "python") 3 0)
+	treemacs-deferred-git-apply-delay      0.5
+	treemacs-display-in-side-window        t
+	treemacs-file-event-delay              5000
+	treemacs-file-follow-delay             0.2
+	treemacs-follow-after-init             t
+	treemacs-git-command-pipe              ""
+	treemacs-goto-tag-strategy             'refetch-index
+	treemacs-indentation                   2
+	treemacs-indentation-string            " "
+	treemacs-is-never-other-window         t
+	treemacs-max-git-entries               5000
+	treemacs-no-png-images                 nil
+	treemacs-no-delete-other-windows       nil
+	treemacs-project-follow-cleanup        nil
+	treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+	treemacs-recenter-distance             0.1
+	treemacs-recenter-after-file-follow    nil
+	treemacs-recenter-after-tag-follow     nil
+	treemacs-recenter-after-project-jump   'always
+	treemacs-recenter-after-project-expand 'on-distance
+	treemacs-show-cursor                   nil
+	treemacs-show-hidden-files             t
+	treemacs-silent-filewatch              nil
+	treemacs-silent-refresh                nil
+	treemacs-sorting                       'alphabetic-desc
+	treemacs-space-between-root-nodes      t
+	treemacs-tag-follow-cleanup            t
+	treemacs-tag-follow-delay              1.5
+	treemacs-width                         35)
+
+  (setq aw-ignored-buffers '())
+  
+  :bind*
+  (("C-x x d" . treemacs-select-window)))
+
+(use-package treemacs-projectile
+  :after treemacs projectile)
+
+(use-package treemacs-icons-dired
+  :after treemacs dired
+  :config (treemacs-icons-dired-mode))
+
+(use-package treemacs-magit
+  :after treemacs magit)
+
+(use-package
+  simple-bookmarks
+
+  :config
+  (defun sql-mysql-for (user password database server &optional buffername)
+    (let ((sql-mysql-login-params (when (string-empty-p password) '(password)))
+	  (sql-user user)
+	  (sql-password password)
+	  (sql-database database)
+	  (sql-server server))
+      (sql-mysql buffername)))
+
+  (defun simple-bookmarks-interactive-add-mysql (&optional name user password database server more)
+    (interactive "Smysql-bookmark name: \nsmysql-bookmark user : \nsmysql-bookmark password : \nsmysql-bookmark database : \nsmysql-bookmark server : \ni")
+    (simple-bookmarks-interactive-add name 'sql-mysql-for (list user password database server (symbol-name name)) more))
+
+  (defun simple-bookmarks-interactive-execute-mysql ()
+    (interactive)
+    (simple-bookmarks-interactive-execute (lambda (bookmark) (simple-bookmarks-funcs-type-p 'sql-mysql-for bookmark))))
+  
+  (simple-bookmarks-init)
+
+  :bind*
+  (("M-- f l" . simple-bookmarks-interactive-execute-file)
+   ("M-- f c" . simple-bookmarks-interactive-add-file)
+   ("M-- f k" . simple-bookmarks-interactive-remove-file)
+
+   ("M-- d l" . simple-bookmarks-interactive-execute-directory)
+   ("M-- d c" . simple-bookmarks-interactive-add-directory)
+   ("M-- d k" . simple-bookmarks-interactive-remove-directory)
+   
+   ("M-- m l" . simple-bookmarks-interactive-execute-mysql)
+   ("M-- m c" . simple-bookmarks-interactive-add-mysql)
+   ("M-- m k" . simple-bookmarks-interactive-remove-from-all)))
+
+(custom-set-variables
+ '(uniquify-buffer-name-style (quote forward))
+ '(uniquify-separator "/")
+ '(uniquify-after-kill-buffer-p t)
+ '(uniquify-ignore-buffers-re "^\\*")
+ '(backup-inhibited t)
+ '(delete-by-moving-to-trash nil)
+ '(compilation-ask-about-save nil)
+ '(confirm-nonexistent-file-or-buffer nil)
+ '(require-final-newline t))
+
+(set-language-environment 'utf-8)
+(set-default-coding-systems 'utf-8)
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+;;disable CJK coding/encoding (Chinese/Japanese/Korean characters)
+(setq utf-translate-cjk-mode nil)
+
+(global-auto-revert-mode 1)
+(custom-set-variables '(global-auto-revert-non-file-buffers t))
+
+(auto-compression-mode t)
+
+(defun zshell ()
+  (interactive)
+  (ansi-term "/bin/zsh"))
+
+(defalias 'zsh 'zshell)
+
+(provide 'base--filemanagement)
