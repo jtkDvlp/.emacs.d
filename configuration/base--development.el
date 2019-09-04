@@ -25,7 +25,9 @@
      (sp-wrap-round)
      (sp-rewrap-sexp "\"")))
 
-  :hook (prog-mode . smartparens-mode))
+  :hook
+  ((prog-mode . smartparens-mode)
+   (cider-repl-mode . smartparens-mode)))
 
 (use-package
   newcomment
@@ -41,14 +43,18 @@
 (use-package
   company
   :diminish (company-mode eldoc-mode)
-  :hook (prog-mode . company-mode)
+  :hook
+  ((prog-mode . company-mode)
+   (cider-repl-mode . company-mode))
   :config
   (setq company-tooltip-align-annotations t))
 
 (use-package
   company-quickhelp
   :after company
-  :hook (prog-mode . company-quickhelp-mode)
+  :hook
+  ((prog-mode . company-quickhelp-mode)
+   (cider-repl-mode . company-quickhelp-mode))
   :config (setq company-quickhelp-delay 0.2))
 
 (use-package
@@ -72,7 +78,9 @@
 
 (use-package
   yasnippet-snippets
-  :hook (prog-mode . yas-minor-mode-on))
+  :hook
+  ((prog-mode . yas-minor-mode-on)
+   (cider-repl-mode . yas-minor-mode-on)))
 
 (use-package
   yasnippet
@@ -82,7 +90,9 @@
 (use-package
   highlight-symbol
   :diminish highlight-symbol-mode
-  :hook (prog-mode . highlight-symbol-mode)
+  :hook
+  ((prog-mode . highlight-symbol-mode)
+   (cider-repl-mode . highlight-symbol-mode))
   :config (setq highlight-symbol-idle-delay 0.8))
 
 (use-package

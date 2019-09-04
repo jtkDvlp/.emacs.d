@@ -49,7 +49,9 @@
 
 (use-package
   rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+  :hook
+  ((prog-mode . rainbow-delimiters-mode)
+   (cider-repl-mode . rainbow-delimiters-mode)))
 
 (use-package
   beacon

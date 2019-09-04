@@ -75,6 +75,8 @@
 	("C-c M-j J" . cider-jack-in-clj)
 	("C-c M-j j" . cider-connect-clj)
 
+        ("C-c C-M-j" . cider-switch-to-repl-buffer)
+
 	("C-c M-j S" . cider-jack-in-cljs)
 	("C-c M-j s" . cider-connect-cljs)
 
@@ -84,7 +86,7 @@
 	:map cider-mode-map
 	("C-M-x" . cider-eval-last-sexp)
 	("C-M-g" . cider-interrupt)
-	("C-M-X" . cider-insert-last-sexp-in-repl)
+	("C-M-S-X" . cider-insert-last-sexp-in-repl)
 	("C-c M-k" . cider-load-buffer)
 
 	("C-h h" . cider-doc)
@@ -135,16 +137,6 @@
 
 	("C-;" . sp-comment-dwim)
 
-	("C-c M-j" . nil)
-
-	("C-c M-j J" . cider-jack-in-clj)
-	("C-c M-j j" . cider-connect-clj)
-
-	("C-c M-j S" . cider-jack-in-cljs)
-	("C-c M-j s" . cider-connect-cljs)
-
-	("C-c M-j B" . cider-jack-in-clj&cljs)
-	("C-c M-j b" . cider-connect-clj&cljs)
 	("C-<left>" . sp-backward-sexp)
 	("M-<left>" . sp-forward-barf-sexp)
 	("C-M-<left>" . sp-backward-barf-sexp)
@@ -180,14 +172,7 @@
 
 	("C-c M-j" . nil)
 
-	("C-c M-j J" . cider-jack-in-clj)
-	("C-c M-j j" . cider-connect-clj)
-
-	("C-c M-j S" . cider-jack-in-cljs)
-	("C-c M-j s" . cider-connect-cljs)
-
-	("C-c M-j B" . cider-jack-in-clj&cljs)
-	("C-c M-j b" . cider-connect-clj&cljs)
+        ("C-c C-M-j" . cider-switch-to-last-clojure-buffer)
 
 	("RET" . cider-repl-return)
 	("C-<return>" . cider-repl-newline-and-indent)
@@ -196,7 +181,7 @@
 	;; ("M-p" . history)
 	;; ("M-n" . history)
 
-	("M-S-p" . cider-repl-history)
+	("M-S-P" . cider-repl-history)
 
 	("C-M-g" . cider-interrupt)
 
