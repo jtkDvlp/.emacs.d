@@ -79,13 +79,16 @@
 (use-package
   yasnippet-snippets
   :hook
-  ((prog-mode . yas-minor-mode-on)
-   (cider-repl-mode . yas-minor-mode-on)))
+  ((prog-mode . yas-reload-all)
+   (cider-repl-mode . yas-reload-all)))
 
 (use-package
   yasnippet
   :diminish yas-minor-mode
-  :after yasnippet-snippets)
+  :after yasnippet-snippets
+  :hook
+  ((prog-mode . yas-minor-mode)
+   (cider-repl-mode . yas-minor-mode)))
 
 (use-package
   highlight-symbol
