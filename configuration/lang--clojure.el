@@ -2,7 +2,8 @@
   clojure-mode
 
   :mode
-  "\\.cljs?\\'"
+  (("\\.clj\\'" . clojure-mode)
+   ("\\.cljs\\'" . clojurescript-mode))
 
   :config
   (require 'smartparens-clojure)
