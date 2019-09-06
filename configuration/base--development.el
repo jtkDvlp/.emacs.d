@@ -85,10 +85,13 @@
 (use-package
   yasnippet
   :diminish yas-minor-mode
-  :after yasnippet-snippets
   :hook
-  ((prog-mode . yas-minor-mode)
-   (cider-repl-mode . yas-minor-mode)))
+  ((prog-mode . yas-minor-mode-on)
+   (cider-repl-mode . yas-minor-mode-on))
+
+  :bind*
+  (:map yas-minor-mode-map
+        ("C-c" . nil)))
 
 (use-package
   highlight-symbol
