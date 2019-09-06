@@ -40,6 +40,7 @@
 ;; (require 'lang--php)
 (require 'lang--python)
 (require 'lang--html)
+(require 'lang--css)
 (require 'lang--clojure)
 
 (defun dump (data)
