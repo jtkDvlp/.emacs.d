@@ -77,10 +77,7 @@
   :hook (prog-mode . flycheck-mode-on-safe))
 
 (use-package
-  yasnippet-snippets
-  :hook
-  ((prog-mode . yas-reload-all)
-   (cider-repl-mode . yas-reload-all)))
+  yasnippet-snippets)
 
 (use-package
   yasnippet
@@ -89,6 +86,10 @@
   ((prog-mode . yas-minor-mode-on)
    (cider-repl-mode . yas-minor-mode-on))
 
+  :config
+  (require 'yasnippet-snippets)
+  (yas-reload-all)
+  
   :bind*
   (:map yas-minor-mode-map
         ("C-c" . nil)))
