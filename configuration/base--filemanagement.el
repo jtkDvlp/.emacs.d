@@ -12,6 +12,9 @@
   (counsel-projectile-mode)
   (add-to-list 'projectile-globally-ignored-directories "node_modules")
   (add-to-list 'projectile-globally-ignored-directories "dist")
+  (add-to-list 'projectile-globally-ignored-directories "elpa")
+  (add-to-list 'projectile-globally-ignored-directories "cache")
+  (add-to-list 'projectile-globally-ignored-directories ".cache")
 
   :bind
   (("C-x f" . counsel-find-file)
@@ -20,7 +23,7 @@
    ("C-x C-f" . counsel-recentf)
    ("C-x C-S-F" . projectile-recentf)
 
-   ("C-x d" . dired)
+   ("C-x d" . projectile-dired)
    ("C-x D" . counsel-projectile-find-dir)
 
    ("C-x x f" . counsel-projectile-switch-project)

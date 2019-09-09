@@ -85,7 +85,8 @@
   :hook (prog-mode . flycheck-mode-on-safe))
 
 (use-package
-  yasnippet-snippets)
+  yasnippet-snippets
+  :defer t)
 
 (use-package
   yasnippet

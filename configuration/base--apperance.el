@@ -53,23 +53,14 @@
   ((prog-mode . rainbow-delimiters-mode)
    (cider-repl-mode . rainbow-delimiters-mode)))
 
-(use-package
-  beacon
-  :demand t
-  :diminish beacon-mode
-  :config
-  (setq beacon-color "#5D4D7A")
-  (beacon-mode))
-
-(use-package
-  smooth-scrolling
-  :demand t
-  :config
-  (smooth-scrolling-mode t))
-
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+
+(let ((n 5))
+  (setq scroll-step 1)
+  (setq scroll-conservatively n)
+  (setq scroll-margin n))
 
 (custom-set-variables
  '(inhibit-startup-screen t)
@@ -88,6 +79,16 @@
 (custom-set-variables '(show-paren-delay 0))
 
 (custom-set-variables '(frame-title-format (quote ("%b"))))
+
+(global-hl-line-mode 1)
+
+(add-hook
+ 'prog-mode-hook
+ (lambda ()
+   (font-lock-add-keywords
+    nil
+    '(("\\<\\(HACK\\|NOTE\\|FIXME\\|TODO\\|BUG\\|INFO\\)"
+       1 font-lock-warning-face t)))))
 
 (load-theme 'spacemacs-dark t)
 (toggle-frame-maximized)

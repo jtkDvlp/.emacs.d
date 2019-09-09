@@ -1,8 +1,4 @@
 (use-package
-  smartrep
-  :demand t)
-
-(use-package
   ivy
   :demand t
   :diminish ivy-mode
@@ -39,17 +35,6 @@
    
    :map swiper-map
    ("C-r" . swiper-query-replace)))
-
-(use-package
-  winner
-  :demand t
-  :config (winner-mode 1)
-  
-  :bind
-  (:map winner-mode-map
-	("C-M-' -" . winner-undo)
-	("C-M-' _" . winner-redo)
-	("C-q" . quit-window)))
 
 (use-package
   fullframe
@@ -173,7 +158,8 @@
  '(shift-select-mode t)
  '(x-select-enable-clipboard t)
  '(initial-major-mode (quote fundamental-mode))
- '(initial-buffer-choice "*empty*"))
+ '(initial-buffer-choice "*empty*")
+ '(ring-bell-function (quote ignore)))
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
