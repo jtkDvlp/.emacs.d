@@ -24,8 +24,8 @@
 	("C-<down>" . sp-down-sexp)
 	("M-<down>" . sp-raise-sexp)
 	
-	("C-M-<up>" . sp-backward-transpose-sexp)
-	("C-M-<down>" . sp-forward-transpose-sexp)
+	("C-M-<up>" . paxedit-transpose-backward)
+	("C-M-<down>" . paxedit-transpose-forward)
 	
 	("M-\"" . sp-wrap-doublequote)
 	("C-(" . sp-wrap-round)
@@ -119,8 +119,8 @@
 	("C-<down>" . sp-down-sexp)
 	("M-<down>" . sp-raise-sexp)
 
-	("C-M-<up>" . sp-backward-transpose-sexp)
-	("C-M-<down>" . sp-forward-transpose-sexp)
+	("C-M-<up>" . paxedit-transpose-backward)
+	("C-M-<down>" . paxedit-transpose-forward)
 
 	("M-\"" . sp-wrap-doublequote)
 	("C-(" . sp-wrap-round)
@@ -152,8 +152,8 @@
 	("C-<down>" . sp-down-sexp)
 	("M-<down>" . sp-raise-sexp)
 
-	("C-M-<up>" . sp-backward-transpose-sexp)
-	("C-M-<down>" . sp-forward-transpose-sexp)
+	("C-M-<up>" . paxedit-transpose-backward)
+	("C-M-<down>" . paxedit-transpose-forward)
 
 	("M-\"" . sp-wrap-doublequote)
 	("C-(" . sp-wrap-round)

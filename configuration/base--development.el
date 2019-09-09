@@ -30,6 +30,14 @@
    (cider-repl-mode . smartparens-mode)))
 
 (use-package
+  paxedit
+  :diminish paxedit-mode
+
+  :hook
+  ((prog-mode . paxedit-mode)
+   (cider-repl-mode . paxedit-mode)))
+
+(use-package
   newcomment
   :ensure nil
   :bind
