@@ -27,7 +27,14 @@
    org-refile-use-outline-path t
    org-blank-before-new-entry '((heading . nil) (plain-list-item . nil))
    show-week-agenda-p t
-   org-agenda-files (list org-gtd-todos-file))
+   org-agenda-files (list org-gtd-todos-file)
+   org-todo-keywords '((sequence "TODO(t)" "BLOCKED(b)" "|" "DONE(d)" "DELEGATED(g)" "CANCELED(c)"))
+   org-tag-alist '(;; For exclusiv groups
+                   ;; (:startgroup . nil)
+                   ;; ("@work" . ?w) ("@home" . ?h)
+                   ;; ("@tennisclub" . ?t)
+                   ;; (:endgroup . nil)
+                   ("GENERAL" . ?g) ("EMACS" . ?e)))
 
   (setq
    org-capture-templates
