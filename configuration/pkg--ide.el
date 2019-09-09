@@ -152,7 +152,7 @@
 
 (defvar ide/default-layout
   `(("\\*\\(?:eshell\s[^\\*]*\\|compilation\\)\\*")
-    ("\\*\\(?:help\\|grep\\|Completions\\)\\*"
+    ("\\*\\(?:help\\|cider-doc\\|grep\\|Completions\\)\\*"
      "\\*Flycheck error messages\\*")))
 
 (defvar ide/default-buffers
