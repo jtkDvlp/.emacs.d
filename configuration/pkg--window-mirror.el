@@ -1,6 +1,13 @@
 (defvar window-mirror--mirrors '())
 (defvar window-mirror--current-pairing-master nil)
 
+(defun window-mirror/start-mirroring ()
+  "Enables window-mirror-mode and starts pairing."
+  (interactive)
+  (unless (bound-and-true-p window-mirror)
+    (window-mirror)
+    (window-mirror/start-pairing)))
+
 (defun window-mirror/start-pairing ()
   "Start pairing (current window becomes master)."
   (interactive)

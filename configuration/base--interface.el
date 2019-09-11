@@ -150,7 +150,7 @@
 (use-package
   pkg--window-mirror
   :load-path "configuration/"
-  :commands window-mirror/start-pairing)
+  :commands window-mirror/start-mirroring)
 
 (custom-set-variables
  '(transient-mark-mode t)
