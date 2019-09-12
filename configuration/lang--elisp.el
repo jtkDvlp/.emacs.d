@@ -42,7 +42,8 @@
 
 	("C-;" . comment-dwim)
 
-	("C-M-x" . eval-defun)
+        ("C-c C-c" . eval-defun)
+	("C-M-x" . eval-last-sexp)
 	("C-c M-k" . eval-buffer)))
 
 (provide 'lang--elisp)
