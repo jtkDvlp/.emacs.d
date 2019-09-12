@@ -5,12 +5,27 @@
   (require 'spaceline-segments)
   (setq powerline-default-separator 'wave)
 
+  (spaceline-define-segment ide-window
+    "IDE-Window marker."
+    (let* ((window
+            (selected-window))
+
+           (ide-window?
+            (window-parameter window 'ide)))
+      
+      (when ide-window?
+        "IDE")))
+  
   (spaceline-compile
     '((buffer-id
        :priority 99
-       :when (and buffer-file-name (buffer-modified-p))
+       :when (and active buffer-file-name (buffer-modified-p))
        :face highlight-face)
-      (buffer-id
+      ((buffer-id "~")
+       :priority 99
+       :when (and (not active) buffer-file-name (buffer-modified-p))
+       :face highlight-face)
+      ((buffer-id)
        :priority 99
        :when (not (and buffer-file-name (buffer-modified-p))))
       (buffer-size
@@ -26,9 +41,11 @@
       (buffer-encoding
        :when (and active vc-mode)
        :priority 50))
-
+    
     '((minor-modes
        :when active
+       :priority 70)
+      (ide-window
        :priority 60)
       (line-column
        :separator " | "
