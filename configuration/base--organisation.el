@@ -57,7 +57,7 @@
 
   (defun org-capture-journal ()
     (interactive)
-    (org-capture nil "t"))
+    (org-capture nil "j"))
 
   (defun org-capture-calendar ()
     (interactive)
