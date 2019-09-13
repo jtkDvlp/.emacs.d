@@ -132,4 +132,11 @@
     (interactive)
     (ide/open-buffers ide/default-buffers)))
 
+(setq eval-sexp-fu-flash-face 'success-face
+      eval-sexp-fu-flash-duration 0.3
+      eval-sexp-fu-flash-error-face 'error-face
+      eval-sexp-fu-flash-error-duration 0.5
+
+      eldoc-echo-area-use-multiline-p t)
+
 (provide 'base--development)

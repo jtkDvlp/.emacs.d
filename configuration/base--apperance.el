@@ -70,6 +70,12 @@
   ((prog-mode . rainbow-delimiters-mode)
    (cider-repl-mode . rainbow-delimiters-mode)))
 
+(defface error-face
+  '((t (:foreground "#CC5353"))) "Red Highlight")
+
+(defface success-face
+  '((t (:foreground "yellow" :background "#555577"))) "Green Highlight")
+
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)

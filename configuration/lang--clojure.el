@@ -65,9 +65,43 @@
    cider-connect-clj&cljs)
 
   :config
+  (defun clojure-user/system-init ()
+    (interactive)
+    (cider-interactive-eval
+     "(user/system-restart!)"))
+
+  (defun clojure-user/system-stop ()
+    (interactive)
+    (cider-interactive-eval
+     "(user/system-stop!)"))
+
+  (defun clojure-user/fig-init ()
+    (interactive)
+    (cider-interactive-eval
+     "(user/fig-init)"))
+
+  (defun clojure-repl/refresh ()
+    (interactive)
+    (cider-interactive-eval
+     "(do (require 'clojure.tools.namespace.repl) (clojure.tools.namespace.repl/refresh-all))"))
+  
   (setq
-   cider-repl-pop-to-buffer-on-connect nil
-   cider-show-error-buffer nil)
+   cider-repl-pop-to-buffer-on-connect t
+   cider-show-error-buffer nil
+   cider-repl-result-prefix ";=> "
+   cider-repl-display-help-banner nil
+
+   cider-repl-use-pretty-printing t
+   cider-print-fn "pprint"
+   cider-print-options '(("length" 15))
+   
+   cider-use-overlays t
+
+   cider-overlays-use-font-lock t
+   cider-font-lock-dynamically '(macro core function var)
+   cider-repl-use-clojure-font-lock t
+   
+   cider-error-highlight-face 'error-face)
 
   :bind*
   (:map clojure-mode-map
@@ -102,9 +136,15 @@
 
 	("C-c M-q" . cider-quit)
 	("C-c M-r" . cider-restart)
+        ("C-c M-o" . cider-repl-clear-buffer)
 	("C-c M-c" . cider-completion-flush-caches)
 
-	:map cider-repl-mode-map
+        ("M-u" . nil)
+        ("M-u i" . clojure-user/system-init)
+        ("M-u I" . clojure-user/system-stop)
+        ("M-u f" . clojure-user/fig-init)
+        
+       	:map cider-repl-mode-map
 	("C-<left>" . sp-backward-sexp)
 	("M-<left>" . sp-forward-barf-sexp)
 	("C-M-<left>" . sp-backward-barf-sexp)
@@ -196,8 +236,14 @@
 	("M-j n" . cider-find-ns)
 	("M-J" . cider-pop-back)
 
+        ("M-u" . nil)
+        ("M-u i" . clojure-user/system-init)
+        ("M-u I" . clojure-user/system-stop)
+        ("M-u f" . clojure-user/fig-init)
+        
 	("C-c M-q" . cider-quit)
 	("C-c M-r" . cider-restart)
+        ("C-c M-o" . cider-repl-clear-buffer)
 
 	:map cider-repl-history-mode-map
 	("M-p" . cider-repl-history-backward)
