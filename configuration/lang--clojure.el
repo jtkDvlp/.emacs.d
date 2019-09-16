@@ -86,18 +86,22 @@
      "(do (require 'clojure.tools.namespace.repl) (clojure.tools.namespace.repl/refresh-all))"))
   
   (setq
-   cider-repl-pop-to-buffer-on-connect t
+   cider-repl-pop-to-buffer-on-connect 'display-only
    cider-show-error-buffer nil
-   cider-repl-result-prefix ";=> "
+   cider-repl-result-prefix ";; => "
    cider-repl-display-help-banner nil
+   cider-prompt-for-symbol nil
 
+   nrepl-log-messages nil
+   nrepl-hide-special-buffers t
+   
    cider-repl-use-pretty-printing t
    cider-print-fn "pprint"
    cider-print-options '(("length" 15))
    
    cider-use-overlays t
-
    cider-overlays-use-font-lock t
+
    cider-font-lock-dynamically '(macro core function var)
    cider-repl-use-clojure-font-lock t
    
