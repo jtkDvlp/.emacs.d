@@ -1,7 +1,14 @@
 (use-package
   web-mode
   :mode
-  "\\.\\(html\\|phtml\\|xml\\)\\'")
+  "\\.\\(html\\|phtml\\|xml\\)\\'"
+
+  :config
+  (defun browse-current-file ()
+    (interactive)
+    (if (buffer-file-name)
+        (browse-url (buffer-file-name))
+      (message "No file based buffer"))))
 
 (use-package
   web-mode-edit-element
