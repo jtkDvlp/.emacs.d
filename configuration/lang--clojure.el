@@ -96,7 +96,7 @@
    nrepl-hide-special-buffers t
    
    cider-repl-use-pretty-printing t
-   cider-print-fn "pprint"
+   cider-print-fn 'pprint
    cider-print-options '(("length" 15))
    
    cider-use-overlays t

@@ -16,6 +16,10 @@
   (add-to-list 'projectile-globally-ignored-directories "cache")
   (add-to-list 'projectile-globally-ignored-directories ".cache")
 
+  (defun save-all-buffers ()
+    (interactive)
+    (save-some-buffers t))
+
   :bind
   (("C-x f" . counsel-find-file)
    ("C-x F" . counsel-projectile-find-file)
@@ -27,7 +31,12 @@
    ("C-x D" . counsel-projectile-find-dir)
 
    ("C-x x f" . counsel-projectile-switch-project)
-   ("C-x x F" . counsel-projectile)))
+   ("C-x x F" . counsel-projectile)
+
+   ("C-q" . switch-to-prev-buffer)
+
+   ("C-x C-s" . save-buffer)
+   ("C-x C-S-S" . save-all-buffers)))
 
 (use-package
   treemacs

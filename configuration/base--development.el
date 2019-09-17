@@ -104,6 +104,23 @@
         ("C-c" . nil)))
 
 (use-package
+  prog-mode
+  :ensure nil
+
+  :config
+  (defun enable-prettify-symbols ()
+    (interactive)
+    (setq prettify-symbols-alist
+          '(("lambda" . 955) ; λ
+            ("fn" . 955) ; λ
+            ("sum" . 8721))) ; ∑
+    (prettify-symbols-mode))
+  
+  :hook
+  ((prog-mode . enable-prettify-symbols)
+   (cider-repl-mode . enable-prettify-symbols)))
+
+(use-package
   highlight-symbol
   :diminish highlight-symbol-mode
   :hook
