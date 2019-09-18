@@ -140,6 +140,27 @@
     (setq sql-mysql-options '("-C" "-t" "-f" "-n"))))
 
 (use-package
+  simple-httpd
+
+  :config
+  (defun httpd/start (&optional root port)
+    (interactive "Dhttp-root: \nnhttp-port: \n")
+    (setq httpd-root root
+          httpd-port port)
+    (httpd-start))
+
+  (defun projectile-httpd/start ()
+    (interactive)
+    (setq httpd-root (projectile-project-root)
+          httpd-port 8080)
+    (httpd-start))
+  
+  :commands
+  (http-start
+   httpd/start
+   projectile-httpd/start))
+
+(use-package
   markdown-mode
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
