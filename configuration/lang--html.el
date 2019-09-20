@@ -7,7 +7,27 @@
   (defun browse-current-file ()
     (interactive)
     (if (buffer-file-name)
-        (browse-url (buffer-file-name))
+        (browse-url
+         (if (and (fboundp 'projectile-project-root)
+                  (fboundp 'httpd-running-p))
+             (let ((project-root-dir
+                    (projectile-project-root))
+
+                   (buffer-file-path
+                    (buffer-file-name)))
+               (if (and project-root-dir
+                        (httpd-running-p))
+                   (replace-regexp-in-string
+                    (format "^%s" project-root-dir)
+                    (format "http://%s:%d/"
+                            (cl-case httpd-host
+                              ((nil) "0.0.0.0")
+                              ((local) "localhost")
+                              (otherwise httpd-host))
+                            httpd-port)
+                    buffer-file-path)
+                 (buffer-file-name)))
+           (buffer-file-name)))
       (message "No file based buffer"))))
 
 (use-package
