@@ -72,8 +72,6 @@
 	treemacs-tag-follow-delay              1.5
 	treemacs-width                         35)
 
-  (setq aw-ignored-buffers '())
-  
   :bind*
   (("C-x x d" . treemacs-select-window)))
 
