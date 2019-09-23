@@ -69,6 +69,19 @@
    ("N" . elscreen-toggle)
    ("t" . elscreen-screen-nickname)
    ("f" . elscreen-select-and-goto))
+
+  :init
+  (defun elscreen (open-command close-command)
+    (let ((open
+           (lambda (&rest args)
+             (call-interactively 'elscreen-create)))
+
+          (close
+           (lambda (&rest args)
+             (call-interactively 'elscreen-kill))))
+
+      (advice-add #'open-command :before #'open)
+      (advice-add #'close-command :after #'close)))
   
   :config
   (setq
@@ -78,57 +91,22 @@
   
   (elscreen-start))
 
+;; (defun foo (&rest args)
+;;   (call-interactively 'elscreen-create))
+
+;; (advice-add #'ediff :before #'foo)
+
 (use-package
   ediff
   :ensure nil
 
   :config
-  (defun ediff-setup-window-elscreen-compare (buf-A buf-B buf-C buf-control)
-    (split-window-vertically)
-    (split-window-horizontally)
-    (split-window-horizontally)
-    
-    (let* ((window-origin
-            (selected-window))
-
-           (window-A
-            window-origin)
-
-           (window-B
-            (window-in-direction 'right window-origin t 1 t))
-
-           (window-control
-            (window-in-direction 'below window-origin t 1 t)))
-
-      (with-selected-window window-A
-        (switch-to-buffer buf-A t t)
-        (setq ediff-window-A window-A))
-
-      (with-selected-window window-B
-        (switch-to-buffer buf-B t t)
-        (setq ediff-window-B window-B))
-
-      (with-selected-window window-control
-        (switch-to-buffer buf-control t t)
-        (setq ediff-control-window window-control))
-
-      (select-window window-control t)))
-
-  (defun ediff-setup-window-elscreen-merge (buf-A buf-B buf-C buf-control)
-    nil)
-  
-  (defun ediff-setup-window-elscreen (buf-A buf-B buf-C buf-control)
-    (when (not (get-buffer-window buf-control (selected-frame)))
-      (elscreen-create)
-      
-      (if ediff-merge-job
-          (ediff-setup-window-elscreen-merge buf-A buf-B buf-C buf-control)
-        (ediff-setup-window-elscreen-compare buf-A buf-B buf-C buf-control))))
-  
-  ;; (setq ediff-window-setup-function 'ediff-setup-window-elscreen)
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  ;; (elscreen 'ediff 'ediff-quit)
 
   :commands
   (ediff-buffers
+   ediff-files
    ediff))
 
 (use-package
