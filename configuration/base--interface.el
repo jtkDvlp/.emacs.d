@@ -72,16 +72,19 @@
 
   :init
   (defun elscreen (open-command close-command)
-    (let ((open
-           (lambda (&rest args)
-             (call-interactively 'elscreen-create)))
-
-          (close
-           (lambda (&rest args)
-             (call-interactively 'elscreen-kill))))
-
-      (advice-add #'open-command :before #'open)
-      (advice-add #'close-command :after #'close)))
+    (advice-add
+     open-command
+     :before
+     (lambda (&rest args)
+       (call-interactively 'elscreen-create))
+     '((name . "elscreen-open-command")))
+    
+    (advice-add
+     close-command
+     :after
+     (lambda (&rest args)
+       (call-interactively 'elscreen-kill))
+     '((name . "elscreen-close-command"))))
   
   :config
   (setq
@@ -91,19 +94,16 @@
   
   (elscreen-start))
 
-;; (defun foo (&rest args)
-;;   (call-interactively 'elscreen-create))
-
-;; (advice-add #'ediff :before #'foo)
-
 (use-package
   ediff
   :ensure nil
 
   :config
-  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
-  ;; (elscreen 'ediff 'ediff-quit)
-
+  (setq ediff-window-setup-function #'ediff-setup-windows-plain)
+  (elscreen #'ediff-buffers #'ediff-quit)
+  (elscreen #'ediff-files #'ediff-quit)
+  (elscreen #'ediff #'ediff-quit)  
+  
   :commands
   (ediff-buffers
    ediff-files
