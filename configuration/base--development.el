@@ -75,6 +75,8 @@
    ("M-v L" . magit-log-all))
   :config
   (setq magit-completing-read-function 'ivy-completing-read)
+  (transient-append-suffix 'magit-push "e"
+    '("P" "Push implicitly" magit-push-implicitly))
   (fullframe magit-status magit-mode-quit-window)
   (fullframe magit-log-all magit-mode-quit-window)
   (fullframe magit-log-current magit-mode-quit-window))
