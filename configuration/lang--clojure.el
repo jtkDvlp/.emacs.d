@@ -47,8 +47,11 @@
   clj-refactor
   :after clojure-mode
 
-  :config
-  (defun clj-refactor-enable ()
+  :hook
+  (clojure-mode . enable-clj-refactor)
+  
+  :init
+  (defun enable-clj-refactor ()
     (clj-refactor-mode 1)
     (cljr-add-keybindings-with-prefix "M-r")))
 
