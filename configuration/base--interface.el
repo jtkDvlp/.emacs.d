@@ -203,7 +203,9 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (when (eq system-type 'darwin)
-  (setq default-input-method "MacOSX"
-        ns-right-alternate-modifier nil))
+  (setq
+   ns-alternate-modifier nil
+   ns-right-alternate-modifier nil 
+   mac-command-modifier 'meta))
 
 (provide 'base--interface)
