@@ -17,6 +17,8 @@
   (package-install 'spacemacs-theme)
   (package-install 'exec-path-from-shell))
 
+(setq shell-file-name "/bin/bash")
+
 (when (memq window-system '(mac ns x))
   ;; (setq exec-path-from-shell-check-startup-files nil)
   ;; (exec-path-from-shell-initialize)
