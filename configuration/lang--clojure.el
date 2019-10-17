@@ -47,18 +47,18 @@
   clj-refactor
   :after clojure-mode
 
-  :hook
-  (clojure-mode . enable-clj-refactor)
-  
-  :init
-  (defun enable-clj-refactor ()
-    (clj-refactor-mode 1)
-    (cljr-add-keybindings-with-prefix "M-r")))
+  :config
+  (setq cljr-warn-on-eval nil)
+  (cljr-add-keybindings-with-prefix "M-r")
+  (clj-refactor-mode 1)
+
+  :bind-keymap*
+  ("M-r" . clj-refactor-map))
 
 (use-package
   cider
   :after clojure-mode
-
+  
   :commands
   (cider-jack-in-clj
    cider-connect-clj
@@ -68,25 +68,30 @@
    cider-connect-clj&cljs)
 
   :config
-  (defun clojure-user/system-init ()
+  (defun cider-repl-user-system-start ()
     (interactive)
     (cider-interactive-eval
      "(user/system-restart!)"))
 
-  (defun clojure-user/system-stop ()
+  (defun cider-repl-user-system-stop ()
     (interactive)
     (cider-interactive-eval
      "(user/system-stop!)"))
 
-  (defun clojure-user/fig-init ()
+  (defun cider-repl-user-fig-init ()
     (interactive)
     (cider-interactive-eval
      "(user/fig-init)"))
 
-  (defun clojure-repl/refresh ()
+  (defun cider-repl-refresh-all ()
     (interactive)
     (cider-interactive-eval
      "(do (require 'clojure.tools.namespace.repl) (clojure.tools.namespace.repl/refresh-all))"))
+
+  (defun cider-repl-switch-to-repl-buffer-and-ns ()
+    (interactive)
+    (call-interactively 'cider-repl-set-ns)
+    (call-interactively 'cider-switch-to-repl-buffer))
   
   (setq
    cider-repl-pop-to-buffer-on-connect 'display-only
@@ -108,8 +113,8 @@
    cider-font-lock-dynamically '(macro core function var)
    cider-repl-use-clojure-font-lock t
    
-   cider-error-highlight-face 'error-face)
-
+   cider-error-highlight-face 'error-face)  
+  
   :bind*
   (:map clojure-mode-map
 	("C-c M-j" . nil)
@@ -118,6 +123,7 @@
 	("C-c M-j j" . cider-connect-clj)
 
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
+        ("C-c C-M-S-J" . cider-repl-switch-to-repl-buffer-and-ns)
 
 	("C-c M-j S" . cider-jack-in-cljs)
 	("C-c M-j s" . cider-connect-cljs)
@@ -141,15 +147,19 @@
 	("M-j n" . cider-find-ns)
 	("M-J" . cider-pop-back)
 
+	("C-c M-j" . nil)
+        ("C-c C-M-j" . cider-switch-to-repl-buffer)
+        ("C-c C-M-S-J" . cider-repl-switch-to-repl-buffer-and-ns)
+        
 	("C-c M-q" . cider-quit)
 	("C-c M-r" . cider-restart)
-        ("C-c M-o" . cider-repl-clear-buffer)
+        ("C-c M-o" . cider-find-and-clear-repl-output)
 	("C-c M-c" . cider-completion-flush-caches)
 
         ("M-u" . nil)
-        ("M-u i" . clojure-user/system-init)
-        ("M-u I" . clojure-user/system-stop)
-        ("M-u f" . clojure-user/fig-init)
+        ("M-u i" . cider-repl-user-system-start)
+        ("M-u I" . cider-repl-user-system-stop)
+        ("M-u f" . cider-repl-user-fig-init)
         
        	:map cider-repl-mode-map
 	("C-<left>" . sp-backward-sexp)
@@ -219,7 +229,6 @@
 	("C-;" . sp-comment-dwim)
 
 	("C-c M-j" . nil)
-
         ("C-c C-M-j" . cider-switch-to-last-clojure-buffer)
 
 	("RET" . cider-repl-return)
@@ -229,7 +238,7 @@
 	;; ("M-p" . history)
 	;; ("M-n" . history)
 
-	("M-S-P" . cider-repl-history)
+	("M-P" . cider-repl-history)
 
 	("C-M-g" . cider-interrupt)
 
@@ -244,13 +253,13 @@
 	("M-J" . cider-pop-back)
 
         ("M-u" . nil)
-        ("M-u i" . clojure-user/system-init)
-        ("M-u I" . clojure-user/system-stop)
-        ("M-u f" . clojure-user/fig-init)
+        ("M-u i" . cider-repl-user-system-start)
+        ("M-u I" . cider-repl-user-system-stop)
+        ("M-u f" . cider-repl-user-fig-init)
         
 	("C-c M-q" . cider-quit)
 	("C-c M-r" . cider-restart)
-        ("C-c M-o" . cider-repl-clear-buffer)
+        ("C-c M-o" . cider-find-and-clear-repl-output)
 
 	:map cider-repl-history-mode-map
 	("M-p" . cider-repl-history-backward)
