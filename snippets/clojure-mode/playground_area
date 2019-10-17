@@ -1,7 +1,6 @@
 # -*- mode: snippet -*-
 # name: Playground Area
-# key: ;g
+# key: ;pg
 # --
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Playground
-$0
+;; Playground$0
