@@ -12,7 +12,7 @@
     (sp-next-sexp)
     (sp-transpose-sexp)
     (sp-backward-sexp))
-  
+
   (defun sp-backward-transpose-sexp ()
     (interactive)
     (sp-transpose-sexp)
@@ -34,6 +34,12 @@
   :ensure nil
   :bind
   (("C-;" . comment-dwim)))
+
+(use-package
+  simple
+  :ensure nil
+  :hook
+  ((before-save . delete-trailing-whitespace)))
 
 (use-package
   aggressive-indent
@@ -92,7 +98,7 @@
   :config
   (require 'yasnippet-snippets)
   (yas-reload-all)
-  
+
   :bind*
   (:map yas-minor-mode-map
         ("C-c" . nil)))
@@ -109,7 +115,7 @@
             ("fn" . 955) ; λ
             ("sum" . 8721))) ; ∑
     (prettify-symbols-mode))
-  
+
   :hook
   ((prog-mode . enable-prettify-symbols)
    (cider-repl-mode . enable-prettify-symbols)))
@@ -157,7 +163,7 @@
     (httpd/start (projectile-project-root) 8080))
 
   (defalias 'projectile-httpd/stop 'httpd/stop)
-  
+
   :commands
   (http-start
    httpd/start

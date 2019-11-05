@@ -13,30 +13,30 @@
 	("C-<left>" . sp-backward-sexp)
 	("M-<left>" . sp-forward-barf-sexp)
 	("C-M-<left>" . sp-backward-barf-sexp)
-	
+
 	("C-<right>" . sp-forward-sexp)
 	("M-<right>" . sp-forward-slurp-sexp)
 	("C-M-<right>" . sp-backward-slurp-sexp)
-	
+
 	("C-<up>" . sp-backward-up-sexp)
 	("M-<up>" . sp-convolute-sexp)
 
 	("C-<down>" . sp-down-sexp)
 	("M-<down>" . sp-raise-sexp)
-	
+
 	("C-M-<up>" . sp-backward-transpose-sexp)
 	("C-M-<down>" . sp-forward-transpose-sexp)
-	
+
 	("M-\"" . sp-wrap-doublequote)
 	("C-(" . sp-wrap-round)
 	("M-[" . sp-wrap-square)
 	("M-{" . sp-wrap-curly)
-	
+
 	("C-M-(" . sp-rewrap-sexp)
 
 	("C-k" . sp-kill-sexp)
 	("C-S-K" . sp-unwrap-sexp)
-	
+
 	("M-k" . sp-splice-sexp-killing-forward)
 	("M-K" . sp-splice-sexp-killing-backward)
 	("C-M-k" . sp-splice-sexp-killing-around)
@@ -58,7 +58,7 @@
 (use-package
   cider
   :after clojure-mode
-  
+
   :commands
   (cider-jack-in-clj
    cider-connect-clj
@@ -92,7 +92,7 @@
     (interactive)
     (call-interactively 'cider-repl-set-ns)
     (call-interactively 'cider-switch-to-repl-buffer))
-  
+
   (setq
    cider-repl-pop-to-buffer-on-connect 'display-only
    cider-show-error-buffer nil
@@ -102,23 +102,23 @@
 
    nrepl-log-messages nil
    nrepl-hide-special-buffers t
-   
+
    cider-repl-use-pretty-printing t
    cider-print-fn 'pprint
    cider-print-options '(("length" 15))
-   
+
    cider-use-overlays t
    cider-overlays-use-font-lock t
 
    cider-font-lock-dynamically '(macro core function var)
    cider-repl-use-clojure-font-lock t
-   
-   cider-error-highlight-face 'error-face)  
-  
+
+   cider-error-highlight-face 'error-face)
+
   :bind*
   (:map clojure-mode-map
 	("C-c M-j" . nil)
-	
+
 	("C-c M-j J" . cider-jack-in-clj)
 	("C-c M-j j" . cider-connect-clj)
 
@@ -150,17 +150,17 @@
 	("C-c M-j" . nil)
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
         ("C-c C-M-S-J" . cider-repl-switch-to-repl-buffer-and-ns)
-        
+
 	("C-c M-q" . cider-quit)
 	("C-c M-r" . cider-restart)
         ("C-c M-o" . cider-find-and-clear-repl-output)
 	("C-c M-c" . cider-completion-flush-caches)
 
         ("M-u" . nil)
-        ("M-u i" . cider-repl-user-system-start)
-        ("M-u I" . cider-repl-user-system-stop)
+        ("M-u s" . cider-repl-user-system-start)
+        ("M-u S" . cider-repl-user-system-stop)
         ("M-u f" . cider-repl-user-fig-init)
-        
+
        	:map cider-repl-mode-map
 	("C-<left>" . sp-backward-sexp)
 	("M-<left>" . sp-forward-barf-sexp)
@@ -253,10 +253,10 @@
 	("M-J" . cider-pop-back)
 
         ("M-u" . nil)
-        ("M-u i" . cider-repl-user-system-start)
-        ("M-u I" . cider-repl-user-system-stop)
+        ("M-u s" . cider-repl-user-system-start)
+        ("M-u S" . cider-repl-user-system-stop)
         ("M-u f" . cider-repl-user-fig-init)
-        
+
 	("C-c M-q" . cider-quit)
 	("C-c M-r" . cider-restart)
         ("C-c M-o" . cider-find-and-clear-repl-output)

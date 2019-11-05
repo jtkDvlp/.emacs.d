@@ -148,7 +148,7 @@
 
 (defun zshell ()
   (interactive)
-  (ansi-term "/bin/zsh"))
+  (ansi-term "/bin/zsh" "zshell"))
 
 (defalias 'zsh 'zshell)
 
