@@ -68,6 +68,24 @@
    cider-connect-clj&cljs)
 
   :config
+  ;; (defun string-starts-with-p
+  ;;     (string starts-with)
+  ;;   (and
+  ;;    (not (string-empty-p string))
+  ;;    (string= starts-with (substring (concat string starts-with) 0 (length starts-with)))))
+
+  ;; (defun cider-eval-dwim ()
+  ;;   (interactive)
+  ;;   (save-excursion
+  ;;     (let ((sexp (cider-sexp-at-point))
+  ;;           (caret (point)))
+  ;;       (while (not (string-starts-with-p sexp "(comment"))
+  ;;         (setq caret (point))
+  ;;         (sp-backward-up-sexp)
+  ;;         (setq sexp (cider-sexp-at-point)))
+  ;;       (goto-char caret)
+  ;;       (cider-eval-sexp-at-point))))
+
   (defun cider-repl-user-system-start ()
     (interactive)
     (cider-interactive-eval
