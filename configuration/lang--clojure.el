@@ -68,23 +68,21 @@
    cider-connect-clj&cljs)
 
   :config
-  ;; (defun string-starts-with-p
-  ;;     (string starts-with)
-  ;;   (and
-  ;;    (not (string-empty-p string))
-  ;;    (string= starts-with (substring (concat string starts-with) 0 (length starts-with)))))
 
-  ;; (defun cider-eval-dwim ()
-  ;;   (interactive)
-  ;;   (save-excursion
-  ;;     (let ((sexp (cider-sexp-at-point))
-  ;;           (caret (point)))
-  ;;       (while (not (string-starts-with-p sexp "(comment"))
-  ;;         (setq caret (point))
-  ;;         (sp-backward-up-sexp)
-  ;;         (setq sexp (cider-sexp-at-point)))
-  ;;       (goto-char caret)
-  ;;       (cider-eval-sexp-at-point))))
+  (defun cider-eval-dwim ()
+    (interactive)
+    (save-excursion
+      (let ((cursor nil)
+            (sexp nil))
+        (ignore-errors
+          (while (not (string-match-p "^(comment.*" (or sexp "")))
+            (setq cursor (point))
+            (paredit-backward-up)
+            (setq sexp (cider-sexp-at-point))))
+        (goto-char cursor)
+        (unless (cider-sexp-at-point)
+          (paredit-backward-up))
+        (cider-eval-sexp-at-point))))
 
   (defun cider-repl-user-system-start ()
     (interactive)
@@ -150,8 +148,9 @@
 	("C-c M-j b" . cider-connect-clj&cljs)
 
 	:map cider-mode-map
-	("C-M-x" . cider-eval-last-sexp)
 	("C-M-g" . cider-interrupt)
+        ("C-c C-c" . cider-eval-dwim)
+        ("C-M-x" . cider-eval-last-sexp)
 	("C-M-S-X" . cider-insert-last-sexp-in-repl)
 	("C-c M-k" . cider-load-buffer)
 
