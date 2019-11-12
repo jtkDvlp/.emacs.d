@@ -12,10 +12,10 @@
 
            (ide-window?
             (window-parameter window 'ide)))
-      
+
       (when ide-window?
         "IDE")))
-  
+
   (spaceline-compile
     '((buffer-id
        :priority 99
@@ -41,7 +41,7 @@
       (buffer-encoding
        :when (and active vc-mode)
        :priority 50))
-    
+
     '((minor-modes
        :when active
        :priority 70)
@@ -113,7 +113,8 @@
     '(("\\<\\(HACK\\|NOTE\\|FIXME\\|TODO\\|BUG\\|INFO\\)"
        1 font-lock-warning-face t)))))
 
-(load-theme 'spacemacs-dark t)
+;; (load-theme 'spacemacs-dark t)
+(load-theme 'doom-one t)
 (toggle-frame-maximized)
 
 (provide 'base--apperance)

@@ -14,7 +14,8 @@
   (package-install 'diminish)
   (package-install 'smartrep)
   (package-install 'use-package)
-  (package-install 'spacemacs-theme)
+  ;; (package-install 'spacemacs-theme)
+  (package-install 'doom-themes)
   (package-install 'exec-path-from-shell))
 
 (setq shell-file-name "/bin/bash")
