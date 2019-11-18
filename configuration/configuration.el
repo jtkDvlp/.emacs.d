@@ -18,17 +18,7 @@
   (package-install 'doom-themes)
   (package-install 'exec-path-from-shell))
 
-(setq shell-file-name "/bin/bash")
-
-(when (memq window-system '(mac ns x))
-  ;; (setq exec-path-from-shell-check-startup-files nil)
-  ;; (exec-path-from-shell-initialize)
-
-  (add-to-list 'exec-path "/usr/local/bin")
-  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
-
 (setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
 
 (require 'smartrep);
 (require 'use-package)
