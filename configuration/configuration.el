@@ -37,6 +37,7 @@
 (require 'base--organisation)
 (require 'base--startup)
 (require 'base--development)
+(require 'base--shell)
 
 (require 'lang--elisp)
 (require 'lang--typescript)
