@@ -49,7 +49,7 @@
 (require 'base--development)
 
 (require 'lang--elisp)
-;; (require 'lang--typescript)
+(require 'lang--typescript)
 (require 'lang--javascript)
 ;; (require 'lang--php)
 (require 'lang--python)

@@ -4,7 +4,9 @@
   "\\.\\(html\\|phtml\\|xml\\)\\'"
 
   :config
-  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-markup-indent-offset 2
+        web-mode-attr-indent-offset 2
+        web-mode-attr-value-indent-offset 2)
   
   (defun browse-current-file ()
     (interactive)
