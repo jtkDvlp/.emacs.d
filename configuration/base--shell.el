@@ -9,6 +9,9 @@
         eshell-review-quick-commands nil
         eshell-smart-space-goes-to-end t)
 
+  (setq eshell-login-script "~/eshell_login"
+        eshell-rc-script "~/eshellrc")
+
   (setq eshell-prompt-function
         (lambda ()
           (let* ((pwd
@@ -66,5 +69,12 @@
    'eshell-mode-hook
    '(lambda ()
       (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point))))
+
+(use-package eshell-up
+  :commands
+  (eshell-up eshell-up-peek))
+
+(use-package esh-autosuggest
+  :hook (eshell-mode . esh-autosuggest-mode))
 
 (provide 'base--shell)
