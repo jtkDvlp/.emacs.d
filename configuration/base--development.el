@@ -122,11 +122,27 @@
 
 (use-package
   highlight-symbol
+  :demand t
   :diminish highlight-symbol-mode
+
+  :commands
+  (highlight-symbol)
+
   :hook
   ((prog-mode . highlight-symbol-mode)
    (cider-repl-mode . highlight-symbol-mode))
-  :config (setq highlight-symbol-idle-delay 0.8))
+
+  :config
+  (setq highlight-symbol-idle-delay 1.5)
+  (define-key input-decode-map [?\C-m] [C-m])
+  (global-set-key (kbd "<C-m>") #'highlight-symbol)
+  (global-unset-key (kbd "M-m"))
+
+  (smartrep-define-key
+      global-map "M-m"
+    '(("n" . (highlight-symbol-next))
+      ("p" . (highlight-symbol-prev))
+      ("r" . (highlight-symbol-query-replace)))))
 
 (use-package
   restclient
