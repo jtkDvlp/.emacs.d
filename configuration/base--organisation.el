@@ -1,4 +1,4 @@
-(use-package 
+(use-package
   org
 
   :mode
@@ -18,7 +18,7 @@
    ;; org-gtd-journal-file (expand-file-name "journal.org" org-gtd-directory)
    org-gtd-todos-file (expand-file-name "gtd.org" org-gtd-directory)
    org-gtd-journal-file (expand-file-name "gtd.org" org-gtd-directory))
-  
+
   (setq
    org-startup-indented t
    org-M-RET-may-split-line t
@@ -34,7 +34,8 @@
                    ;; ("@work" . ?w) ("@home" . ?h)
                    ;; ("@tennisclub" . ?t)
                    ;; (:endgroup . nil)
-                   ("GENERAL" . ?g) ("EMACS" . ?e)))
+                   ("GENERAL" . ?g) ("EMACS" . ?e))
+   org-refile-targets '((org-agenda-files :maxlevel . 5)))
 
   (setq
    org-capture-templates
@@ -62,8 +63,8 @@
   (defun org-capture-calendar ()
     (interactive)
     (org-capture nil "c"))
-  
-  :bind* 
+
+  :bind*
   (("C-M-- <RET>" . org-capture)
    ("C-M-- t" . org-capture-todo)
    ("C-M-- T" . org-capture-todo-context)
