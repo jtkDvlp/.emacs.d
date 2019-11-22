@@ -12,13 +12,15 @@
   (setq eshell-login-script "~/eshell_login"
         eshell-rc-script "~/eshellrc")
 
+  (eshell/pwd)
+
   (setq eshell-prompt-function
         (lambda ()
-          (let* ((pwd
-                  (eshell/pwd))
-
-                 (home
+          (let* ((home
                   (getenv "HOME"))
+
+                 (pwd
+                  (replace-regexp-in-string "~" home (eshell/pwd)))
 
                  (home-based-path
                   (replace-regexp-in-string home "~" pwd))
@@ -47,7 +49,7 @@
 
                  (git-branch
                   (when git?
-                    (replace-regexp-in-string (magit-get-current-branch) "master" "m")))
+                    (replace-regexp-in-string "master" "m" (magit-get-current-branch))))
 
                  (git-modified?
                   (and git? (magit-anything-modified-p)))
