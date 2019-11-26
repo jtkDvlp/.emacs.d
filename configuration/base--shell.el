@@ -12,8 +12,6 @@
   (setq eshell-login-script "~/eshell_login"
         eshell-rc-script "~/eshellrc")
 
-  (eshell/pwd)
-
   (setq eshell-prompt-function
         (lambda ()
           (let* ((home
