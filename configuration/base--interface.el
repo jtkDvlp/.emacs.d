@@ -3,7 +3,7 @@
   :demand t
   :diminish ivy-mode
 
-  :config 
+  :config
   (setq
    enable-recursive-minibuffers t
    ivy-use-selectable-prompt t
@@ -13,7 +13,7 @@
   (ivy-mode 1))
 
 (use-package
-  counsel 
+  counsel
   :demand t
   :diminish counsel-mode
   :config
@@ -23,7 +23,7 @@
   (("C-S-Y" . counsel-yank-pop)))
 
 (use-package
-  swiper 
+  swiper
   :requires counsel
 
   :bind
@@ -32,7 +32,7 @@
 
    ("C-r" . swiper)
    ("C-S-r" . counsel-git-grep-query-replace)
-   
+
    :map swiper-map
    ("C-r" . swiper-query-replace)))
 
@@ -43,7 +43,7 @@
 (use-package
   buffer-move
   :config (setq buffer-move-stay-after-swap t)
-  :bind 
+  :bind
   (("C-M-' <up>" . buf-move-up)
    ("C-M-' <down>" . buf-move-down)
    ("C-M-' <left>" . buf-move-left)
@@ -54,7 +54,7 @@
 
   :commands
   (elscreen-create)
-  
+
   :bind*
   (("M-' c" . elscreen-create)
    ("M-' C" . elscreen-clone)
@@ -71,27 +71,27 @@
    ("f" . elscreen-select-and-goto))
 
   :init
-  (defun elscreen (open-command close-command)
+  (defun with-elscreen (open-command close-command)
     (advice-add
      open-command
      :before
      (lambda (&rest args)
        (call-interactively 'elscreen-create))
      '((name . "elscreen-open-command")))
-    
+
     (advice-add
      close-command
      :after
      (lambda (&rest args)
        (call-interactively 'elscreen-kill))
      '((name . "elscreen-close-command"))))
-  
+
   :config
   (setq
    elscreen-prefix-key "\M-'"
    elscreen-display-screen-number nil
    elscreen-display-tab nil)
-  
+
   (elscreen-start))
 
 (use-package
@@ -100,14 +100,27 @@
 
   :config
   (setq ediff-window-setup-function #'ediff-setup-windows-plain)
-  (elscreen #'ediff-buffers #'ediff-quit)
-  (elscreen #'ediff-files #'ediff-quit)
-  (elscreen #'ediff #'ediff-quit)  
-  
+  (with-elscreen #'ediff-buffers #'ediff-quit)
+  (with-elscreen #'ediff-files #'ediff-quit)
+  (with-elscreen #'ediff-directories #'ediff-quit)
+
   :commands
   (ediff-buffers
    ediff-files
    ediff))
+
+(use-package
+  ztree
+  :demand t
+
+  :commands
+  (ztree-diff)
+
+  :init
+  (defalias 'ediff-trees 'ztree-diff)
+
+  (setq ztree-diff-filter-list '("^\\.$" "^\\.\\.$" "^\\.git$" "^\\.DS_Store$")
+        ztree-draw-unicode-lines t))
 
 (use-package
   ace-jump-mode
@@ -124,7 +137,7 @@
    ("C-#" . aw-flip-window))
 
   :config
-  (setq 
+  (setq
    aw-scope 'frame
    aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
    aw-dispatch-always t))
@@ -205,7 +218,7 @@
 (when (eq system-type 'darwin)
   (setq
    ns-alternate-modifier nil
-   ns-right-alternate-modifier nil 
+   ns-right-alternate-modifier nil
    mac-command-modifier 'meta))
 
 (provide 'base--interface)
