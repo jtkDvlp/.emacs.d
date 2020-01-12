@@ -18,6 +18,14 @@
   (package-install 'doom-themes)
   (package-install 'exec-path-from-shell))
 
+(when (memq window-system '(mac ns x))
+
+  (let ((path (shell-command-to-string "echo -n $PATH")))
+    (setenv "PATH" path)
+    (setq exec-path (split-string-and-unquote path ":")))
+
+  (setq shell-file-name "/bin/bash"))
+
 (setq custom-file "~/.emacs.d/custom.el")
 
 (require 'smartrep);
