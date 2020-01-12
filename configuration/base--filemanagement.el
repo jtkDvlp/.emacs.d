@@ -30,6 +30,8 @@
    ("C-x d" . projectile-dired)
    ("C-x D" . counsel-projectile-find-dir)
 
+   ("C-x C-d" . nil)
+
    ("C-x x f" . counsel-projectile-switch-project)
    ("C-x x F" . counsel-projectile)
 
@@ -40,7 +42,37 @@
 
 (use-package
   treemacs
-  :config 
+  :config
+  (defun treemacs-hide ()
+    (interactive)
+    (delete-window (treemacs-get-local-window)))
+
+  (defun treemacs-select-current-project-file ()
+    (interactive)
+    (save-excursion
+      (treemacs-add-and-display-current-project))
+    (treemacs-find-file)
+    (treemacs-select-window))
+
+  (defun treemacs-select-current-file ()
+    (interactive)
+    (let ((path (buffer-file-name (current-buffer))))
+      (when path
+        (let ((project (treemacs--find-project-for-path path)))
+          (unless project
+            (save-excursion
+              (call-interactively 'treemacs-add-project-to-workspace))))
+        (treemacs-select-window)
+        (treemacs-goto-file-node path project))))
+
+  (defun treemacs-dwim ()
+    (interactive)
+    (if (eq (get-buffer-window) (treemacs-get-local-window))
+        (treemacs-hide)
+      (if (treemacs--find-current-user-project)
+          (treemacs-select-current-project-file)
+        (treemacs-select-current-file))))
+
   (setq treemacs-collapse-dirs                 (if (executable-find "python") 3 0)
 	treemacs-deferred-git-apply-delay      0.5
 	treemacs-display-in-side-window        t
@@ -73,7 +105,8 @@
 	treemacs-width                         35)
 
   :bind*
-  (("C-x x d" . treemacs-select-window)))
+  (("C-x x d" . treemacs-dwim)
+   ("C-x x D" . treemacs-hide)))
 
 (use-package treemacs-projectile
   :after treemacs projectile)
@@ -104,7 +137,7 @@
   (defun simple-bookmarks-interactive-execute-mysql ()
     (interactive)
     (simple-bookmarks-interactive-execute (lambda (bookmark) (simple-bookmarks-funcs-type-p 'sql-mysql-for bookmark))))
-  
+
   (simple-bookmarks-init)
 
   :bind*
@@ -115,7 +148,7 @@
    ("M-- d l" . simple-bookmarks-interactive-execute-directory)
    ("M-- d c" . simple-bookmarks-interactive-add-directory)
    ("M-- d k" . simple-bookmarks-interactive-remove-directory)
-   
+
    ("M-- m l" . simple-bookmarks-interactive-execute-mysql)
    ("M-- m c" . simple-bookmarks-interactive-add-mysql)
    ("M-- m k" . simple-bookmarks-interactive-remove-from-all)))
