@@ -38,14 +38,14 @@
 
   (setq
    org-capture-templates
-   '(("t" "Todo (without context)" entry (file+headline org-gtd-todos-file "Inbox")
+   '(("t" "Todo (without deadline)" entry (file+headline org-gtd-todos-file "Inbox")
+      "* TODO %? %i %^g\n:PROPERTIES:\n:ADDED: %U\n:END:")
+     ("T" "Todo (with deadline)" entry (file+headline org-gtd-todos-file "Inbox")
       "* TODO %? %i %^g\nDEADLINE: %^t\n:PROPERTIES:\n:ADDED: %U\n:END:")
-     ("T" "Todo (with context)" entry (file+headline org-gtd-todos-file "Inbox")
-      "* TODO %? %i %^g\nDEADLINE: %^t\n:PROPERTIES:\n:ADDED: %U\n:CONTEXT: %a\n:END:")
      ("j" "Journal" entry (file+headline org-gtd-journal-file "Journal")
-      "* %? %i %^g\n:PROPERTIES:\n:ADDED: %U\n:CONTEXT: %a\n:END:")
+      "* %? %i %^g\n:PROPERTIES:\n:ADDED: %U\n:END:")
      ("c" "Calendar" entry (file+headline org-gtd-todos-file "Calendar")
-      "* TODO %? %i %^g\nSCHEDULED: %^T\n:PROPERTIES:\n:ADDED: %U\n:CONTEXT: %a\n:END:")))
+      "* TODO %? %i %^g\nSCHEDULED: %^T\n:PROPERTIES:\n:ADDED: %U\n:END:")))
 
   (defun org-capture-todo ()
     (interactive)
