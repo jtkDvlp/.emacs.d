@@ -51,7 +51,7 @@
     (interactive)
     (org-capture nil "t"))
 
-  (defun org-capture-todo-context ()
+  (defun org-capture-todo-deadline ()
     (interactive)
     (org-capture nil "T"))
 
@@ -66,7 +66,7 @@
   :bind*
   (("C-M-- <RET>" . org-capture)
    ("C-M-- t" . org-capture-todo)
-   ("C-M-- T" . org-capture-todo-context)
+   ("C-M-- T" . org-capture-todo-deadline)
    ("C-M-- j" . org-capture-journal)
    ("C-M-- c" . org-capture-calendar)
    ("C-M-- a" . org-agenda)))
