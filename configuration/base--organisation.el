@@ -26,7 +26,6 @@
    org-outline-path-complete-in-steps nil
    org-refile-use-outline-path t
    org-blank-before-new-entry '((heading . nil) (plain-list-item . nil))
-   show-week-agenda-p t
    org-agenda-files (list org-gtd-todos-file)
    org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "BLOCKED(b)" "|" "DONE(d)" "DELEGATED(g)" "CANCELED(c)"))
    org-tag-alist '(;; For exclusiv groups
@@ -40,13 +39,13 @@
   (setq
    org-capture-templates
    '(("t" "Todo (without context)" entry (file+headline org-gtd-todos-file "Inbox")
-      "* TODO %? %i %^g\n:PROPERTIES:\n:ADDED: %U\n:CONTEXT:\n:DEADLINE: %^t\n:END:")
+      "* TODO %? %i %^g\nDEADLINE: %^t\n:PROPERTIES:\n:ADDED: %U\n:END:")
      ("T" "Todo (with context)" entry (file+headline org-gtd-todos-file "Inbox")
-      "* TODO %? %i %^g\n:PROPERTIES:\n:ADDED: %U\n:CONTEXT: %a\n:DEADLINE: %^t\n:END:")
+      "* TODO %? %i %^g\nDEADLINE: %^t\n:PROPERTIES:\n:ADDED: %U\n:CONTEXT: %a\n:END:")
      ("j" "Journal" entry (file+headline org-gtd-journal-file "Journal")
       "* %? %i %^g\n:PROPERTIES:\n:ADDED: %U\n:CONTEXT: %a\n:END:")
      ("c" "Calendar" entry (file+headline org-gtd-todos-file "Calendar")
-      "* TODO %? %i %^g\n:PROPERTIES:\n:ADDED: %U\n:CONTEXT: %a\n:SCHEDULED: %^T\n:DEADLINE: %^t\n:END:")))
+      "* TODO %? %i %^g\nSCHEDULED: %^T\n:PROPERTIES:\n:ADDED: %U\n:CONTEXT: %a\n:END:")))
 
   (defun org-capture-todo ()
     (interactive)
