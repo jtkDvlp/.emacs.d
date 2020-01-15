@@ -27,13 +27,23 @@
    org-refile-use-outline-path t
    org-blank-before-new-entry '((heading . nil) (plain-list-item . nil))
    org-agenda-files (list org-gtd-todos-file)
+
+   org-agenda-prefix-format
+   '((agenda . " %i %-25:(org-format-outline-path (cdr (org-get-outline-path)))%?-12t %s")
+     (todo . " %i %-25:(org-format-outline-path (cdr (org-get-outline-path)))%-12:c")
+     (tags . " %i %-25:(org-format-outline-path (cdr (org-get-outline-path)))%-12:c")
+     (search . " %i %-25:(org-format-outline-path (cdr (org-get-outline-path)))%-12:c"))
+
    org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "BLOCKED(b)" "|" "DONE(d)" "DELEGATED(g)" "CANCELED(c)"))
-   org-tag-alist '(;; For exclusiv groups
-                   ;; (:startgroup . nil)
-                   ;; ("@work" . ?w) ("@home" . ?h)
-                   ;; ("@tennisclub" . ?t)
-                   ;; (:endgroup . nil)
-                   ("GENERAL" . ?g) ("EMACS" . ?e))
+
+   org-tag-alist
+   '(;; For exclusiv groups
+     ;; (:startgroup . nil)
+     ;; ("@work" . ?w) ("@home" . ?h)
+     ;; ("@tennisclub" . ?t)
+     ;; (:endgroup . nil)
+     ("GENERAL" . ?g) ("EMACS" . ?e))
+
    org-refile-targets '((org-agenda-files :maxlevel . 5)))
 
   (setq
