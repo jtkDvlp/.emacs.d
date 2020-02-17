@@ -111,7 +111,7 @@
 
   (setq
    cider-repl-pop-to-buffer-on-connect 'display-only
-   cider-show-error-buffer nil
+   cider-show-error-buffer t
    cider-repl-result-prefix ";; => "
    cider-repl-display-help-banner nil
    cider-prompt-for-symbol nil
@@ -130,6 +130,35 @@
    cider-repl-use-clojure-font-lock t
 
    cider-error-highlight-face 'error-face)
+
+  (define-clojure-indent
+    (defroutes 'defun)
+    (println 'defun)
+    (pprint 'defun)
+    (lazy-seq'defun)
+    (routes 'defun)
+    (render 'defun)
+    (go 'defun)
+    (html 'defun)
+    (doall 'defun)
+    (dosync 'defun)
+
+    ;; Compojure
+    (GET 'defun)
+    (PUT 'defun)
+    (POST 'defun)
+    (where 'defun)
+    (add-watch 'defun)
+    (listen! 'defun)
+
+    ;; Reframe
+    (register-handler 'defun)
+    (register-sub 'defun)
+    (reg-sub 'defun)
+    (reg-event-fx 'defun)
+    (reg-event-db 'defun)
+    (reg-fx 'defun)
+    )
 
   :bind*
   (:map clojure-mode-map
