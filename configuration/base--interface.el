@@ -99,7 +99,8 @@
   :ensure nil
 
   :config
-  (setq ediff-window-setup-function #'ediff-setup-windows-plain)
+  (setq ediff-window-setup-function #'ediff-setup-windows-plain
+        ediff-split-window-function 'split-window-horizontally)
   (with-elscreen #'ediff-buffers #'ediff-quit)
   (with-elscreen #'ediff-files #'ediff-quit)
   (with-elscreen #'ediff-directories #'ediff-quit)
@@ -119,7 +120,7 @@
   :init
   (defalias 'ediff-trees 'ztree-diff)
 
-  (setq ztree-diff-filter-list '("^\\.$" "^\\.\\.$" "^\\.git$" "^\\.DS_Store$")
+  (setq ztree-diff-filter-list '("^\\.$" "^\\.\\.$" "^\\.git$" "^\\.DS_Store$" "^node_modules$")
         ztree-draw-unicode-lines t))
 
 (use-package
