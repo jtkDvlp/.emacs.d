@@ -150,6 +150,14 @@
    ("C-:" . er/contract-region)))
 
 (use-package
+  pkg--narrow
+  :load-path "configuration/"
+  :commands narrow/narrow-dwim
+  :bind*
+  (("C--" . narrow/narrow-dwim)
+   ("C-+" . narrow/widen)))
+
+(use-package
   which-key
   :demand t
   :diminish which-key-mode

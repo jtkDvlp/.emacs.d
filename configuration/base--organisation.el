@@ -79,6 +79,8 @@
    ("C-M-- T" . org-capture-todo-deadline)
    ("C-M-- j" . org-capture-journal)
    ("C-M-- c" . org-capture-calendar)
-   ("C-M-- a" . org-agenda)))
+   ("C-M-- a" . org-agenda)
+
+   ("C--" . org-narrow-to-subtree)))
 
 (provide 'base--organisation)
