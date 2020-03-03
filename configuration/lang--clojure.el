@@ -68,6 +68,16 @@
    cider-connect-clj&cljs)
 
   :config
+  (defun cider-jack-in-with (args)
+    (interactive "sjack-in repl with (repl): ")
+    (let* ((args
+            (if (string-empty-p args)
+                "repl"
+              args))
+
+           (cider-lein-parameters
+            args))
+      (cider-jack-in nil)))
 
   (defun cider-eval-dwim ()
     (interactive)
