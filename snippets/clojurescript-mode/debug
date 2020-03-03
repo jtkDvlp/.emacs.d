@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: debug
+# key: debug
+# --
+(#(do (.debug js/console (clj->js %)) %))
