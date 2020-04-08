@@ -21,7 +21,7 @@
 
   (setq
    org-startup-indented t
-   org-M-RET-may-split-line t
+   org-M-RET-may-split-line nil
    org-default-notes-file org-gtd-todos-file
    org-outline-path-complete-in-steps nil
    org-refile-use-outline-path t
@@ -73,6 +73,16 @@
     (interactive)
     (org-capture nil "c"))
 
+  (defun org-insert-jira-issue (&optional jira-issue)
+    (interactive "MJIRA Issue: ")
+    (let* ((jira-issue
+            (upcase jira-issue))
+
+           (jira-issue-link
+            (concat env-jira-host-url "browse/" jira-issue)))
+
+      (org-insert-link nil jira-issue-link jira-issue)))
+
   :bind*
   (("C-M-- <RET>" . org-capture)
    ("C-M-- t" . org-capture-todo)
@@ -81,6 +91,13 @@
    ("C-M-- c" . org-capture-calendar)
    ("C-M-- a" . org-agenda)
 
-   ("C--" . org-narrow-to-subtree)))
+   ("C--" . org-narrow-to-subtree)
+
+   :map org-mode-map
+   ("M-i l" . org-insert-link)
+   ("M-i j" . org-insert-jira-issue)
+   ("M-i d" . org-deadline)
+
+   ("M-j j" . org-open-at-point)))
 
 (provide 'base--organisation)
