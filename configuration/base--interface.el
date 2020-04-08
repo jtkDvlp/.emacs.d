@@ -174,6 +174,10 @@
 
 (use-package
   multiple-cursors
+
+  :config
+  (define-key mc/keymap (kbd "<return>") nil)
+
   :bind*
   (("M-c m" . mc/mark-more-like-this-extended)
    ("M-c x" . mc/mark-all-like-this-dwim)
@@ -186,7 +190,7 @@
    ("M-c i r" . mc/reverse-region)
 
    :map mc/keymap
-   ("<return>" . nil)))
+   ("<tab>" . mc-hide-unmatched-lines-mode)))
 
 (use-package
   pkg--zoom
