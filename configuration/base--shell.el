@@ -2,8 +2,19 @@
   :ensure nil
   :commands (eshell)
 
+  :bind*
+  (("M-! s s" . eshell-dwim)
+   ("M-! s S" . eshell)
+   ("M-! s c" . shell-command))
+
   :config
   (require 'em-smart)
+
+  (defun eshell-dwim (arg)
+    (interactive "P")
+    (if (projectile-project-root)
+        (projectile-run-eshell arg)
+      (eshell arg)))
 
   (setq eshell-where-to-jump 'begin
         eshell-review-quick-commands nil
