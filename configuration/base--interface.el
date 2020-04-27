@@ -1,4 +1,13 @@
 (use-package
+  kmacro
+  :ensure nil
+
+  :bind*
+  (("M-! m s" . start-kbd-macro)
+   ("M-! m S" . kmacro-end-macro)
+   ("M-! m m" . kmacro-end-and-call-macro)))
+
+(use-package
   ivy
   :demand t
   :diminish ivy-mode
@@ -10,7 +19,11 @@
    ivy-height 15
    ivy-wrap t
    ivy-use-virtual-buffers t)
-  (ivy-mode 1))
+  (ivy-mode 1)
+
+  :bind*
+  (:map ivy-minibuffer-map
+        ("C-o" . ivy-occur)))
 
 (use-package
   counsel
