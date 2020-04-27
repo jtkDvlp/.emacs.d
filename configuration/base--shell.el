@@ -2,10 +2,23 @@
   :ensure nil
   :commands (eshell)
 
+  :init
+  (defvar eshell-mode-map* (make-sparse-keymap))
+
   :bind*
   (("M-! s s" . eshell-dwim)
    ("M-! s S" . eshell)
-   ("M-! s c" . shell-command))
+   ("M-! s c" . shell-command)
+
+   :map eshell-mode-map*
+   ("<up>" . previous-line)
+   ("<down>" . next-line)
+   ("C-<up>" . eshell-previous-prompt)
+   ("C-<down>" . eshell-next-prompt)
+
+   ("C-<return>" . end-of-buffer)
+
+   ("C-o" . eshell-insert-buffer-name))
 
   :config
   (require 'em-smart)
@@ -15,6 +28,11 @@
     (if (projectile-project-root)
         (projectile-run-eshell arg)
       (eshell arg)))
+
+  ;; OHA, weil eshell seine mode map nicht korrekt erstellt, und diese dadurch erst später zur Verfügung steht.
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (replace-keymap-bindings eshell-mode-map* eshell-mode-map)))
 
   (setq eshell-where-to-jump 'begin
         eshell-review-quick-commands nil

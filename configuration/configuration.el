@@ -61,4 +61,10 @@
   (setq dump-buffer (get-buffer-create "*dump*"))
   (print data dump-buffer))
 
+(defun replace-keymap-bindings (from to)
+  (map-keymap
+   (lambda (k f)
+     (define-key to (vector k) f))
+   from))
+
 (provide 'configuration)
