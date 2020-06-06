@@ -99,8 +99,10 @@
         eshell-prompt-regexp
         "^[^\u03bb]*\u03bb\s")
 
-  (defun eshell/repl (&rest args)
-    (cider-jack-in-with (apply 'concat args)))
+  (defun eshell/repl (&rest profile)
+    (if (seq-empty-p profile)
+        (cider-jack-in-with-profile-completion)
+      (cider-jack-in-with-profile (apply 'concat profile))))
 
   (add-hook
    'eshell-mode-hook
