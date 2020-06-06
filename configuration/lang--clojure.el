@@ -7,7 +7,7 @@
 
   :config
   (require 'smartparens-clojure)
-  
+
   :bind*
   (:map clojure-mode-map
 	("C-<left>" . sp-backward-sexp)
@@ -56,8 +56,13 @@
   ("M-r" . clj-refactor-map))
 
 (use-package
+  parseedn
+  :after clojure-mode)
+
+(use-package
   cider
-  :after clojure-mode
+  :after
+  (clojure-mode parseedn)
 
   :commands
   (cider-jack-in-clj
@@ -65,20 +70,83 @@
    cider-jack-in-cljs
    cider-connect-cljs
    cider-jack-in-clj&cljs
-   cider-connect-clj&cljs)
+   cider-connect-clj&cljs
+   cider-jack-in-with-args
+   cider-jack-in-with-profile
+   cider-jack-in-with-profile-completion)
 
   :config
-  (defun cider-jack-in-with (args)
-    (interactive "sjack-in repl with (repl): ")
-    (let* ((args
-            (if (string-empty-p args)
-                "repl"
-              args))
+  (defun get-file-content (filePath)
+    "Return filePath's file content."
+    (with-temp-buffer
+      (insert-file-contents filePath)
+      (buffer-string)))
 
-           (cider-lein-parameters
-            args))
+  (defun lein-project-clj-filepath ()
+    (thread-first
+        (projectile-project-root)
+      (concat "project.clj")))
+
+  (defun lein-project-clj-content (filepath)
+    (let* ((data
+            (thread-first
+                filepath
+              (get-file-content)
+              (parseedn-read-str)))
+
+           (name
+            (nth 1 data))
+
+           (version
+            (nth 2 data))
+
+           (rest-root-level-values
+            (seq-drop data 3))
+           
+           (result
+            (make-hash-table :test 'equal)))
+
+      (puthash :name name result)
+      (puthash :version version result)
+
+      (mapc (lambda (pair) (puthash (car pair) (car (cdr pair)) result))
+            (seq-partition rest-root-level-values 2))
+
+      result))
+
+  (defun lein-project-clj-profiles (filepath)
+    (thread-last filepath
+      (lein-project-clj-content)
+      (gethash :profiles)
+      (hash-table-keys)
+      (mapcar 'symbol-name)
+      (mapcar (lambda (profile) (substring profile 1)))))
+  
+  (defun cider-jack-in-with-args (args)
+    (interactive "sjack-in repl with args: ")
+    (let ((cider-lein-parameters
+           args))
       (cider-jack-in nil)))
 
+  (defun cider-jack-with-profile (profile)
+    (interactive "sjack-in repl with profile: ")
+    (cider-jack-in-with-args (concat "with-profile " profile " repl")))
+
+  (defun cider-jack-with-profile-completion (&optional project-clj-filepath)
+    (interactive "i")
+    (let* ((profiles
+            (thread-last
+                (lein-project-clj-filepath)
+              (lein-project-clj-profiles)
+              (mapcar (lambda (profile) (list profile (concat "+" profile))))
+              (apply 'append)))
+
+           (profile
+            (completing-read "jack-in repl with profile: "
+                             profiles nil nil nil nil "")))
+
+      (cider-jack-with-profile profile)))
+  
   (defun cider-eval-dwim ()
     (interactive)
     (save-excursion
@@ -174,7 +242,7 @@
   (:map clojure-mode-map
 	("C-c M-j" . nil)
 
-	("C-c M-j J" . cider-jack-in-clj)
+	("C-c M-j J" . cider-jack-in-with-completion)
 	("C-c M-j j" . cider-connect-clj)
 
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
