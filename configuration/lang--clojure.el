@@ -220,11 +220,22 @@
     (html 'defun)
     (doall 'defun)
     (dosync 'defun)
+    ;; (swap! 'defun)
+    ;; (reset! 'defun)
+
+    ;; Custom
+    (interval 'defun)
+    (routes 'defun)
+    (context 'defun)
+    (letk 'defun)
 
     ;; Compojure
     (GET 'defun)
     (PUT 'defun)
     (POST 'defun)
+    (cp/GET 'defun)
+    (cp/PUT 'defun)
+    (cp/POST 'defun)
     (where 'defun)
     (add-watch 'defun)
     (listen! 'defun)
