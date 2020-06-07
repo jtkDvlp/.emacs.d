@@ -56,13 +56,10 @@
   ("M-r" . clj-refactor-map))
 
 (use-package
-  parseedn
-  :after clojure-mode)
+  parseedn)
 
 (use-package
   cider
-  :after
-  (clojure-mode parseedn)
 
   :commands
   (cider-jack-in-clj
@@ -102,7 +99,7 @@
 
            (rest-root-level-values
             (seq-drop data 3))
-           
+
            (result
             (make-hash-table :test 'equal)))
 
@@ -121,32 +118,33 @@
       (hash-table-keys)
       (mapcar 'symbol-name)
       (mapcar (lambda (profile) (substring profile 1)))))
-  
+
   (defun cider-jack-in-with-args (args)
     (interactive "sjack-in repl with args: ")
     (let ((cider-lein-parameters
            args))
       (cider-jack-in nil)))
 
-  (defun cider-jack-with-profile (profile)
+  (defun cider-jack-in-with-profile (profile)
     (interactive "sjack-in repl with profile: ")
     (cider-jack-in-with-args (concat "with-profile " profile " repl")))
 
-  (defun cider-jack-with-profile-completion (&optional project-clj-filepath)
+  (defun cider-jack-in-with-profile-completion (&optional project-clj-filepath)
     (interactive "i")
     (let* ((profiles
             (thread-last
                 (lein-project-clj-filepath)
               (lein-project-clj-profiles)
-              (mapcar (lambda (profile) (list profile (concat "+" profile))))
+              (seq-filter (lambda (profile) (not (member profile '("dev" "repl" "uberjar")))))
+              (seq-map (lambda (profile) (list profile (concat "+" profile))))
               (apply 'append)))
 
            (profile
             (completing-read "jack-in repl with profile: "
                              profiles nil nil nil nil "")))
 
-      (cider-jack-with-profile profile)))
-  
+      (cider-jack-in-with-profile profile)))
+
   (defun cider-eval-dwim ()
     (interactive)
     (save-excursion
@@ -253,7 +251,7 @@
   (:map clojure-mode-map
 	("C-c M-j" . nil)
 
-	("C-c M-j J" . cider-jack-in-with-completion)
+	("C-c M-j J" . cider-jack-in-with-profile-completion)
 	("C-c M-j j" . cider-connect-clj)
 
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
