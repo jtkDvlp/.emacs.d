@@ -129,21 +129,37 @@
     (interactive "sjack-in repl with profile: ")
     (cider-jack-in-with-args (concat "with-profile " profile " repl")))
 
-  (defun cider-jack-in-with-profile-completion (&optional project-clj-filepath)
-    (interactive "i")
+  (defun lein-project-clj-jack-in-profiles ()
+    (thread-last
+        (lein-project-clj-filepath)
+      (lein-project-clj-profiles)
+      (seq-filter (lambda (profile) (not (member profile '("dev" "repl" "uberjar")))))
+      (seq-map (lambda (profile) (list profile (concat "+" profile))))
+      (apply 'append)))
+
+  (defun cider-jack-in-with-profile-completion ()
+    (interactive)
     (let* ((profiles
-            (thread-last
-                (lein-project-clj-filepath)
-              (lein-project-clj-profiles)
-              (seq-filter (lambda (profile) (not (member profile '("dev" "repl" "uberjar")))))
-              (seq-map (lambda (profile) (list profile (concat "+" profile))))
-              (apply 'append)))
+            (lein-project-clj-jack-in-profiles))
 
            (profile
             (completing-read "jack-in repl with profile: "
                              profiles nil nil nil nil "")))
 
       (cider-jack-in-with-profile profile)))
+
+  (defun cider-jack-in-dwim ()
+    (interactive)
+    (let* ((profiles
+            (lein-project-clj-jack-in-profiles))
+
+           (profile
+            (completing-read "jack-in repl with profile: "
+                             profiles nil nil nil nil "")))
+
+      (if (string-empty-p profile)
+          (cider-jack-in)
+        (cider-jack-in-with-profile profile))))
 
   (defun cider-eval-dwim ()
     (interactive)
@@ -251,7 +267,7 @@
   (:map clojure-mode-map
 	("C-c M-j" . nil)
 
-	("C-c M-j J" . cider-jack-in-with-profile-completion)
+	("C-c M-j J" . cider-jack-in-dwim)
 	("C-c M-j j" . cider-connect-clj)
 
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
