@@ -73,6 +73,8 @@
    cider-jack-in-with-profile-completion)
 
   :config
+  (require 'parseedn)
+
   (defun get-file-content (filePath)
     "Return filePath's file content."
     (with-temp-buffer
@@ -137,29 +139,20 @@
       (seq-map (lambda (profile) (list profile (concat "+" profile))))
       (apply 'append)))
 
-  (defun cider-jack-in-with-profile-completion ()
-    (interactive)
-    (let* ((profiles
-            (lein-project-clj-jack-in-profiles))
-
-           (profile
-            (completing-read "jack-in repl with profile: "
-                             profiles nil nil nil nil "")))
-
-      (cider-jack-in-with-profile profile)))
-
   (defun cider-jack-in-dwim ()
     (interactive)
     (let* ((profiles
             (lein-project-clj-jack-in-profiles))
 
            (profile
-            (completing-read "jack-in repl with profile: "
-                             profiles nil nil nil nil "")))
+            (unless (seq-empty-p profiles)
+              (nil-blank-string
+               (completing-read "jack-in repl with profile: "
+                                profiles nil nil nil nil "")))))
 
-      (if (string-empty-p profile)
-          (cider-jack-in)
-        (cider-jack-in-with-profile profile))))
+      (if profile
+          (cider-jack-in-with-profile profile)
+        (cider-jack-in nil))))
 
   (defun cider-eval-dwim ()
     (interactive)

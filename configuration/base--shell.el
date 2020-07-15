@@ -101,8 +101,11 @@
 
   (defun eshell/repl (&rest profile)
     (if (seq-empty-p profile)
-        (cider-jack-in-with-profile-completion)
+        (call-interactively 'cider-jack-in-dwim)
       (cider-jack-in-with-profile (apply 'concat profile))))
+
+  (defun eshell/nvm (version)
+    (nvm-use version))
 
   (add-hook
    'eshell-mode-hook
