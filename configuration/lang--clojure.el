@@ -44,6 +44,10 @@
 	("C-;" . comment-dwim)))
 
 (use-package
+  flycheck-clj-kondo
+  :after clojure-mode)
+
+(use-package
   clj-refactor
   :after clojure-mode
 
@@ -70,7 +74,7 @@
    cider-connect-clj&cljs
    cider-jack-in-with-args
    cider-jack-in-with-profile
-   cider-jack-in-with-profile-completion)
+   cider-jack-in-dwim)
 
   :config
   (require 'parseedn)
@@ -235,6 +239,7 @@
     (routes 'defun)
     (context 'defun)
     (letk 'defun)
+    (for-file 'defun)
 
     ;; Compojure
     (GET 'defun)
