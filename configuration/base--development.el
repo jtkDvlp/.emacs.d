@@ -43,8 +43,15 @@
 
 (use-package
   aggressive-indent
-  :diminish aggressive-indent-mode
-  :hook (prog-mode . aggressive-indent-mode))
+
+  :diminish
+  aggressive-indent-mode
+
+  :hook
+  (prog-mode . aggressive-indent-global-mode)
+
+  :config
+  (add-to-list 'aggressive-indent-excluded-modes 'sass-mode))
 
 (use-package
   company
@@ -81,8 +88,14 @@
 
 (use-package
   flycheck
-  :diminish flycheck-mode
-  :hook (prog-mode . flycheck-mode-on-safe))
+  :diminish
+  flycheck-mode
+
+  :hook
+  (prog-mode . flycheck-mode-on-safe)
+
+  :config
+  (set-default 'flycheck-disabled-checkers '(sass)))
 
 (use-package
   yasnippet-snippets
