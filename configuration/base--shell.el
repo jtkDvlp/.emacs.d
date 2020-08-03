@@ -48,15 +48,21 @@
                  (pwd
                   (replace-regexp-in-string "~" home (concat (eshell/pwd) "/")))
 
+                 (remote?
+                  (string-match tramp-file-name-regexp pwd))
+
+                 (local?
+                  (not remote?))
+
                  (home-based-path
                   (replace-regexp-in-string home "~" pwd))
 
                  (project?
-                  (projectile-project-root))
+                  (when (and local? (fboundp 'projectile-project-root))
+                    (projectile-project-root)))
 
                  (project-root
-                  (when (fboundp 'projectile-project-root)
-                    (projectile-project-root)))
+                  project?)
 
                  (project-name
                   (when project?
