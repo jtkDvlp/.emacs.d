@@ -20,6 +20,9 @@
 
    ("C-o" . eshell-insert-buffer-name)
 
+   ("M-p" . eshell-previous-matching-input-from-input)
+   ("M-n" . eshell-next-matching-input-from-input)
+
    ("M-P" . counsel-esh-history))
 
   :config
