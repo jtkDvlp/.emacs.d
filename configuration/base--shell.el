@@ -18,7 +18,9 @@
 
    ("C-<return>" . end-of-buffer)
 
-   ("C-o" . eshell-insert-buffer-name))
+   ("C-o" . eshell-insert-buffer-name)
+
+   ("M-P" . counsel-esh-history))
 
   :config
   (require 'em-smart)
@@ -36,7 +38,9 @@
 
   (setq eshell-where-to-jump 'begin
         eshell-review-quick-commands nil
-        eshell-smart-space-goes-to-end t)
+        eshell-smart-space-goes-to-end t
+        eshell-hist-ignoredups t
+        eshell-history-size 1024)
 
   (setq eshell-rc-script "~/.eshellrc")
 
