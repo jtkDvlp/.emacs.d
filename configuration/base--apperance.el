@@ -65,6 +65,14 @@
   :config (setq linum-format "%3d"))
 
 (use-package
+  rainbow-mode
+  :diminish rainbow-mode
+
+  :hook
+  ((prog-mode . rainbow-mode)
+   (cider-repl-mode . rainbow-mode)))
+
+(use-package
   rainbow-delimiters
   :hook
   ((prog-mode . rainbow-delimiters-mode)
