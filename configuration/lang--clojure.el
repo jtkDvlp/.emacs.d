@@ -139,7 +139,7 @@
     (thread-last
         (lein-project-clj-filepath)
       (lein-project-clj-profiles)
-      (seq-filter (lambda (profile) (not (member profile '("dev" "repl" "uberjar")))))
+      (seq-filter (lambda (profile) (not (member profile '("dev" "repl" "provided" "uberjar")))))
       (seq-map (lambda (profile) (list profile (concat "+" profile))))
       (apply 'append)))
 
@@ -183,10 +183,31 @@
     (cider-interactive-eval
      "(user/system-stop!)"))
 
+  (defun cider-figwheel-main-profiles ()
+    (thread-last
+        (projectile-project-root)
+      (directory-files)
+      (seq-filter (lambda (filename) (s-ends-with? ".cljs.edn" filename)))
+      (seq-map (lambda (build-filename) (substring build-filename 0 (- 0 (length ".cljs.edn")))))))
+
   (defun cider-repl-user-fig-init ()
     (interactive)
-    (cider-interactive-eval
-     "(user/fig-init)"))
+    (let* ((profiles
+            (cider-figwheel-main-profiles))
+
+           (build
+            (unless (seq-empty-p profiles)
+              (nil-blank-string
+               (completing-read "jack-in cljs-repl with build: "
+                                profiles nil nil nil nil "")))))
+
+      (cider-interactive-eval
+       (if build
+           (format
+            "(require 'figwheel.main.api)
+             (figwheel.main.api/start \"%s\")"
+            build)
+         "(user/fig-init)"))))
 
   (defun cider-repl-refresh-all ()
     (interactive)
