@@ -194,9 +194,10 @@
   (defalias 'projectile-httpd/stop 'httpd/stop)
 
   :commands
-  (http-start
-   httpd/start
-   projectile-httpd/start))
+  (httpd/start
+   httpd/stop
+   projectile-httpd/start
+   projectile-httpd/stop))
 
 (use-package
   markdown-mode
