@@ -38,7 +38,10 @@
    ("C-q" . switch-to-prev-buffer)
 
    ("C-x C-s" . save-buffer)
-   ("C-x C-S-S" . save-all-buffers)))
+   ("C-x C-S-S" . save-all-buffers)
+
+   ("C-x k" . kill-buffer)
+   ("C-x K" . projectile-kill-buffers)))
 
 (use-package
   treemacs
