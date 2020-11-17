@@ -83,18 +83,6 @@
 	("M-J " . xref-pop-maker-stack)))
 
 (use-package
-  company-tern
-  :requires company
-  :after js2-mode
-  :init
-  (defun enable-company-javascript ()
-    (make-local-variable 'company-backends)
-    (add-to-list 'company-backends 'company-tern)
-    (tern-mode))
-  :hook
-  (js2-mode . enable-company-javascript))
-
-(use-package
   indium
   :after js2-mode
   :diminish indium-interaction-mode
