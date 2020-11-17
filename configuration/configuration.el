@@ -56,6 +56,7 @@
 (require 'lang--css)
 (require 'lang--clojure)
 (require 'lang--basic)
+(require 'lang--c)
 
 (defun dump (data)
   (setq dump-buffer (get-buffer-create "*dump*"))
