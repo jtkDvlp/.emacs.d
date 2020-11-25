@@ -31,6 +31,8 @@
 (require 'smartrep);
 (require 'use-package)
 
+(global-so-long-mode 1)
+
 (setq
  use-package-verbose t
  use-package-always-ensure t

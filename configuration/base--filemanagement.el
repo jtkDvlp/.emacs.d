@@ -21,7 +21,10 @@
     (save-some-buffers t))
 
   :bind
-  (("C-x f" . counsel-find-file)
+  (("C-x b" . counsel-switch-buffer)
+   ("C-x B" . counsel-projectile-switch-to-buffer)
+
+   ("C-x f" . counsel-find-file)
    ("C-x F" . counsel-projectile-find-file)
 
    ("C-x C-f" . counsel-recentf)
