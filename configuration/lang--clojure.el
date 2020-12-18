@@ -79,6 +79,12 @@
   :config
   (require 'parseedn)
 
+  (defun nil-blank-string (s)
+    (when  s
+      (if (string-blank-p s)
+          nil
+        s)))
+
   (defun get-file-content (filePath)
     "Return filePath's file content."
     (with-temp-buffer
