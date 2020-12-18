@@ -50,8 +50,24 @@
    ("C-r" . swiper-query-replace)))
 
 (use-package
+  winner
+  :ensure nil
+  :demand t
+  :init
+  (defun toggle-fullframe-window ()
+    (interactive)
+    (if (> (length (window-list)) 1)
+        (delete-other-windows)
+      (winner-undo)))
+  :config
+  (winner-mode)
+  :bind*
+  (("C-M-#" . toggle-fullframe-window)))
+
+(use-package
   fullframe
-  :commands fullframe)
+  :config
+  (setq fullframe/advice-generic-quit-commands nil))
 
 (use-package
   buffer-move
