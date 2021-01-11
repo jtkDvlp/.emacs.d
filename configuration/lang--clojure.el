@@ -230,17 +230,19 @@
     (call-interactively 'cider-switch-to-repl-buffer))
 
   (setq
-   cider-repl-pop-to-buffer-on-connect 'display-only
-   cider-show-error-buffer t
+   cider-default-cljs-repl 'figwheel-main
+
+   cider-repl-pop-to-buffer-on-connect nil
+   cider-show-error-buffer nil
    cider-repl-result-prefix ";; => "
    cider-repl-display-help-banner nil
    cider-prompt-for-symbol nil
 
-   nrepl-log-messages nil
-   nrepl-hide-special-buffers t
+   nrepl-log-messages t
+   nrepl-hide-special-buffers nil
 
-   cider-repl-use-pretty-printing t
-   cider-print-fn 'pprint
+   ;; cider-repl-use-pretty-printing t
+   ;; cider-print-fn 'pprint
    cider-print-options '(("length" 15))
 
    cider-use-overlays t
