@@ -103,7 +103,7 @@
  '(next-error-highlight t)
  '(next-error-highlight-no-select t))
 
-(set-default 'truncate-lines t)
+(set-default 'truncate-lines nil)
 (set-default 'indent-tabs-mode nil)
 
 (show-paren-mode 1)
