@@ -88,7 +88,7 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
-(let ((n 5))
+(let ((n 50))
   (setq scroll-step 1)
   (setq scroll-conservatively n)
   (setq scroll-margin n))
