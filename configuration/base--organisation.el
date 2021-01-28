@@ -11,16 +11,16 @@
    org-capture-journal
    org-capture-calendar)
 
-  :config
-  (setq
+  :init
+  (setq-default
    org-gtd-directory "~/.gtd/"
    ;; org-gtd-todos-file (expand-file-name "todos.org" org-gtd-directory)
    ;; org-gtd-journal-file (expand-file-name "journal.org" org-gtd-directory)
    org-gtd-todos-file (expand-file-name "gtd.org" org-gtd-directory)
-   org-gtd-journal-file (expand-file-name "gtd.org" org-gtd-directory))
+   org-gtd-journal-file (expand-file-name "gtd.org" org-gtd-directory)
 
-  (setq
    org-startup-indented t
+   org-startup-folded 'content
    org-M-RET-may-split-line nil
    org-default-notes-file org-gtd-todos-file
    org-outline-path-complete-in-steps nil
@@ -44,9 +44,8 @@
      ;; (:endgroup . nil)
      ("GENERAL" . ?g) ("EMACS" . ?e))
 
-   org-refile-targets '((org-agenda-files :maxlevel . 5)))
+   org-refile-targets '((org-agenda-files :maxlevel . 5))
 
-  (setq
    org-capture-templates
    '(("t" "Todo (without deadline)" entry (file+headline org-gtd-todos-file "Inbox")
       "* TODO %? %i %^g\n:PROPERTIES:\n:ADDED: %U\n:END:")
@@ -83,6 +82,21 @@
 
       (org-insert-link nil jira-issue-link jira-issue)))
 
+  (defun org-backward-element-with-beginning ()
+    (interactive)
+    (let ((cursor (point)))
+      (org-beginning-of-line)
+      (when (= cursor (point))
+        (org-backward-element))))
+
+  (defun org-forward-element-with-end ()
+    (interactive)
+    (let ((cursor (point)))
+      (org-end-of-line)
+      (when (= cursor (point))
+        (org-forward-element)
+        (org-end-of-line))))
+
   :bind*
   (("C-M-- <RET>" . org-capture)
    ("C-M-- t" . org-capture-todo)
@@ -98,6 +112,16 @@
    ("M-i j" . org-insert-jira-issue)
    ("M-i d" . org-deadline)
 
-   ("M-j j" . org-open-at-point)))
+   ("M-j j" . org-open-at-point)
+
+   ("C-<up>" . org-up-element)
+   ("C-<down>" . org-down-element)
+   ("C-<left>" . org-backward-element-with-beginning)
+   ("C-<right>" . org-forward-element-with-end)
+
+   ("C-M-<up>" . org-drag-element-backward)
+   ("C-M-<down>" . org-drag-element-forward)
+
+   ("C-k" . org-cut-special)))
 
 (provide 'base--organisation)
