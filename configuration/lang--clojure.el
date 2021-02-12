@@ -182,11 +182,13 @@
   (defun cider-repl-user-system-start ()
     (interactive)
     (cider-interactive-eval
-     "(if (and (resolve 'user/system-go!) (nil? (resolve 'user/emacs-system-go-executed)))
-           (do
-             (intern 'user 'emacs-system-go-executed)
-             (#'user/system-go!))
-           (user/system-restart!))"))
+     "(if-let [system-go (resolve 'user/system-go!)]
+        (if (nil? (resolve 'user/emacs-system-go-executed))
+          (do
+            (intern 'user 'emacs-system-go-executed)
+            (system-go))
+          (user/system-restart!))
+        (user/system-restart!))"))
 
   (defun cider-repl-user-system-stop ()
     (interactive)
