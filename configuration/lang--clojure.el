@@ -6,7 +6,7 @@
    ("\\.cljs\\'" . clojurescript-mode))
 
   :config
-  (require 'smartparens-clojure)
+  ;; (require 'smartparens-clojure)
 
   :bind*
   (:map clojure-mode-map
