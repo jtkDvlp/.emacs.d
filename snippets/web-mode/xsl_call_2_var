@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: xsl call 2var
+# key: vc
+# --
+<xsl:variable name="$1">
+<xsl:call-template name="$2">
+<xsl:with-param name="$3" select="$4"/>$0
+</xsl:call-template>
+</xsl:variable>

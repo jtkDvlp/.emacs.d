@@ -2,4 +2,4 @@
 # name: debug
 # key: debug
 # --
-(#(do (.debug js/console (clj->js %)) %))
+(#(do (clojure.pprint/pprint %) %))

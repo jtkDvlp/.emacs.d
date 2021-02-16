@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: xsl call template with params
+# key: callw
+# --
+<xsl:call-template name="$1">
+<xsl:with-param name="$2" select="$3"/>$4
+</xsl:call-template>

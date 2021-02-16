@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: xsl copy of
+# key: copy
+# --
+<xsl:copy-of select="$1"/>$0

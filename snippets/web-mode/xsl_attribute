@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: xsl attribute
+# key: attr
+# --
+<xsl:attribute name="$1" select="$2"/>$0

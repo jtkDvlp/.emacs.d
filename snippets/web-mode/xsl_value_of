@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: xsl value of
+# key: val
+# --
+<xsl:value-of select="$1"/>$0

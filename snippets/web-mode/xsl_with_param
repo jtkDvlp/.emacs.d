@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: xsl with params
+# key: wp
+# --
+<xsl:with-param name="$1" select="$2"/>$0
