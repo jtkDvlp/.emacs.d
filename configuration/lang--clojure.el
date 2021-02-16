@@ -164,6 +164,12 @@
           (cider-jack-in-with-profile profile)
         (cider-jack-in nil))))
 
+  (defun cider-jack-in-cljs-dwim ()
+    (interactive)
+    (let ((cider-lein-parameters
+           (concat "with-profile -dev,+dev-desktop repl")))
+      (cider-jack-in-cljs nil)))
+
   (defun cider-eval-dwim ()
     (interactive)
     (save-excursion
@@ -177,7 +183,9 @@
         (goto-char cursor)
         (unless (cider-sexp-at-point)
           (paredit-backward-up))
-        (cider-eval-sexp-at-point))))
+        (cider-eval-sexp-at-point)
+        (when (string-match-p "^(\\([^\/]*\/\\)?deftest" (cider-sexp-at-point))
+          (cider-test-run-test)))))
 
   (defun cider-repl-user-system-start ()
     (interactive)
@@ -220,6 +228,26 @@
              (figwheel.main.api/start \"%s\")"
             build)
          "(user/fig-init)"))))
+
+  (defun cider-repl-user-switch-repl ()
+    (interactive)
+    (let* ((profiles
+            (cider-figwheel-main-profiles))
+
+           (build
+            (unless (seq-empty-p profiles)
+              (nil-blank-string
+               (completing-read "switch cljs-repl to build: "
+                                profiles nil nil nil nil ""))))
+
+           (build
+            (or build "dev")))
+
+      (cider-interactive-eval
+       (format
+        "(require 'figwheel.main.api)
+             (figwheel.main.api/cljs-repl \"%s\")"
+        build build))))
 
   (defun cider-repl-refresh-all ()
     (interactive)
@@ -266,8 +294,12 @@
     (html 'defun)
     (doall 'defun)
     (dosync 'defun)
+    (log/spy 'defun)
     ;; (swap! 'defun)
     ;; (reset! 'defun)
+    (is 'defun)
+    (testing 'defun)
+    (element 'defun)
 
     ;; Custom
     (interval 'defun)
@@ -275,6 +307,13 @@
     (context 'defun)
     (letk 'defun)
     (for-file 'defun)
+    (entity 'defun)
+    (<with-transaction 'defun)
+    (<with-temporary-db-file 'defun)
+    (<with-attached-db 'defun)
+    (<with-keep-awake 'defun)
+    (<with-resource 'defun)
+    (<!with-resource 'defun)
 
     ;; Compojure
     (GET 'defun)
