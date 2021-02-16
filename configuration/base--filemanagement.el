@@ -104,11 +104,11 @@
 	treemacs-show-hidden-files             t
 	treemacs-silent-filewatch              nil
 	treemacs-silent-refresh                nil
-	treemacs-sorting                       'alphabetic-desc
+	treemacs-sorting                       'alphabetic-asc
 	treemacs-space-between-root-nodes      t
 	treemacs-tag-follow-cleanup            t
 	treemacs-tag-follow-delay              1.5
-	treemacs-width                         35)
+	treemacs-width                         40)
 
   :bind*
   (("C-x x d" . treemacs-dwim)
