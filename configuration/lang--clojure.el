@@ -304,6 +304,9 @@
     (is 'defun)
     (testing 'defun)
     (element 'defun)
+    (match 'defun)
+    (->files 'defun)
+    (->dir 'defun)
 
     ;; Custom
     (interval 'defun)
@@ -312,12 +315,15 @@
     (letk 'defun)
     (for-file 'defun)
     (entity 'defun)
+    (type 'defun)
+    (usage 'defun)
     (<with-transaction 'defun)
     (<with-temporary-db-file 'defun)
     (<with-attached-db 'defun)
     (<with-keep-awake 'defun)
     (<with-resource 'defun)
     (<!with-resource 'defun)
+    (some-interact 'defun)
 
     ;; Compojure
     (GET 'defun)
@@ -337,6 +343,7 @@
     (reg-event-fx 'defun)
     (reg-event-db 'defun)
     (reg-fx 'defun)
+    (reg-cofx 'defun)
     )
 
   :bind*
