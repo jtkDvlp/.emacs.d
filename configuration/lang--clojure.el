@@ -124,12 +124,16 @@
       result))
 
   (defun lein-project-clj-profiles (filepath)
-    (thread-last filepath
-      (lein-project-clj-content)
-      (gethash :profiles)
-      (hash-table-keys)
-      (mapcar 'symbol-name)
-      (mapcar (lambda (profile) (substring profile 1)))))
+    (let* ((profiles
+            (thread-last filepath
+              (lein-project-clj-content)
+              (gethash :profiles))))
+
+      (when profiles
+        (thread-last profiles
+          (hash-table-keys)
+          (mapcar 'symbol-name)
+          (mapcar (lambda (profile) (substring profile 1)))))))
 
   (defun cider-jack-in-with-args (args)
     (interactive "sjack-in repl with args: ")
