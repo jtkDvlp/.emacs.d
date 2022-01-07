@@ -49,6 +49,8 @@
 (require 'base--development)
 (require 'base--shell)
 
+(require 'file--csv)
+
 (require 'lang--elisp)
 (require 'lang--typescript)
 (require 'lang--javascript)
