@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Pretty Print
+# key: pp
+# --
+(cljs.pprint/pprint $1)
