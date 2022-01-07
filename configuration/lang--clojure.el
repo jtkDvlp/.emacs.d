@@ -81,8 +81,7 @@
 
   (defun nil-blank-string (s)
     (when  s
-      (if (string-blank-p s)
-          nil
+      (unless (string-blank-p s)
         s)))
 
   (defun get-file-content (filePath)
@@ -233,7 +232,12 @@
             build)
          "(user/fig-init)"))))
 
-  (defun cider-repl-user-switch-repl ()
+  (defun cider-repl-user-quit-cljs-repl ()
+    (interactive)
+    (cider-interactive-eval
+     ":cljs/quit"))
+
+  (defun cider-repl-user-switch-cljs-repl ()
     (interactive)
     (let* ((profiles
             (cider-figwheel-main-profiles))
@@ -248,10 +252,16 @@
             (or build "dev")))
 
       (cider-interactive-eval
+       ":cljs/quit")
+
+      (sleep-for 0 100)
+
+      (cider-interactive-eval
        (format
         "(require 'figwheel.main.api)
-             (figwheel.main.api/cljs-repl \"%s\")"
-        build build))))
+         (figwheel.main.api/cljs-repl \"%s\")"
+        build build))
+      ))
 
   (defun cider-repl-refresh-all ()
     (interactive)
@@ -339,11 +349,14 @@
     ;; Reframe
     (register-handler 'defun)
     (register-sub 'defun)
+    (reg-sub-raw 'defun)
     (reg-sub 'defun)
     (reg-event-fx 'defun)
     (reg-event-db 'defun)
     (reg-fx 'defun)
     (reg-cofx 'defun)
+    (reg-acofx 'defun)
+    (reg-acofx-by-fx 'defun)
     )
 
   :bind*
@@ -392,6 +405,8 @@
         ("M-u s" . cider-repl-user-system-start)
         ("M-u S" . cider-repl-user-system-stop)
         ("M-u f" . cider-repl-user-fig-init)
+        ("M-u w" . cider-repl-user-switch-cljs-repl)
+        ("M-u W" . cider-repl-user-quit-cljs-repl)
 
        	:map cider-repl-mode-map
 	("C-<left>" . sp-backward-sexp)
@@ -488,6 +503,8 @@
         ("M-u s" . cider-repl-user-system-start)
         ("M-u S" . cider-repl-user-system-stop)
         ("M-u f" . cider-repl-user-fig-init)
+        ("M-u w" . cider-repl-user-switch-cljs-repl)
+        ("M-u W" . cider-repl-user-quit-cljs-repl)
 
 	("C-c M-q" . cider-quit)
 	("C-c M-r" . cider-restart)
