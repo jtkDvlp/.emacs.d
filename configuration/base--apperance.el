@@ -88,7 +88,7 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
-(let ((n 50))
+(let ((n 0))
   (setq scroll-step 1)
   (setq scroll-conservatively n)
   (setq scroll-margin n))
@@ -109,7 +109,10 @@
 (show-paren-mode 1)
 (custom-set-variables '(show-paren-delay 0))
 
-(custom-set-variables '(frame-title-format (quote ("%b"))))
+(custom-set-variables '(frame-title-format (quote ((:eval (when (fboundp 'projectile-project-root)
+                                                            (when (projectile-project-root)
+                                                              (concat (projectile-project-name) " - "))))
+                                                   "%b"))))
 
 (global-hl-line-mode 1)
 

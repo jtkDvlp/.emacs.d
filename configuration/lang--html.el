@@ -1,13 +1,13 @@
 (use-package
   web-mode
   :mode
-  "\\.\\(html\\|phtml\\|xml\\)\\'"
+  "\\.\\(html\\|phtml\\|xml\\|xsl\\|xslt\\|xsd\\)\\'"
 
   :config
   (setq web-mode-markup-indent-offset 2
         web-mode-attr-indent-offset 2
         web-mode-attr-value-indent-offset 2)
-  
+
   (defun browse-current-file ()
     (interactive)
     (if (buffer-file-name)
@@ -42,7 +42,7 @@
 
   :config
   (require 'html-mode-expansions)
-  
+
   (defun web-mode-element-forward ()
     (interactive)
     (when (looking-at-p "[\s\n]+")
@@ -53,7 +53,7 @@
     (interactive)
     (when (looking-at-p "[\s\n]+")
       (web-mode-tag-previous))
-    (let ((curpos (point))) 
+    (let ((curpos (point)))
       (web-mode-element-beginning)
       (when (= curpos (point))
 	(web-mode-element-sibling-previous))))
@@ -88,7 +88,7 @@
       (web-mode-attribute-next))
     (web-mode-attribute-beginning)
     (call-interactively 'er/mark-word))
-  
+
   (smartrep-define-key
       web-mode-edit-element-minor-mode-map
       "C-a"
@@ -104,23 +104,23 @@
       ("C-k" . web-mode-attribute-kill)
 
       ("M-SPC" . web-mode-attribute-select-content)))
-  
+
   :bind*
   (:map web-mode-edit-element-minor-mode-map
 	("C-<left>" . web-mode-element-backward)
 	("M-<left>" . web-mode-edit-element-elements-contract-over-border)
 	;; ("C-M-<left>" . web-mode-element-beginning)
-	
+
 	("C-<right>" . web-mode-element-forward)
 	("M-<right>" . web-mode-edit-element-elements-expand-over-border)
 	;; ("C-M-<right>" . web-mode-element-end)
 
 	("C-<up>" . web-mode-element-parent)
 	("M-<up>" . web-mode-element-vanish)
-	
+
 	("C-<down>" . web-mode-element-child)
 	("M-<down>" . web-mode-edit-element-elements-raise)
-	
+
 	("C-M-<up>" . web-mode-edit-element-elements-transpose-backward)
 	("C-M-<down>" . web-mode-element-transpose)
 
@@ -129,7 +129,7 @@
 
 	("C-k" . web-mode-element-kill)
 	("C-S-K" . web-mode-edit-element-elements-dissolve)
-	
+
 	("M-k" . web-mode-edit-element-elements-kill-siblings-next)
 	("M-K" . web-mode-edit-element-elements-kill-siblings-previous)
 	("C-M-k" . web-mode-edit-element-elements-kill-siblings)

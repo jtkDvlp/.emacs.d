@@ -51,7 +51,8 @@
   (prog-mode . aggressive-indent-global-mode)
 
   :config
-  (add-to-list 'aggressive-indent-excluded-modes 'sass-mode))
+  (add-to-list 'aggressive-indent-excluded-modes 'sass-mode)
+  (add-to-list 'aggressive-indent-excluded-modes 'cider-repl-mode))
 
 (use-package
   company

@@ -2,7 +2,11 @@
   scss-mode
 
   :mode
-  "\\.\\(scss\\)\\'")
+  "\\.\\(scss\\)\\'"
+
+  :config
+  (setq
+   scss-compile-at-save nil))
 
 (use-package
   sass-mode
