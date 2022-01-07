@@ -19,6 +19,7 @@
    org-gtd-todos-file (expand-file-name "gtd.org" org-gtd-directory)
    org-gtd-journal-file (expand-file-name "gtd.org" org-gtd-directory)
 
+   org-cycle-include-plain-lists 'integrate
    org-startup-indented t
    org-startup-folded 'content
    org-M-RET-may-split-line nil
@@ -27,12 +28,14 @@
    org-refile-use-outline-path t
    org-blank-before-new-entry '((heading . nil) (plain-list-item . nil))
    org-agenda-files (list org-gtd-todos-file)
+   org-ellipsis "--more"
+   org-default-priority 65
 
    org-agenda-prefix-format
-   '((agenda . " %i %-25:(org-format-outline-path (cdr (org-get-outline-path)))%?-12t %s")
-     (todo . " %i %-25:(org-format-outline-path (cdr (org-get-outline-path)))%-12:c")
-     (tags . " %i %-25:(org-format-outline-path (cdr (org-get-outline-path)))%-12:c")
-     (search . " %i %-25:(org-format-outline-path (cdr (org-get-outline-path)))%-12:c"))
+   '((agenda . " %i %-30:(org-format-outline-path (org-get-outline-path))%?-12t %s")
+     (todo . " %i %-30:(org-format-outline-path (org-get-outline-path))")
+     (tags . " %i %-30:(org-format-outline-path (org-get-outline-path))")
+     (search . " %i %-30:(org-format-outline-path (org-get-outline-path))"))
 
    org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "BLOCKED(b)" "|" "DONE(d)" "DELEGATED(g)" "CANCELED(c)"))
 
@@ -42,9 +45,10 @@
      ;; ("@work" . ?w) ("@home" . ?h)
      ;; ("@tennisclub" . ?t)
      ;; (:endgroup . nil)
-     ("GENERAL" . ?g) ("EMACS" . ?e))
+     ("GENERAL" . ?g) ("EMACS" . ?e) ("DAILY" . ?d)
+     ("RETRO" . ?r))
 
-   org-refile-targets '((org-agenda-files :maxlevel . 5))
+   org-refile-targets '((org-agenda-files :maxlevel . 4))
 
    org-capture-templates
    '(("t" "Todo (without deadline)" entry (file+headline org-gtd-todos-file "Inbox")
@@ -97,6 +101,19 @@
         (org-forward-element)
         (org-end-of-line))))
 
+  (defun org-kill-list-item ()
+    (interactive)
+    (beginning-of-line)
+    (org-kill-line)
+    (org-kill-line))
+
+  (defun org-kill-item ()
+    (interactive)
+    (let ((e (save-excursion (beginning-of-line) (org-element-at-point))))
+      (if (memq (org-element-type e) '(item plain-list))
+          (org-kill-list-item)
+        (org-cut-special))))
+
   :bind*
   (("C-M-- <RET>" . org-capture)
    ("C-M-- t" . org-capture-todo)
@@ -122,6 +139,7 @@
    ("C-M-<up>" . org-drag-element-backward)
    ("C-M-<down>" . org-drag-element-forward)
 
-   ("C-k" . org-cut-special)))
+   ("C-k" . org-kill-line)
+   ("C-S-k" . org-kill-item)))
 
 (provide 'base--organisation)
