@@ -357,6 +357,11 @@
     (reg-cofx 'defun)
     (reg-acofx 'defun)
     (reg-acofx-by-fx 'defun)
+    (as-task 'defun)
+    (register 'defun)
+    (reg 'defun)
+    (reg-remote-sub 'defun)
+    (reg-remote-sub-raw 'defun)
     )
 
   :bind*
