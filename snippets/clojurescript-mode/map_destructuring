@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: map destructuring
+# key: dmap
+# --
+{:keys [$1] :as $2}$0

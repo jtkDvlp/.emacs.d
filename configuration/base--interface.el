@@ -39,9 +39,16 @@
   swiper
   :requires counsel
 
+  :config
+  (defun counsel-git-grep-dwim ()
+    (interactive)
+    (let ((text (when mark-active (buffer-substring-no-properties (region-beginning) (region-end)))))
+      (deactivate-mark)
+      (counsel-git-grep text)))
+
   :bind
   (("C-s" . swiper)
-   ("C-S-s" . counsel-git-grep)
+   ("C-S-s" . counsel-git-grep-dwim)
 
    ("C-r" . swiper)
    ("C-S-r" . counsel-git-grep-query-replace)
@@ -82,10 +89,26 @@
   elscreen
 
   :commands
-  (elscreen-create)
+  (elscreen-create projectile-elscreen-create)
+
+  :init
+  (defun projectile-elscreen-create ()
+    (interactive)
+    (let* ((project-root
+            (when (fboundp 'projectile-project-root)
+              (projectile-project-root)))
+
+           (project-name
+            (when project-root
+              (projectile-project-name-function project-root))))
+
+      (elscreen-create)
+      (when project-name
+        (elscreen-screen-nickname project-name))
+      nil))
 
   :bind*
-  (("M-' c" . elscreen-create)
+  (("M-' c" . projectile-elscreen-create)
    ("M-' C" . elscreen-clone)
 
    :map elscreen-map
