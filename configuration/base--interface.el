@@ -100,7 +100,7 @@
 
            (project-name
             (when project-root
-              (projectile-project-name-function project-root))))
+              (funcall projectile-project-name-function project-root))))
 
       (elscreen-create)
       (when project-name
