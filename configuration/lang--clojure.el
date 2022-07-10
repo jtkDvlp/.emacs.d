@@ -317,6 +317,7 @@
     (match 'defun)
     (->files 'defun)
     (->dir 'defun)
+    (assoc 'defun)
 
     ;; Custom
     (interval 'defun)
@@ -327,12 +328,16 @@
     (entity 'defun)
     (type 'defun)
     (usage 'defun)
+    (register 'defun)
     (<with-transaction 'defun)
+    (<!with-transaction 'defun)
     (<with-temporary-db-file 'defun)
     (<with-attached-db 'defun)
     (<with-keep-awake 'defun)
     (<with-resource 'defun)
     (<!with-resource 'defun)
+    (<with-connection 'defun)
+    (<!with-connection 'defun)
     (some-interact 'defun)
 
     ;; Compojure

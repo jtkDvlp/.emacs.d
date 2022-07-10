@@ -120,6 +120,9 @@
   (defun eshell/nvm (version)
     (nvm-use version))
 
+  (defun eshell/open (file)
+    (browse-url-of-file file))
+
   (add-hook
    'eshell-mode-hook
    '(lambda ()
