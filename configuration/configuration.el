@@ -27,6 +27,8 @@
   (setq shell-file-name "/bin/bash"))
 
 (setq custom-file "~/.emacs.d/custom.el")
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 (require 'smartrep);
 (require 'use-package)
