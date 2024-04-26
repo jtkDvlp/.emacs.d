@@ -5,3 +5,5 @@ alias d dired $1
 alias ff find-file $1
 alias home cd ~
 alias .. eshell-up $1
+alias crepl lein clean && repl
+alias cinstall lein clean && lein install

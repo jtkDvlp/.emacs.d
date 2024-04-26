@@ -3,7 +3,7 @@
   :demand t
   :config
   (require 'spaceline-segments)
-  (setq powerline-default-separator 'wave)
+  (setq powerline-default-separator 'arrow)
 
   (spaceline-define-segment ide-window
     "IDE-Window marker."
@@ -104,6 +104,8 @@
  '(next-error-highlight t)
  '(next-error-highlight-no-select t))
 
+(add-to-list 'image-types 'svg)
+
 (set-default 'truncate-lines nil)
 (set-default 'indent-tabs-mode nil)
 
@@ -122,7 +124,7 @@
  (lambda ()
    (font-lock-add-keywords
     nil
-    '(("\\<\\(HACK\\|NOTE\\|FIXME\\|TODO\\|BUG\\|INFO\\|IDEA\\)"
+    '(("\\<\\(HACK\\|NOTE\\|FIXME\\|TODO\\|BUG\\|INFO\\|IDEA\\|WATCHOUT\\)"
        1 font-lock-warning-face t)))))
 
 ;; (load-theme 'spacemacs-dark t)
