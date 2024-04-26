@@ -10,10 +10,9 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-(unless (package-installed-p 'use-package)
+(unless (package-installed-p 'doom-themes)
   (package-install 'diminish)
   (package-install 'smartrep)
-  (package-install 'use-package)
   ;; (package-install 'spacemacs-theme)
   (package-install 'doom-themes)
   (package-install 'exec-path-from-shell))

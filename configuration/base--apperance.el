@@ -61,6 +61,7 @@
 
 (use-package
   linum
+  :ensure nil
   :hook (prog-mode . linum-mode)
   :config (setq linum-format "%3d"))
 
