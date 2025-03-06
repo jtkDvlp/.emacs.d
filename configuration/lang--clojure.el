@@ -92,13 +92,13 @@
 
   (defun lein-project-clj-filepath ()
     (thread-first
-        (projectile-project-root)
+      (projectile-project-root)
       (concat "project.clj")))
 
   (defun lein-project-clj-content (filepath)
     (let* ((data
             (thread-first
-                filepath
+              filepath
               (get-file-content)
               (parseedn-read-str)))
 
@@ -125,14 +125,14 @@
   (defun lein-project-clj-profiles (filepath)
     (let* ((profiles
             (thread-last filepath
-              (lein-project-clj-content)
-              (gethash :profiles))))
+                         (lein-project-clj-content)
+                         (gethash :profiles))))
 
       (when profiles
         (thread-last profiles
-          (hash-table-keys)
-          (mapcar 'symbol-name)
-          (mapcar (lambda (profile) (substring profile 1)))))))
+                     (hash-table-keys)
+                     (mapcar 'symbol-name)
+                     (mapcar (lambda (profile) (substring profile 1)))))))
 
   (defun cider-jack-in-with-args (args)
     (interactive "sjack-in repl with args: ")
@@ -146,7 +146,7 @@
 
   (defun lein-project-clj-jack-in-profiles ()
     (thread-last
-        (lein-project-clj-filepath)
+      (lein-project-clj-filepath)
       (lein-project-clj-profiles)
       (seq-filter (lambda (profile) (not (member profile '("dev" "repl" "provided" "uberjar")))))
       (seq-map (lambda (profile) (list profile (concat "+" profile))))
@@ -208,7 +208,7 @@
 
   (defun cider-figwheel-main-profiles ()
     (thread-last
-        (projectile-project-root)
+      (projectile-project-root)
       (directory-files)
       (seq-filter (lambda (filename) (s-ends-with? ".cljs.edn" filename)))
       (seq-map (lambda (build-filename) (substring build-filename 0 (- 0 (length ".cljs.edn")))))))
@@ -284,6 +284,7 @@
 
    nrepl-log-messages t
    nrepl-hide-special-buffers nil
+   nrepl-use-ssh-fallback-for-remote-hosts t
 
    ;; cider-repl-use-pretty-printing t
    ;; cider-print-fn 'pprint
@@ -298,76 +299,79 @@
    cider-error-highlight-face 'error-face)
 
   (define-clojure-indent
-    (defroutes 'defun)
-    (println 'defun)
-    (pprint 'defun)
-    (lazy-seq'defun)
-    (routes 'defun)
-    (render 'defun)
-    (go 'defun)
-    (html 'defun)
-    (doall 'defun)
-    (dosync 'defun)
-    (log/spy 'defun)
-    ;; (swap! 'defun)
-    ;; (reset! 'defun)
-    (is 'defun)
-    (testing 'defun)
-    (element 'defun)
-    (match 'defun)
-    (->files 'defun)
-    (->dir 'defun)
-    (assoc 'defun)
+   (defroutes 'defun)
+   (println 'defun)
+   (pprint 'defun)
+   (lazy-seq'defun)
+   (routes 'defun)
+   (render 'defun)
+   (go 'defun)
+   (html 'defun)
+   (doall 'defun)
+   (dosync 'defun)
+   (log/spy 'defun)
+   (log/debug 'defun)
+   (log/trace 'defun)
+   ;; (swap! 'defun)
+   ;; (reset! 'defun)
+   (is 'defun)
+   (testing 'defun)
+   (element 'defun)
+   (match 'defun)
+   (->files 'defun)
+   (->dir 'defun)
+   (assoc 'defun)
 
-    ;; Custom
-    (interval 'defun)
-    (routes 'defun)
-    (context 'defun)
-    (letk 'defun)
-    (for-file 'defun)
-    (entity 'defun)
-    (type 'defun)
-    (usage 'defun)
-    (register 'defun)
-    (<with-transaction 'defun)
-    (<!with-transaction 'defun)
-    (<with-temporary-db-file 'defun)
-    (<with-attached-db 'defun)
-    (<with-keep-awake 'defun)
-    (<with-resource 'defun)
-    (<!with-resource 'defun)
-    (<with-connection 'defun)
-    (<!with-connection 'defun)
-    (some-interact 'defun)
+   ;; Custom
+   (interval 'defun)
+   (routes 'defun)
+   (context 'defun)
+   (letk 'defun)
+   (for-file 'defun)
+   (entity 'defun)
+   (type 'defun)
+   (usage 'defun)
+   (register 'defun)
+   (<with-transaction 'defun)
+   (<!with-transaction 'defun)
+   (<with-temporary-db-file 'defun)
+   (<with-attached-db 'defun)
+   (<with-keep-awake 'defun)
+   (<with-resource 'defun)
+   (<!with-resource 'defun)
+   (<with-connection 'defun)
+   (<!with-connection 'defun)
+   (some-interact 'defun)
+   (commit! 'defun)
 
-    ;; Compojure
-    (GET 'defun)
-    (PUT 'defun)
-    (POST 'defun)
-    (cp/GET 'defun)
-    (cp/PUT 'defun)
-    (cp/POST 'defun)
-    (where 'defun)
-    (add-watch 'defun)
-    (listen! 'defun)
+   ;; Compojure
+   (GET 'defun)
+   (PUT 'defun)
+   (POST 'defun)
+   (cp/GET 'defun)
+   (cp/PUT 'defun)
+   (cp/POST 'defun)
+   (where 'defun)
+   (add-watch 'defun)
+   (listen! 'defun)
 
-    ;; Reframe
-    (register-handler 'defun)
-    (register-sub 'defun)
-    (reg-sub-raw 'defun)
-    (reg-sub 'defun)
-    (reg-event-fx 'defun)
-    (reg-event-db 'defun)
-    (reg-fx 'defun)
-    (reg-cofx 'defun)
-    (reg-acofx 'defun)
-    (reg-acofx-by-fx 'defun)
-    (as-task 'defun)
-    (register 'defun)
-    (reg 'defun)
-    (reg-remote-sub 'defun)
-    (reg-remote-sub-raw 'defun)
-    )
+   ;; Reframe
+   (register-handler 'defun)
+   (register-sub 'defun)
+   (reg-sub-raw 'defun)
+   (reg-sub 'defun)
+   (reg-event-fx 'defun)
+   (reg-event-db 'defun)
+   (reg-fx 'defun)
+   (reg-cofx 'defun)
+   (reg-acofx 'defun)
+   (reg-acofx-by-fx 'defun)
+   (as-task 'defun)
+   (register 'defun)
+   (reg 'defun)
+   (reg-remote-sub 'defun)
+   (reg-remote-sub-raw 'defun)
+   )
 
   :bind*
   (:map clojure-mode-map

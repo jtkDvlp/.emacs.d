@@ -3,6 +3,7 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        ace-jump-mode-pop-mark
         basic-electric-colon
         c-electric-colon
         c-electric-lt-gt
@@ -34,6 +35,7 @@
         sp-forward-transpose-sexp
         sp-kill-sexp
         sp-raise-sexp
+        sp-splice-sexp-killing-backward
         sp-unwrap-sexp
         sp-wrap-round
         web-mode-element-content-select
@@ -44,6 +46,7 @@
 (setq mc/cmds-to-run-once
       '(
         cider-eval-dwim
+        mac-mwheel-scroll
         mouse-drag-vertical-line
         mouse-set-region
         platformio-build

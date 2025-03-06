@@ -10,3 +10,5 @@ auto-save-list/
 /.cache/
 custom.el
 *.~undo-tree~
+.DS_Store
+.projectile

@@ -222,6 +222,7 @@
   :demand t
   :diminish undo-tree-mode
   :config
+  (setq undo-tree-auto-save-history nil)
   (global-undo-tree-mode))
 
 (use-package
@@ -268,6 +269,12 @@
 ;; (use-package
 ;;   google-translate
 ;;   ())
+
+;; TODO: eigenes package?
+(smartrep-define-key
+    global-map
+    "M-+ w"
+  '(("#" . toggle-frame-maximized)))
 
 (custom-set-variables
  '(transient-mark-mode t)
