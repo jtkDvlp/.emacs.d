@@ -421,6 +421,51 @@ Entfernen Verhalten ändert (`linum`), und fliegen, wo es keines ändert
 Dateikopf den Dateinamen trägt — sonst würde jeder Kopf zweimal
 geschrieben.
 
+**Vorarbeit für 1.8 — die sieben Kopien heute.** „gleich“ heißt: derselbe
+Befehl wie in Clojure; „fehlt“: die Taste ist in dieser Mode-Map nicht
+belegt (es gilt dann, was global oder in der Mode selbst liegt).
+
+| Taste | Befehl in Clojure | CIDER-REPL | Elisp | Python | JS (js2) | TS (tide) | HTML (web-mode) |
+|---|---|---|---|---|---|---|---|
+| `C-<left>` | `sp-backward-sexp` | gleich | gleich | gleich | gleich | gleich | `web-mode-element-backward` |
+| `M-<left>` | `sp-forward-barf-sexp` | gleich | gleich | gleich | gleich | gleich | `web-mode-edit-element-elements-contract-over-border` |
+| `C-M-<left>` | `sp-backward-barf-sexp` | gleich | gleich | gleich | gleich | gleich | fehlt |
+| `C-<right>` | `sp-forward-sexp` | gleich | gleich | gleich | gleich | gleich | `web-mode-element-forward` |
+| `M-<right>` | `sp-forward-slurp-sexp` | gleich | gleich | gleich | gleich | gleich | `web-mode-edit-element-elements-expand-over-border` |
+| `C-M-<right>` | `sp-backward-slurp-sexp` | gleich | gleich | gleich | gleich | gleich | fehlt |
+| `C-<up>` | `sp-backward-up-sexp` | gleich | gleich | gleich | gleich | gleich | `web-mode-element-parent` |
+| `M-<up>` | `sp-convolute-sexp` | gleich | gleich | gleich | fehlt | fehlt | `web-mode-element-vanish` |
+| `C-<down>` | `sp-down-sexp` | gleich | gleich | gleich | gleich | gleich | `web-mode-element-child` |
+| `M-<down>` | `sp-raise-sexp` | gleich | gleich | gleich | `js2r-unwrap` | fehlt | `web-mode-edit-element-elements-raise` |
+| `C-M-<up>` | `sp-backward-transpose-sexp` | gleich | gleich | gleich | `js2-mode-forward-transpose` | `js2-mode-forward-transpose` | `web-mode-edit-element-elements-transpose-backward` |
+| `C-M-<down>` | `sp-forward-transpose-sexp` | gleich | gleich | gleich | `js2-mode-backward-transpose` | `js2-mode-backward-transpose` | `web-mode-element-transpose` |
+| `M-"` | `sp-wrap-doublequote` | gleich | gleich | gleich | fehlt | fehlt | fehlt |
+| `C-(` | `sp-wrap-round` | gleich | gleich | gleich | gleich | gleich | `web-mode-element-wrap` |
+| `M-[` | `sp-wrap-square` | gleich | gleich | gleich | gleich | gleich | fehlt |
+| `M-{` | `sp-wrap-curly` | gleich | gleich | gleich | gleich | gleich | fehlt |
+| `C-M-(` | `sp-rewrap-sexp` | gleich | gleich | gleich | fehlt | fehlt | `web-mode-element-rename` |
+| `C-k` | `sp-kill-sexp` | gleich | gleich | gleich | gleich | gleich | `web-mode-element-kill` |
+| `C-S-K` | `sp-unwrap-sexp` | gleich | gleich | gleich | gleich | gleich | `web-mode-edit-element-elements-dissolve` |
+| `M-k` | `sp-splice-sexp-killing-forward` | gleich | gleich | gleich | gleich | gleich | `web-mode-edit-element-elements-kill-siblings-next` |
+| `M-K` | `sp-splice-sexp-killing-backward` | gleich | gleich | gleich | fehlt | fehlt | `web-mode-edit-element-elements-kill-siblings-previous` |
+| `C-M-k` | `sp-splice-sexp-killing-around` | gleich | gleich | gleich | gleich | gleich | `web-mode-edit-element-elements-kill-siblings` |
+| `C-;` | `comment-dwim` | `sp-comment-dwim` | gleich | gleich | fehlt | fehlt | `web-mode-comment-or-uncomment` |
+
+Was die Tabelle zeigt:
+
+- Clojure, CIDER-REPL, Elisp und Python sind gleich — bis auf `C-;` in der
+  REPL (`sp-comment-dwim` statt `comment-dwim`). Das ist der gemeinsame
+  Kern.
+- JS und TS sind eine Teilmenge; vertauscht wird zeilenweise
+  (`js2-mode-*-transpose`), und `M-<down>` ist in JS `js2r-unwrap`.
+  Die TS-Map benutzt dabei Funktionen, die erst `js2-mode`s `:config`
+  definiert — ohne geladenes `js2-mode` zeigen die Tasten ins Leere.
+- HTML belegt dieselben Tasten mit Element-Befehlen und lässt einige
+  frei. Das bleibt eine eigene Map; gemeinsam ist dort nur die
+  Tastenbedeutung, nicht der Befehl.
+- Ob die Lücken in JS/TS (`M-<up>`, `M-"`, `C-M-(`, `M-K`, `C-;`) Absicht
+  sind oder Versehen, weißt nur du — **Frage an dich** vor 1.8.
+
 **Umzug auf dem Mac**, einmal nach dem Ziehen dieses Stands. Vorher
 sichern; Emacs dabei beenden:
 

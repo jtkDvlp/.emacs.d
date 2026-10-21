@@ -159,6 +159,10 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 |---|---|---|---:|---:|
 | `a116aa1` (vor dem Umbau), CI, Emacs 31.1 ohne GUI | scheitert an `(scroll-bar-mode -1)` | — | — | — |
 | nach Phase 1, Schritt 1.3, Cloud, Emacs 31.1 ohne GUI | ok | 93 installiert, Lockdatei reproduziert | 0 | 52 |
+| nach Phase 1, Schritt 1.3, CI (macOS), Emacs 31.1 ohne GUI | ok | 93 installiert, Lockdatei reproduziert | 0 | 49 |
+
+Der Unterschied von 3 Warnungen: Die `ns-*`- und `mac-*`-Variablen gibt es
+nur unter macOS; in der Cloud meldet der Byte-Compiler sie als frei.
 
 Die Startzeit in der GUI fehlt noch (Plan, Phase 0).
 
