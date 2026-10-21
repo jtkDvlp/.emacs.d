@@ -394,11 +394,14 @@ verified lock file changed, or a file in RESULTS has compile errors."
   (let ((unfinished (check-unfinished-packages)))
     ;; NOTE: Only a complete install is worth pinning.
     (unless (or check-load-error unfinished)
-      (check-write-lock-file)
-      ;; NOTE: Before compiling, which loads files of its own.
-      (check-take-snapshot))
+      (check-write-lock-file))
     (let ((results (unless check-load-error
                      (check-compile-all))))
+      ;; NOTE: After compiling: the snapshot loads every package, which
+      ;; would hide the compiler's "might not be defined" warnings and
+      ;; make the count depend on whether a snapshot was asked for.
+      (unless (or check-load-error unfinished)
+        (check-take-snapshot))
       (check--write-report (check-report unfinished results))
       (kill-emacs (if (check-failed-p unfinished results) 1 0)))))
 
