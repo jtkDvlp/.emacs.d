@@ -104,8 +104,6 @@
  '(next-error-highlight t)
  '(next-error-highlight-no-select t))
 
-(add-to-list 'image-types 'svg)
-
 (set-default 'truncate-lines nil)
 (set-default 'indent-tabs-mode nil)
 
