@@ -103,7 +103,6 @@
 	treemacs-no-png-images                 nil
 	treemacs-no-delete-other-windows       nil
 	treemacs-project-follow-cleanup        nil
-	treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
 	treemacs-recenter-distance             0.1
 	treemacs-recenter-after-file-follow    nil
 	treemacs-recenter-after-tag-follow     nil
@@ -137,6 +136,11 @@
 (use-package
   simple-bookmarks
   :ensure (:host github :repo "jtkDvlp/simple-bookmarks")
+
+  :init
+  ;; NOTE: Unversioned under var/: database bookmarks hold passwords.
+  (setq simple-bookmarks-file
+        (no-littering-expand-var-file-name "simple-bookmarks.el"))
 
   :config
   (defun sql-mysql-for (user password database server &optional buffername)

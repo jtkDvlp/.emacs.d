@@ -19,10 +19,6 @@
   ;; `shell-file-name', and PATH is set up for the login shell.
   (setq shell-file-name "/bin/bash"))
 
-(setq custom-file "~/.emacs.d/custom.el")
-(when (file-exists-p custom-file)
-  (load custom-file))
-
 (global-so-long-mode 1)
 
 (setq

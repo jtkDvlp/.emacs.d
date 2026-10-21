@@ -2,8 +2,9 @@
 
 ;;; Commentary:
 
-;; Sets up the package manager, then loads the configuration modules.
-;; What has to happen before the first frame is in early-init.el.
+;; Sets up the package manager, keeps generated files out of the way,
+;; then loads the configuration modules.  What has to happen before the
+;; first frame is in early-init.el.
 
 ;;; Code:
 
@@ -82,6 +83,17 @@ Written with `elpaca-write-lock-file' after updating packages.")
 
 (setq use-package-always-ensure t
       use-package-verbose t)
+
+;;;; Generated files
+
+;; WATCHOUT: no-littering has to come before every package whose paths
+;; it sets; it only changes defaults, so a later `setq' still wins.
+(use-package no-littering
+  :ensure (:wait t)
+  :demand t
+  :config
+  (setq custom-file (no-littering-expand-var-file-name "custom.el"))
+  (load custom-file 'noerror))
 
 ;;;; Configuration
 

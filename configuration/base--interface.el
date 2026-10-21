@@ -229,6 +229,12 @@
 (use-package
   multiple-cursors
 
+  :init
+  ;; NOTE: no-littering would put this file under var/; it records which
+  ;; commands run for all cursors, a choice made by hand, so it is kept
+  ;; under etc/ and versioned.
+  (setq mc/list-file (no-littering-expand-etc-file-name "mc-list.el"))
+
   :config
   (define-key mc/keymap (kbd "<return>") nil)
 

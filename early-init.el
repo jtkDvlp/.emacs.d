@@ -13,6 +13,16 @@
 ;; activate anything first.
 (setq package-enable-at-startup nil)
 
+;; NOTE: Native compilation would otherwise write to eln-cache/ in the
+;; root; no-littering keeps generated files under var/.  Its own path
+;; helpers are not available yet, hence the literal path.
+(when (and (fboundp 'startup-redirect-eln-cache)
+           (fboundp 'native-comp-available-p)
+           (native-comp-available-p))
+  (startup-redirect-eln-cache
+   (convert-standard-filename
+    (expand-file-name "var/eln-cache/" user-emacs-directory))))
+
 ;; NOTE: Frame parameters rather than calling `menu-bar-mode' and the
 ;; like: the first frame is created from them without ever drawing the
 ;; bars, and a build without a GUI has no `scroll-bar-mode' to call.
