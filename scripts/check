@@ -23,11 +23,9 @@ while [ $# -gt 0 ]; do
 done
 
 # NOTE: An isolated HOME keeps personal dotfiles (~/.eshellrc, ~/.gtd, a
-# real ~/.emacs.d) out of the result. The configuration still finds
-# itself as ~/.emacs.d, because the current init.el hard-codes that path.
+# real ~/.emacs.d) out of the result.
 home="$(mktemp -d)"
 trap 'rm -rf "$home"' EXIT
-ln -s "$root" "$home/.emacs.d"
 
 # Package installs clone with git; keep the user's git settings (proxies,
 # URL rewrites) despite the isolated HOME.
