@@ -541,52 +541,52 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 
 | Paket | Quelle | heute in | wofür | Einschätzung | benutzt? |
 |---|---|---|---|---|---|
-| use-package | e | configuration | Deklaration | bleibt | |
-| diminish | M | Bootstrap | Modeline-Lichter ausblenden | hängt an 2.11 | |
-| smartrep | M | Bootstrap | Wiederholtasten | → `repeat-mode` | |
+| use-package | e | configuration | Deklaration | bleibt | Ja |
+| diminish | M | Bootstrap | Modeline-Lichter ausblenden | hängt an 2.11 | Ja |
+| smartrep | M | Bootstrap | Wiederholtasten | → `repeat-mode` | Ja |
 | exec-path-from-shell | M | Bootstrap | PATH aus Login-Shell | installiert, **nie benutzt** — einsetzen | |
 | doom-themes | M | apperance | Theme `doom-one` | gepflegt | |
 | spaceline | M | apperance | Modeline | kaum noch gepflegt | |
-| linum | e | apperance | Zeilennummern | obsolet seit 29.1 | |
-| rainbow-mode | M | apperance | Farbwerte einfärben | ok; in jedem `prog-mode` fraglich | |
-| rainbow-delimiters | M | apperance | Klammern einfärben | ok | |
+| linum | e | apperance | Zeilennummern | obsolet seit 29.1 | Ja |
+| rainbow-mode | M | apperance | Farbwerte einfärben | ok; in jedem `prog-mode` fraglich | Ja |
+| rainbow-delimiters | M | apperance | Klammern einfärben | ok | Ja |
 | kmacro | e | interface | Makros | ok | |
-| ivy / counsel / swiper | M | interface | Vervollständigung, Suche | → 2.1 | |
-| winner | e | interface | Fensterlayout zurück | ok, ggf. `tab-bar-history` | |
-| fullframe | M | interface | magit im Vollbild | ggf. `display-buffer-alist` | |
-| buffer-move | M | interface | Puffer tauschen | → `windmove-swap-states-*` | |
-| elscreen | M | interface | Bildschirme je Projekt | ungepflegt → `tab-bar-mode` | |
-| ediff | e | interface | Vergleich | ok | |
-| ztree | M | interface | Verzeichnisvergleich | prüfen | |
+| ivy / counsel / swiper | M | interface | Vervollständigung, Suche | → 2.1 | Ja |
+| winner | e | interface | Fensterlayout zurück | ok, ggf. `tab-bar-history` | Ja |
+| fullframe | M | interface | magit im Vollbild | ggf. `display-buffer-alist` | Ja |
+| buffer-move | M | interface | Puffer tauschen | → `windmove-swap-states-*` | Ja |
+| elscreen | M | interface | Bildschirme je Projekt | ungepflegt → `tab-bar-mode` | Ja |
+| ediff | e | interface | Vergleich | ok | Ja |
+| ztree | M | interface | Verzeichnisvergleich | prüfen | Ja |
 | ace-jump-mode | M | interface | Springen | ungepflegt → avy | |
-| ace-window | M | interface | Fensterwahl | gepflegt | |
-| expand-region | M | interface | Auswahl erweitern | ok; expreg als Alternative | |
+| ace-window | M | interface | Fensterwahl | gepflegt | Ja |
+| expand-region | M | interface | Auswahl erweitern | ok; expreg als Alternative | Ja |
 | which-key | M | interface | Tastenhilfe | eingebaut ab 30 | |
-| undo-tree | M | interface | Undo-Baum | schwergewichtig → vundo | |
-| multiple-cursors | M | interface | Mehrfach-Cursor | ok | |
-| counsel-projectile / projectile | M | filemanagement | Projekte | → 2.1 / 2.3 | |
+| undo-tree | M | interface | Undo-Baum | schwergewichtig → vundo | Ja |
+| multiple-cursors | M | interface | Mehrfach-Cursor | ok | Ja |
+| counsel-projectile / projectile | M | filemanagement | Projekte | → 2.1 / 2.3 | Ja |
 | git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | prüfen | |
-| treemacs (+ -projectile, -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt | |
-| simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | |
+| treemacs (+ -projectile, -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt | Ja |
+| simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | Ja |
 | org | e | organisation | GTD | bleibt | |
 | dashboard (+ page-break-lines) | M | startup | Startbildschirm | gepflegt | |
-| smartparens | M | development | Klammern, sexp-Editieren | → 2.5 | |
-| aggressive-indent | M | development | Einrücken beim Tippen | ok; Hook-Fehler U3 | |
-| company / company-quickhelp | M | development | Vervollständigung im Puffer | → corfu? | |
-| magit | M | development | Git | bleibt | |
+| smartparens | M | development | Klammern, sexp-Editieren | → 2.5 | Ja |
+| aggressive-indent | M | development | Einrücken beim Tippen | ok; Hook-Fehler U3 | Ja |
+| company / company-quickhelp | M | development | Vervollständigung im Puffer | → corfu? | Ja |
+| magit | M | development | Git | bleibt | Ja |
 | flycheck | M | development | Syntaxprüfung | → flymake? | |
-| yasnippet / yasnippet-snippets | M | development | Snippets | ok | |
-| highlight-symbol | M | development | Symbol hervorheben | ungepflegt → symbol-overlay | |
-| restclient | M | development | HTTP-Anfragen | meines Wissens archiviert → verb | |
-| sql | e | development | MySQL | ok | |
+| yasnippet / yasnippet-snippets | M | development | Snippets | ok | Ja |
+| highlight-symbol | M | development | Symbol hervorheben | ungepflegt → symbol-overlay | Ja |
+| restclient | M | development | HTTP-Anfragen | meines Wissens archiviert → verb | Ja |
+| sql | e | development | MySQL | ok | Ja |
 | simple-httpd | M | development | lokaler HTTP-Server | prüfen | |
 | markdown-mode | M | development | Markdown | bleibt | |
-| logview | M | development | Logdateien | gepflegt | |
-| eshell / eshell-up / esh-autosuggest | e/M/M | shell | Shell | ok | |
+| logview | M | development | Logdateien | gepflegt | Ja |
+| eshell / eshell-up / esh-autosuggest | e/M/M | shell | Shell | ok | Ja |
 | csv-mode | M | csv | CSV | ok | |
-| clojure-mode | M | clojure | Clojure | ggf. clojure-ts-mode | |
-| cider | M | clojure | REPL | bleibt | |
-| clj-refactor | M | clojure | Refactoring | prüfen gegen clojure-lsp | |
+| clojure-mode | M | clojure | Clojure | ggf. clojure-ts-mode | Ja |
+| cider | M | clojure | REPL | bleibt | Ja |
+| clj-refactor | M | clojure | Refactoring | prüfen gegen clojure-lsp | Ja |
 | parseedn | M | clojure | `project.clj` lesen | hängt an Leiningen-Helfern | |
 | flycheck-clj-kondo | M | clojure | Linter | hängt an 2.6 | |
 | js2-mode / js2-refactor / xref-js2 | M | javascript | JS | → `js-ts-mode` + eglot | |
@@ -594,7 +594,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | tide / npm-mode | M | typescript | TS | → `typescript-ts-mode` + eglot | |
 | web-mode | M | html | HTML/XML/XSL | gepflegt | |
 | web-mode-edit-element | M | html | strukturelles HTML-Editieren | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | |
-| scss-mode / sass-mode / css-mode | M/M/e | css | Stylesheets | scss-mode überflüssig | |
+| scss-mode / sass-mode / css-mode | M/M/e | css | Stylesheets | scss-mode überflüssig | Ja |
 | elpy | M | python | Python | meines Wissens kaum gepflegt → eglot | |
 | c++-mode / platformio-mode | e/M | c | Arduino/PlatformIO | prüfen | |
 | basic-mode | M | basic | ASP/BASIC | Fehler B6 | |
