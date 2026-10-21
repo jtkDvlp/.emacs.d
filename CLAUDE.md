@@ -77,6 +77,14 @@ GitHub-Action (`.github/workflows/check.yml`, macOS, Emacs 31.1) führt es
 bei jedem Push aus und legt den Bericht in die Zusammenfassung des Laufs.
 Ein anderes Emacs wählt man über `EMACS=/pfad/zu/emacs scripts/check`.
 
+`--snapshot FILE` schreibt nach dem Laden — und nachdem jedes deklarierte
+Paket zusätzlich geladen wurde — jede Tastenbelegung, Option, Hook-Funktion
+und Dateizuordnung als sortierte Zeile in eine Datei (`scripts/snapshot.el`,
+rund 17 700 Zeilen). Zwei Läufe ohne Änderung ergeben dieselbe Datei; der
+Diff zweier Stände zeigt also genau, was sich am Verhalten geändert hat.
+Ein reiner Umbau hat einen leeren Diff. Nicht erfasst: Faces, Modeline,
+Fensterlayout — alles, was nur eine laufende GUI zeigt.
+
 `--verify-lock` (so in CI) schreibt nach dem Laden die Lockdatei neu und
 scheitert, wenn sich dabei ein Commit ändert — der Beweis, dass die
 eingecheckte Lockdatei installiert, was sie sagt. `--write-lock` tut
@@ -164,7 +172,21 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 Der Unterschied von 3 Warnungen: Die `ns-*`- und `mac-*`-Variablen gibt es
 nur unter macOS; in der Cloud meldet der Byte-Compiler sie als frei.
 
-Die Startzeit in der GUI fehlt noch (Plan, Phase 0).
+**Startzeit (GUI, Mac):** `emacs-init-time` 0,387 s (gemessen nach
+Schritt 1.3, 2026-10-21).
+
+WATCHOUT: Mit elpaca ist `emacs-init-time` nicht die Startzeit. Die Uhr
+bleibt stehen, bevor `after-init-hook` läuft — und dort aktiviert und
+konfiguriert elpaca alle Pakete. Die volle Zeit misst erst
+`elpaca-after-init-hook`:
+
+```elisp
+(add-hook 'elpaca-after-init-hook
+          (lambda ()
+            (message "Startup with packages: %.3f s"
+                     (float-time (time-subtract (current-time)
+                                                before-init-time)))))
+```
 
 ## Entscheidungen
 

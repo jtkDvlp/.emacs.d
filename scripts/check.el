@@ -40,6 +40,8 @@
   "How many lines of `check-load-backtrace' the report shows.
 The innermost frames name the failing form; the rest is the loader.")
 
+(defvar use-package-compute-statistics)
+
 (defvar check-runtime-warnings nil
   "Warnings shown via `display-warning' while loading, newest first.")
 
@@ -64,6 +66,10 @@ would otherwise never happen."
   ;; WATCHOUT: Packages tell init from later by `after-init-time', which
   ;; batch mode has already set by now.  elpaca, for one, would treat
   ;; every order as made after init and leave it out of the lock file.
+  ;; NOTE: The snapshot loads every declared package, and only
+  ;; use-package's statistics know them all.
+  (when (check--snapshot-file)
+    (setq use-package-compute-statistics t))
   (let ((after-init-time nil))
     (dolist (file '("early-init.el" "init.el"))
       (let ((path (expand-file-name file check-root)))
@@ -71,6 +77,30 @@ would otherwise never happen."
           (load path nil t)))))
   (check--run-startup-hooks)
   (check--wait-for-packages))
+
+(defvar check-snapshot nil
+  "What `check-take-snapshot' did, or nil if no snapshot was asked for.
+A plist: `:file', `:lines' and `:unloadable'.")
+
+(declare-function snapshot-load-declared-packages "snapshot")
+(declare-function snapshot-write "snapshot")
+
+(defun check--snapshot-file ()
+  "Return the file CHECK_SNAPSHOT names, or nil."
+  (let ((file (getenv "CHECK_SNAPSHOT")))
+    (unless (or (null file) (string-empty-p file))
+      file)))
+
+(defun check-take-snapshot ()
+  "Write the snapshot of `snapshot.el' if CHECK_SNAPSHOT names a file."
+  (when-let* ((file (check--snapshot-file)))
+    (load (expand-file-name "scripts/snapshot.el" check-root) nil t)
+    (condition-case err
+        (let* ((unloadable (snapshot-load-declared-packages))
+               (lines (snapshot-write file unloadable)))
+          (setq check-snapshot
+                (list :file file :lines lines :unloadable unloadable)))
+      (error (setq check-snapshot (list :file file :error err))))))
 
 (defun check--remember-backtrace (_error)
   "Store the current backtrace in `check-load-backtrace'."
@@ -256,6 +286,20 @@ Return an alist of (FILE . DIAGNOSTICS)."
                 (string-join differences ", ")
                 "\n\n"))))))
 
+(defun check--report-snapshot ()
+  "Return the report line on the snapshot, if one was taken."
+  (cond
+   ((plist-get check-snapshot :error)
+    (format "**Snapshot:** failed — `%S`\n\n"
+            (plist-get check-snapshot :error)))
+   ((plist-get check-snapshot :lines)
+    (concat (format "**Snapshot:** %d lines" (plist-get check-snapshot :lines))
+            (when-let* ((unloadable (plist-get check-snapshot :unloadable)))
+              (format "; declared but not loadable as a feature: %s"
+                      (mapconcat (lambda (name) (format "`%s`" name))
+                                 unloadable ", ")))
+            "\n\n"))))
+
 (defun check--report-load ()
   "Return the report section on loading."
   (concat
@@ -320,6 +364,7 @@ compiled."
    (check--report-load)
    (check--report-packages unfinished)
    (check--report-lock)
+   (check--report-snapshot)
    (if results
        (concat (check--report-table results)
                (check--report-details results))
@@ -349,7 +394,9 @@ verified lock file changed, or a file in RESULTS has compile errors."
   (let ((unfinished (check-unfinished-packages)))
     ;; NOTE: Only a complete install is worth pinning.
     (unless (or check-load-error unfinished)
-      (check-write-lock-file))
+      (check-write-lock-file)
+      ;; NOTE: Before compiling, which loads files of its own.
+      (check-take-snapshot))
     (let ((results (unless check-load-error
                      (check-compile-all))))
       (check--write-report (check-report unfinished results))
