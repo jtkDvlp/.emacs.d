@@ -10,11 +10,11 @@ jobs:
     # `system-type' branches for it.
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: purcell/setup-emacs@master
         with:
           version: 31.1
 
       - name: Load and byte-compile the configuration
-        run: scripts/check --report "$GITHUB_STEP_SUMMARY"
+        run: scripts/check --report "$GITHUB_STEP_SUMMARY" --verify-lock

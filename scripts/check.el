@@ -61,10 +61,14 @@ would otherwise never happen."
 
 (defun check--load-init-files ()
   "Load the init files, finish startup and wait for packages."
-  (dolist (file '("early-init.el" "init.el"))
-    (let ((path (expand-file-name file check-root)))
-      (when (file-exists-p path)
-        (load path nil t))))
+  ;; WATCHOUT: Packages tell init from later by `after-init-time', which
+  ;; batch mode has already set by now.  elpaca, for one, would treat
+  ;; every order as made after init and leave it out of the lock file.
+  (let ((after-init-time nil))
+    (dolist (file '("early-init.el" "init.el"))
+      (let ((path (expand-file-name file check-root)))
+        (when (file-exists-p path)
+          (load path nil t)))))
   (check--run-startup-hooks)
   (check--wait-for-packages))
 
@@ -82,6 +86,69 @@ would otherwise never happen."
         (check--load-init-files))
     (error (setq check-load-error err)))
   (advice-remove 'display-warning #'check--collect-runtime-warning))
+
+(declare-function elpaca--queued "elpaca")
+(declare-function elpaca<-status "elpaca")
+
+(defun check-unfinished-packages ()
+  "Return (ID . STATUS) for every elpaca order that did not finish."
+  (when (fboundp 'elpaca--queued)
+    (cl-loop for (id . order) in (elpaca--queued)
+             for status = (elpaca<-status order)
+             unless (eq status 'finished)
+             collect (cons id status))))
+
+(declare-function elpaca-write-lock-file "elpaca")
+
+(defvar check-lock-change nil
+  "How the lock file changed, or nil if it was not written.
+A plist: `:before' and `:after' are alists of (ID . COMMIT); `:before'
+is nil when there was no lock file yet.")
+
+(defun check--locked-commits (file)
+  "Return (ID . COMMIT) for every package pinned in lock FILE, or nil."
+  (when (file-exists-p file)
+    (with-temp-buffer
+      (insert-file-contents file)
+      (mapcar (lambda (entry)
+                (cons (car entry)
+                      (plist-get (plist-get (cdr entry) :recipe) :ref)))
+              (read (current-buffer))))))
+
+(defun check-write-lock-file ()
+  "Write `elpaca-lock-file' if CHECK_LOCK asks for it.
+Records the commits before and after in `check-lock-change'."
+  (when (and (getenv "CHECK_LOCK")
+             (fboundp 'elpaca-write-lock-file)
+             (boundp 'elpaca-lock-file))
+    (let ((before (check--locked-commits elpaca-lock-file)))
+      (make-directory (file-name-directory elpaca-lock-file) t)
+      (elpaca-write-lock-file elpaca-lock-file)
+      (setq check-lock-change
+            (list :before before
+                  :after (check--locked-commits elpaca-lock-file))))))
+
+(defun check--lock-differences ()
+  "Return the packages whose commit changed, as Markdown fragments."
+  (let ((before (plist-get check-lock-change :before))
+        (after (plist-get check-lock-change :after)))
+    (append
+     (cl-loop for (id . commit) in after
+              for old = (alist-get id before)
+              unless (equal old commit)
+              collect (if old
+                          (format "`%s` %.7s → %.7s" id old commit)
+                        (format "`%s` new" id)))
+     (cl-loop for (id . _) in before
+              unless (assq id after)
+              collect (format "`%s` gone" id)))))
+
+(defun check-lock-mismatch-p ()
+  "Return non-nil if CHECK_LOCK is `verify' and the lock file changed.
+Without a lock file before there is nothing to verify."
+  (and (equal (getenv "CHECK_LOCK") "verify")
+       (plist-get check-lock-change :before)
+       (check--lock-differences)))
 
 (defun check--source-files ()
   "Return the existing files matching `check-source-globs'."
@@ -162,6 +229,33 @@ Return an alist of (FILE . DIAGNOSTICS)."
             (string-join lines "\n")
             "\n```\n\n</details>\n\n")))
 
+(defun check--report-packages (unfinished)
+  "Return the report line on packages; UNFINISHED as from elpaca."
+  (if (null unfinished)
+      "**Packages:** all installed\n\n"
+    (concat "**Packages:** not installed — "
+            (mapconcat (pcase-lambda (`(,id . ,status))
+                         (format "`%s` (%s)" id status))
+                       unfinished ", ")
+            "\n\n")))
+
+(defun check--report-lock ()
+  "Return the report line on the lock file, if it was written."
+  (when check-lock-change
+    (let ((differences (check--lock-differences))
+          (count (length (plist-get check-lock-change :after))))
+      (cond
+       ((null (plist-get check-lock-change :before))
+        (format "**Lock file:** written for %d packages, none before\n\n"
+                count))
+       ((null differences)
+        (format "**Lock file:** reproduced, %d packages at their commits\n\n"
+                count))
+       (t
+        (concat "**Lock file:** changed — "
+                (string-join differences ", ")
+                "\n\n"))))))
+
 (defun check--report-load ()
   "Return the report section on loading."
   (concat
@@ -216,35 +310,50 @@ Return an alist of (FILE . DIAGNOSTICS)."
     "\n")
    "\n\n</details>\n"))
 
-(defun check-report (results)
-  "Return the full Markdown report for compile RESULTS.
-RESULTS is nil when loading failed and nothing was compiled."
+(defun check-report (unfinished results)
+  "Return the full Markdown report.
+UNFINISHED lists packages that did not install, RESULTS the compile
+diagnostics; RESULTS is nil when loading failed and nothing was
+compiled."
   (concat
    (format "## Configuration check\n\nGNU Emacs %s\n\n" emacs-version)
    (check--report-load)
+   (check--report-packages unfinished)
+   (check--report-lock)
    (if results
        (concat (check--report-table results)
                (check--report-details results))
      "Byte-compile skipped: without a loaded configuration its packages
 are missing, and every file would only report them.\n")))
 
-(defun check-failed-p (results)
-  "Return non-nil if loading failed or any file in RESULTS has errors."
+(defun check-failed-p (unfinished results)
+  "Return non-nil if the check failed.
+That is: loading failed, a package in UNFINISHED did not install, a
+verified lock file changed, or a file in RESULTS has compile errors."
   (or check-load-error
+      unfinished
+      (check-lock-mismatch-p)
       (cl-some (lambda (result) (< 0 (check--count :error (cdr result))))
                results)))
+
+(defun check--write-report (report)
+  "Print REPORT and append it to the file named by CHECK_REPORT, if any."
+  (let ((report-file (getenv "CHECK_REPORT")))
+    (princ report)
+    (when (and report-file (not (string-empty-p report-file)))
+      (write-region report nil report-file t))))
 
 (defun check-main ()
   "Run the check, print the report and exit with its status."
   (check-load-configuration)
-  (let* ((results (unless check-load-error
-                    (check-compile-all)))
-         (report (check-report results))
-         (report-file (getenv "CHECK_REPORT")))
-    (princ report)
-    (when (and report-file (not (string-empty-p report-file)))
-      (write-region report nil report-file t))
-    (kill-emacs (if (check-failed-p results) 1 0))))
+  (let ((unfinished (check-unfinished-packages)))
+    ;; NOTE: Only a complete install is worth pinning.
+    (unless (or check-load-error unfinished)
+      (check-write-lock-file))
+    (let ((results (unless check-load-error
+                     (check-compile-all))))
+      (check--write-report (check-report unfinished results))
+      (kill-emacs (if (check-failed-p unfinished results) 1 0)))))
 
 (check-main)
 
