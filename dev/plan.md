@@ -14,7 +14,7 @@ Inhalt:
 4. Zielbild
 5. Plan: Phasen und Reihenfolge des Paket-Reviews
 6. Paketinventar
-7. Offene Fragen
+7. Entschiedene Fragen
 
 ---
 
@@ -228,12 +228,19 @@ Version. Ist Reproduzierbarkeit über mehrere Rechner wichtig, ist
 **elpaca** (oder `straight.el`) mit Lockdatei die Alternative — mit einem
 Bootstrap-Block mehr und eigener Fehlersuche. Siehe Frage Q2.
 
+**Entschieden (Q2): elpaca.** Gleiche Paketversionen sind wichtig. elpaca
+klont jedes Paket als Git-Repo und hält die Commits in einer Lockdatei
+fest; die kommt nach `etc/` und wird versioniert, der Klon-Baum
+`elpaca/` nicht. Eigene Pakete bekommen ein Rezept auf ihr Repo. Was das
+für Phase 1 heißt, steht dort unter 1.2.
+
 ---
 
 ## 3. Nebenbei gefundene Fehler
 
 Aus dem Code geschlossen, nicht beobachtet. Behoben werden sie im
-Paket-Review des jeweiligen Themas — oder vorgezogen, siehe Phase 1b.
+Paket-Review des jeweiligen Themas (entschieden, Q6) — manche Pakete
+fallen dort ganz weg, und der Fehler mit ihnen.
 
 | Nr. | Ort | Was passiert (vermutlich) |
 |---|---|---|
@@ -283,7 +290,8 @@ der CLAUDE.md festzuhalten:
 ├── var/              Zustand und Caches (no-littering), inkl. custom.el,
 │                     nicht versioniert                            (Rolle: target/)
 ├── local.el          maschinenspezifisch (Jira-URL, …), nicht versioniert
-├── elpa/, eln-cache/ nicht versioniert
+├── elpaca/, eln-cache/  Paket-Klone und native Kompilate, nicht versioniert
+│                     (die elpaca-Lockdatei liegt versioniert in etc/)
 └── dev/              plan.md, tmp/ (nicht versioniert)
 ```
 
@@ -313,8 +321,8 @@ jede Sprache übernimmt und nur dort überschreibt, wo sie wirklich abweicht
 `--init-directory` (siehe CLAUDE.md) ein Prüfskript, das Emacs im
 Batch-Modus mit der Konfiguration lädt und alle Module byte-kompiliert. Das
 fängt Fehler wie B3 und B4 ohne Zutun — der Byte-Compiler meldet unbekannte
-Funktionen. Optional dasselbe als GitHub-Action. Beides berührt `scripts/`
-bzw. CI und braucht deine Freigabe (Q5).
+Funktionen. Dasselbe läuft als GitHub-Action, damit jeder Push ohne
+lokales Emacs geprüft wird. Beides ist freigegeben (Q5).
 
 ---
 
@@ -332,27 +340,51 @@ Zwei Grundsätze für die Reihenfolge:
 
 ### Phase 0 – Klären und messen (bei dir)
 
-- Offene Fragen in Abschnitt 7 beantworten.
+- ~~Offene Fragen in Abschnitt 7 beantworten.~~ Erledigt, siehe dort.
+- Die neueste stabile Emacs-Version installieren. Welche das ist und
+  welcher macOS-Build sich empfiehlt (Kandidat: `emacs-plus` über Homebrew,
+  mit nativer Kompilierung), sehe ich vor Phase 1 nach — siehe unten,
+  „Netzzugriffe“.
 - Im Paketinventar (Abschnitt 6) die Spalte „benutzt?“ füllen. Was nicht
   mehr benutzt wird, fliegt ohne Review — das ist der billigste Gewinn.
 - Baseline festhalten: Emacs-Version (`M-x emacs-version`), Startzeit
   (`M-x emacs-init-time`, dreimal, nach eingeschwungenem System), und mit
   `(setq use-package-compute-statistics t)` am Anfang von `init.el` die
   Ausgabe von `M-x use-package-report`. Die Zahlen kommen in die CLAUDE.md.
+  Gemessen wird mit der **heutigen Konfiguration auf dem neuen Emacs** —
+  sonst vergleicht der Wert nach dem Umbau zwei Dinge auf einmal. Startet
+  die heutige Konfiguration dort nicht, ist genau das der erste Befund.
 
 ### Phase 1 – Fundament, verhaltensneutral (ein PR, mehrere Commits)
 
+**Netzzugriffe, am Stück vor Beginn:** aktuelle stabile Emacs-Version und
+empfohlener macOS-Build; elpaca-Bootstrap-Block, Lockdatei-Funktionen und
+use-package-Anbindung in der aktuellen Doku; Variablenliste von
+no-littering (welche Pfade es umbiegt, etwa für eshell); die
+GitHub-Action zum Installieren von Emacs (`purcell/setup-emacs`) und die
+dort verfügbaren Versionen. Danach läuft Phase 1 ohne weitere Zugriffe —
+bis auf die CI-Läufe selbst, die auf GitHub stattfinden.
+
 | Schritt | Inhalt | löst |
 |---|---|---|
-| 1.1 | `early-init.el`: GC-Grenze für den Start, `package-enable-at-startup`, Frame-Voreinstellungen (Leisten aus, maximiert) über `default-frame-alist` | S1 |
-| 1.2 | Paketsystem: `https`, NonGNU ELPA, Prioritäten; Bootstrap-Pakete als normale use-package-Deklarationen; `exec-path-from-shell` statt PATH-Eigenbau | P1, U4 |
-| 1.3 | `no-littering`; `.gitignore` auf `var/`, `elpa/`, `eln-cache/`, `local.el`, `dev/tmp/` reduzieren; `custom-file` nach `var/`, `custom.el` aus dem Repo; `local.el` für `env-jira-host-url` | S5, S6 |
+| 1.0 | Prüfskript unter `scripts/` (Batch-Laden der Konfiguration, Byte-Compile aller Module, Warnungen gesammelt ausgeben) und GitHub-Action, die es bei jedem Push ausführt — **zuerst, gegen den heutigen Stand.** Die Warnungen von heute sind die Baseline; jeder folgende Schritt zeigt, ob er welche hinzufügt. | — |
+| 1.1 | `early-init.el`: GC-Grenze für den Start, `package-enable-at-startup nil` (verlangt elpaca ohnehin), Frame-Voreinstellungen (Leisten aus, maximiert) über `default-frame-alist` | S1 |
+| 1.2 | Paketverwaltung auf elpaca: Bootstrap, `elpaca-use-package-mode`, Lockdatei nach `etc/`, Rezepte für die eigenen Pakete auf ihre Repos; Bootstrap-Pakete (`diminish`, `smartrep`, …) als normale Deklarationen; `exec-path-from-shell` statt PATH-Eigenbau | P1, P2, U4 |
+| 1.3 | `no-littering`; `.gitignore` auf `var/`, `elpaca/`, `eln-cache/`, `local.el`, `dev/tmp/` reduzieren; `custom-file` nach `var/`, `custom.el` aus dem Repo; `local.el` für `env-jira-host-url` | S5, S6 |
 | 1.4 | Dateiköpfe mit `lexical-binding` und Commentary; Tabs zu Leerzeichen; Kommentare englisch | F1, F4 |
 | 1.5 | Umzug in `modules/` und `lisp/`: **nur `git mv` und Verschieben ganzer Blöcke**, kein Inhalt geändert, eigener Commit je Thema | S2–S4 |
 | 1.6 | Einstellungen vereinheitlichen: `custom-set-variables` → `:custom`/`setopt`, Grundeinstellungen in `(use-package emacs …)` | F2 |
 | 1.7 | Eigene Bibliotheken: Präfix `jtk-`, Hilfsfunktionen aus `:config` nach `lisp/` | F6 |
 | 1.8 | Eine Keymap für strukturelles Editieren statt sieben Kopien; Abweichungen je Sprache sichtbar machen (vorher Tabelle der heutigen Unterschiede, damit nichts still verloren geht) | F3 |
-| 1.9 | Prüfskript (Batch-Laden + Byte-Compile), falls freigegeben | — |
+
+**WATCHOUT für 1.2:** elpaca installiert und aktiviert Pakete
+**asynchron, nach** dem Durchlauf von `init.el`. Code außerhalb eines
+`use-package`-Blocks, der ein Paket voraussetzt — heute etwa
+`(require 'smartrep)` und `(load-theme 'doom-one t)` auf oberster Ebene —
+läuft dann, bevor das Paket da ist. Alles Paketabhängige gehört deshalb
+in den jeweiligen Block (`:config`), notfalls hinter `elpaca-wait`. Und
+eingebaute Pakete brauchen weiterhin `:ensure nil`, sonst holt elpaca eine
+zweite Fassung aus Git (bei `org` womöglich gewollt — Entscheidung in 2.10).
 
 Toter Code und obsolete Aufrufe (F5) bleiben in Phase 1 stehen, wo ihr
 Entfernen Verhalten ändert (`linum`), und fliegen, wo es keines ändert
@@ -365,10 +397,8 @@ Stichproben der Tasten (`C-s`, `C-x f`, `M-#`, `M-v g`, `C-M-- t`,
 Clojure-REPL starten, eine Org-Erfassung anlegen. Startzeit gegen die
 Baseline.
 
-### Phase 1b – bekannte Fehler (optional vorgezogen)
-
-B1–B7 aus Abschnitt 3 sind jeweils wenige Zeilen. Entweder als kleiner PR
-direkt nach Phase 1 — oder im Review des jeweiligen Themas. Deine Wahl.
+Die Fehler B1–B7 aus Abschnitt 3 bleiben in Phase 1 bewusst stehen; sie
+werden im Paket-Review behoben (Q6).
 
 ### Phase 2 – Paket-Review
 
@@ -436,7 +466,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | counsel-projectile / projectile | M | filemanagement | Projekte | → 2.1 / 2.3 | |
 | git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | prüfen | |
 | treemacs (+ -projectile, -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt | |
-| simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | vermutlich eigenes Paket — bestätigen | |
+| simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | |
 | org | e | organisation | GTD | bleibt | |
 | dashboard (+ page-break-lines) | M | startup | Startbildschirm | gepflegt | |
 | smartparens | M | development | Klammern, sexp-Editieren | → 2.5 | |
@@ -462,7 +492,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | indium | M | javascript | JS-Debugger | Pflegestand prüfen | |
 | tide / npm-mode | M | typescript | TS | → `typescript-ts-mode` + eglot | |
 | web-mode | M | html | HTML/XML/XSL | gepflegt | |
-| web-mode-edit-element | M | html | strukturelles HTML-Editieren | vermutlich eigenes Paket — bestätigen | |
+| web-mode-edit-element | M | html | strukturelles HTML-Editieren | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | |
 | scss-mode / sass-mode / css-mode | M/M/e | css | Stylesheets | scss-mode überflüssig | |
 | elpy | M | python | Python | meines Wissens kaum gepflegt → eglot | |
 | c++-mode / platformio-mode | e/M | c | Arduino/PlatformIO | prüfen | |
@@ -471,22 +501,16 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 
 ---
 
-## 7. Offene Fragen
+## 7. Entschiedene Fragen
 
-- **Q1 – Zielversion und Plattformen.** Welche Emacs-Version läuft bei dir,
-  und auf welchen Systemen (macOS, Linux)? Mein Vorschlag: Emacs 30 als
-  Untergrenze — dann sind which-key, `use-package :vc` und die
-  tree-sitter-Modi ohne Zusatz da.
-- **Q2 – Reproduzierbarkeit.** Benutzt du die Konfiguration auf mehreren
-  Rechnern, und stört es, wenn dort unterschiedliche Paketversionen
-  landen? Nein → package.el bleibt (P2). Ja → elpaca mit Lockdatei.
-- **Q3 – Zielbild.** Passt die Struktur aus Abschnitt 4 (`modules/`,
-  `lisp/`, no-littering mit `etc/`/`var/`) und die Präfixe `init-` /
-  `jtk-`?
-- **Q4 – Eigene Pakete.** Sind `simple-bookmarks` und
-  `web-mode-edit-element` deine? Dann würde ich sie per `package-vc`
-  direkt aus deinem Repo beziehen, statt über MELPA.
-- **Q5 – Prüfskript und CI.** Darf ein Skript unter `scripts/` (Batch-Laden
-  und Byte-Compile) entstehen, und soll es zusätzlich als GitHub-Action
-  laufen?
-- **Q6 – Fehler B1–B7.** Vorziehen (Phase 1b) oder im jeweiligen Review?
+Am 2026-10-21 beantwortet; die Begründungen stehen in der CLAUDE.md unter
+„Entscheidungen“.
+
+| Frage | Antwort |
+|---|---|
+| Q1 – Zielversion und Plattformen | Neueste stabile Emacs-Version, nur macOS. |
+| Q2 – Reproduzierbarkeit über Rechner hinweg | Wichtig → elpaca mit Lockdatei statt package.el. |
+| Q3 – Zielbild (`modules/`, `lisp/`, `etc/`/`var/`, Präfixe `init-`/`jtk-`) | Passt. |
+| Q4 – `simple-bookmarks`, `web-mode-edit-element` | Eigene Pakete mit eigenem Repo, womöglich veraltet → Bezug aus dem Repo, Review wie Fremdpakete. |
+| Q5 – Prüfskript unter `scripts/` und GitHub-Action | Beides freigegeben → Phase 1, Schritt 1.0. |
+| Q6 – Fehler B1–B7 vorziehen? | Nein, im Review des jeweiligen Pakets. |

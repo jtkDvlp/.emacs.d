@@ -1,8 +1,14 @@
 # CLAUDE.md – Emacs-Konfiguration
 
 Arbeitsnotizen für die Zusammenarbeit an dieser Konfiguration. Es gelten die
-projektübergreifenden Richtlinien aus `claude-guidelines`; was hier steht,
-ergänzt sie oder weicht bewusst ab.
+projektübergreifenden Richtlinien; was hier steht, ergänzt sie oder weicht
+bewusst ab.
+
+@../claude-guidelines/CLAUDE.md
+
+Der Pfad ist der in der Cloud-Umgebung, in der hier gearbeitet wird: Beide
+Repos liegen dort nebeneinander unter `/home/user/`. Lokal auf dem Mac läuft
+Claude derzeit nicht.
 
 Der laufende Umbau ist in [`dev/plan.md`](dev/plan.md) beschrieben —
 Bestandsaufnahme, Befunde, Zielbild und Reihenfolge. Diese Datei hält nur
@@ -14,9 +20,11 @@ Die persönliche Emacs-Konfiguration, geklont nach `~/.emacs.d`. Kein
 veröffentlichtes Paket, also keine Versionierung und kein Release —
 Conventional Commits trotzdem, damit die Historie lesbar bleibt.
 
-- Zuletzt angepasst an Emacs 29.3 (Commit `835e12a`). Zielversion: offen,
-  siehe Plan.
-- Plattform: macOS (`mac-command-modifier`), vermutlich auch Linux/X.
+- Zuletzt angepasst an Emacs 29.3 (Commit `835e12a`). Zielversion: die
+  jeweils neueste stabile Emacs-Version.
+- Plattform: **nur macOS.** Fallunterscheidungen für Linux, X oder Windows
+  (`windows-nt` bei `sql`, `x` bei der PATH-Übernahme) tragen nichts und
+  fallen beim jeweiligen Umbau weg.
 - Schwerpunkt: Clojure/ClojureScript mit CIDER; daneben Elisp, JS/TS,
   HTML/CSS, Python, C++ (PlatformIO), Org (GTD).
 
@@ -89,4 +97,10 @@ wurde.
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
-| — | — | — |
+| 2026-10-21 | **Ziel ist die neueste stabile Emacs-Version, nur macOS.** | So sind die eingebauten Nachfolger (which-key, eglot, tree-sitter, `use-package :vc`) ohne Zusatzpakete da. Andere Plattformen werden nicht benutzt. |
+| 2026-10-21 | **use-package bleibt** als Deklarationsform, wird aber idiomatisch benutzt (Konventionen im Plan, Abschnitt 2). | Eingebaut, Standard, deklarativ. Verworfen: reines Elisp (mehr Zeilen für dieselbe Aussage), `leaf`/`setup.el` (Nische), Literate Config (Übersetzungsschritt, Fehler zeigen auf die erzeugte Datei), Starter-Kits (überschreiben das eigene Tastaturkonzept). |
+| 2026-10-21 | **Paketverwaltung mit Lockdatei: elpaca** statt package.el. | Gleiche Paketversionen sind wichtig; package.el kennt keine Lockdatei. elpaca hält jedes Paket als Git-Klon und schreibt die Commits in eine Lockdatei, die versioniert wird; eigene Pakete kommen über ein Rezept direkt aus ihrem Repo. Verworfen: `straight.el` (dasselbe Prinzip, älter; meines Wissens vom elpaca-Autor nur noch mitgepflegt), package.el + `package-vc` (keine Lockdatei). |
+| 2026-10-21 | **Zielbild aus dem Plan, Abschnitt 4:** `modules/init-<thema>.el` für Konfiguration, `lisp/jtk-*.el` für eigene Bibliotheken, no-littering mit `etc/` (versioniert) und `var/` (nicht versioniert). | Bewusste Abweichung von `src/`/`resources/`/`target/` der Richtlinien: Emacs gibt `init.el` und `early-init.el` im Wurzelverzeichnis vor, und `src/jtkdvlp/<artifact>/` wäre eine Ebene, die nichts trennt. Die Rollen bleiben: `modules/` und `lisp/` sind Quellcode, `snippets/` und `eshell/` handgeschriebene Ressourcen, `var/` das Generierte. |
+| 2026-10-21 | **`simple-bookmarks` und `web-mode-edit-element` sind eigene Pakete** und kommen aus ihren eigenen Repos. | Sie bekommen im Paket-Review dieselben Fragen wie Fremdpakete — sie sind womöglich veraltet. |
+| 2026-10-21 | **Prüfskript unter `scripts/` und GitHub-Action** sind freigegeben. | Batch-Laden und Byte-Compile fangen Tippfehler und unbekannte Funktionen, die beim Lesen durchgehen; die Action macht das ohne lokales Emacs sichtbar. |
+| 2026-10-21 | **Bekannte Fehler (Plan, B1–B7) werden im Review des jeweiligen Pakets behoben**, nicht vorgezogen. | Manche Pakete fallen dabei ganz weg; ein vorgezogener Fix wäre dann verlorene Arbeit. |
