@@ -85,10 +85,6 @@
 (defface success-face
   '((t (:foreground "yellow" :background "#555577"))) "Green Highlight")
 
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-
 (let ((n 0))
   (setq scroll-step 1)
   (setq scroll-conservatively n)
@@ -127,6 +123,5 @@
 
 ;; (load-theme 'spacemacs-dark t)
 (load-theme 'doom-one t)
-(toggle-frame-maximized)
 
 (provide 'base--apperance)
