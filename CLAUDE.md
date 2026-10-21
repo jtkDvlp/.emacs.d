@@ -57,9 +57,24 @@ Damit das billig bleibt:
 - Zu jedem Schritt gehört eine kurze Sichtungsliste: welche Tasten, welche
   Modi, welche Datei man öffnen soll, und was dabei passieren muss.
 
-**In dieser Cloud-Umgebung ist kein Emacs installiert.** Aussagen über
-Verhalten sind dort Lesart des Codes, nicht Beobachtung — das wird im
-Bericht so gekennzeichnet.
+**`scripts/check` lädt die Konfiguration im Batch-Modus und
+byte-kompiliert alle Dateien.** Der Bericht (Markdown) sagt, ob das Laden
+klappte, und zählt je Datei Fehler und Warnungen; bei einem Ladefehler
+kommt der Backtrace dazu. Es endet mit einem Fehler, wenn das Laden oder
+eine Datei scheitert — Warnungen allein nicht, ihre Zahl ist das Maß. Die
+GitHub-Action (`.github/workflows/check.yml`, macOS, Emacs 31.1) führt es
+bei jedem Push aus und legt den Bericht in die Zusammenfassung des Laufs.
+Ein anderes Emacs wählt man über `EMACS=/pfad/zu/emacs scripts/check`.
+
+**In der Cloud-Umgebung gibt es kein Emacs, bis man es baut.** Der Weg,
+der funktioniert hat: Quellen per `git clone --depth 1 --branch
+emacs-31.1` vom Spiegel `github.com/emacs-mirror/emacs` (die GNU-Server
+sind über den Proxy gesperrt), Abhängigkeiten per `apt-get`, dann
+`./configure --without-x --with-tree-sitter --without-native-compilation`
+und `make`, nach `/opt/emacs-31.1`. Dauer rund 15 Minuten. Erreichbar sind
+von dort nur GitHub und GitLab — MELPA, GNU ELPA und Codeberg nicht. Was
+ein Paketarchiv braucht, lässt sich also nur in der Action prüfen.
+Aussagen über das Verhalten der GUI bleiben dort Lesart des Codes.
 
 **Startzeit wird gemessen, nicht geschätzt** (`M-x emacs-init-time`, für die
 Aufschlüsselung `use-package-compute-statistics` auf `t` und

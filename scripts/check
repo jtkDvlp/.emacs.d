@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Load the configuration in batch mode and byte-compile it (see check.el).
+#
+# Usage: scripts/check [--report FILE]
+#   --report FILE  also append the Markdown report to FILE
+# Environment:
+#   EMACS          Emacs binary to use (default: emacs)
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if [ "${1:-}" = "--report" ]; then
+  export CHECK_REPORT="$2"
+fi
+
+# NOTE: An isolated HOME keeps personal dotfiles (~/.eshellrc, ~/.gtd, a
+# real ~/.emacs.d) out of the result. The configuration still finds
+# itself as ~/.emacs.d, because the current init.el hard-codes that path.
+home="$(mktemp -d)"
+trap 'rm -rf "$home"' EXIT
+ln -s "$root" "$home/.emacs.d"
+
+# Package installs clone with git; keep the user's git settings (proxies,
+# URL rewrites) despite the isolated HOME.
+if [ -f "$HOME/.gitconfig" ]; then
+  export GIT_CONFIG_GLOBAL="$HOME/.gitconfig"
+fi
+
+HOME="$home" "${EMACS:-emacs}" --batch --init-directory="$root" \
+    --load "$root/scripts/check.el"
