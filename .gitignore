@@ -3,6 +3,9 @@
 /elpaca/
 /var/
 
+# Machine-specific settings.
+/local.el
+
 # Throwaway files.
 /dev/tmp/
 

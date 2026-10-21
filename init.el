@@ -3,12 +3,11 @@
 ;;; Commentary:
 
 ;; Sets up the package manager, keeps generated files out of the way,
-;; then loads the configuration modules.  What has to happen before the
-;; first frame is in early-init.el.
+;; reads the machine-specific settings, then loads the configuration
+;; modules.  What has to happen before the first frame is in
+;; early-init.el.
 
 ;;; Code:
-
-(setq env-jira-host-url nil)
 
 ;;;; Package manager
 
@@ -94,6 +93,15 @@ Written with `elpaca-write-lock-file' after updating packages.")
   :config
   (setq custom-file (no-littering-expand-var-file-name "custom.el"))
   (load custom-file 'noerror))
+
+;;;; Machine-specific settings
+
+(defvar env-jira-host-url nil
+  "Base URL of the Jira instance, ending in a slash.
+Set in local.el; used by `org-insert-jira-issue'.")
+
+;; local.el is not versioned: it holds what differs between machines.
+(load (expand-file-name "local.el" user-emacs-directory) 'noerror)
 
 ;;;; Configuration
 
