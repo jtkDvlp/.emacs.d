@@ -5,6 +5,9 @@ Stand: 2026-10-21. Grundlage ist der Commit `a116aa1` („Some settings“, Mär
 Plan entstand, läuft kein Emacs. Was als Fehler markiert ist, wurde nicht
 beobachtet, sondern aus dem Code geschlossen.
 
+**Fortschritt:** Phase 1, Schritte 1.0–1.3 sind umgesetzt (siehe dort);
+der aktuelle Aufbau steht in der CLAUDE.md.
+
 Inhalt:
 
 1. Bestandsaufnahme
@@ -245,7 +248,7 @@ fallen dort ganz weg, und der Fehler mit ihnen.
 | Nr. | Ort | Was passiert (vermutlich) |
 |---|---|---|
 | B1 | `base--organisation.el:125` | `("C--" . org-narrow-to-subtree)` steht vor `:map org-mode-map`, also **global** in der Override-Map. Weil Org nach `base--interface` lädt, verdrängt es dort `narrow/narrow-dwim`: `C--` lädt in jedem Puffer Org und ruft `org-narrow-to-subtree`. |
-| B2 | `pkg--narrow.el:4` | `(narrow-to-region)` ohne Argumente — bei aktiver Region ein Fehler „wrong number of arguments“. |
+| B2 | `pkg--narrow.el:4` | `(narrow-to-region)` ohne Argumente — bei aktiver Region ein Fehler „wrong number of arguments“. Vom Byte-Compiler bestätigt. |
 | B3 | `lang--typescript.el:9` | `before-save`-Hook auf `tide-formater-before-save`; die Funktion heißt `tide-format-before-save`. Und der Hook ist global, nicht pufferlokal. Sobald einmal eine TS-Datei offen war, sollte **jedes** Speichern mit einem Fehler abbrechen. |
 | B4 | `lang--javascript.el:83` | `"M-J "` (mit Leerzeichen) auf `xref-pop-maker-stack` — die Funktion heißt `xref-pop-marker-stack`, seit Emacs 29 `xref-go-back`. |
 | B5 | `lang--typescript.el:57` | `"C-C M-j"` — großes C, also `C-S-c`; gemeint war wohl `C-c`. |
@@ -284,7 +287,8 @@ der CLAUDE.md festzuhalten:
 ├── lisp/             eigene Bibliotheken, ohne Seiteneffekte    (Rolle: src/)
 │   ├── jtk-ide.el, jtk-window-mirror.el, jtk-zoom.el, jtk-narrow.el
 │   └── jtk-cider.el          Leiningen-/figwheel-Helfer aus lang--clojure
-├── snippets/, eshell/        handgeschrieben, versioniert        (Rolle: resources/)
+│                     (auch die handgeschriebenen yasnippet-Vorlagen und
+│                     eshell-Aliase, Rolle: resources/)
 ├── etc/              von Paketen geschriebene Konfiguration (no-littering),
 │                     versioniert, was gepflegt ist (z. B. mc-lists)
 ├── var/              Zustand und Caches (no-littering), inkl. custom.el,
@@ -319,10 +323,18 @@ jede Sprache übernimmt und nur dort überschreibt, wo sie wirklich abweicht
 
 **Sichtung billig machen.** Neben der Parallel-Instanz per
 `--init-directory` (siehe CLAUDE.md) ein Prüfskript, das Emacs im
-Batch-Modus mit der Konfiguration lädt und alle Module byte-kompiliert. Das
-fängt Fehler wie B3 und B4 ohne Zutun — der Byte-Compiler meldet unbekannte
-Funktionen. Dasselbe läuft als GitHub-Action, damit jeder Push ohne
-lokales Emacs geprüft wird. Beides ist freigegeben (Q5).
+Batch-Modus mit der Konfiguration lädt und alle Module byte-kompiliert.
+Dasselbe läuft als GitHub-Action, damit jeder Push ohne lokales Emacs
+geprüft wird. Beides ist freigegeben (Q5).
+
+*Korrektur (nach Umsetzung):* Hier stand, das Prüfskript fange Fehler wie
+B3 und B4 ohne Zutun. Das stimmt nicht. Funktionsnamen in `:hook`,
+`:bind` und `:commands` sind für den Byte-Compiler Daten, kein Aufruf;
+er meldet sie nicht. (B2 dagegen meldet er, weil dort eine Funktion
+mit falscher Argumentzahl aufgerufen wird.) Das fängt erst eine Prüfung nach dem Laden, die
+jedes gebundene Kommando und jede Hook-Funktion auf `fboundp` prüft — und
+dafür müssten die verzögert geladenen Pakete erst geladen werden. Offener
+Punkt für das Prüfskript.
 
 ---
 
@@ -367,10 +379,10 @@ bis auf die CI-Läufe selbst, die auf GitHub stattfinden.
 
 | Schritt | Inhalt | löst |
 |---|---|---|
-| 1.0 | Prüfskript unter `scripts/` (Batch-Laden der Konfiguration, Byte-Compile aller Module, Warnungen gesammelt ausgeben) und GitHub-Action, die es bei jedem Push ausführt — **zuerst, gegen den heutigen Stand.** Die Warnungen von heute sind die Baseline; jeder folgende Schritt zeigt, ob er welche hinzufügt. | — |
-| 1.1 | `early-init.el`: GC-Grenze für den Start, `package-enable-at-startup nil` (verlangt elpaca ohnehin), Frame-Voreinstellungen (Leisten aus, maximiert) über `default-frame-alist` | S1 |
-| 1.2 | Paketverwaltung auf elpaca: Bootstrap, `elpaca-use-package-mode`, Lockdatei nach `etc/`, Rezepte für die eigenen Pakete auf ihre Repos; Bootstrap-Pakete (`diminish`, `smartrep`, …) als normale Deklarationen; `exec-path-from-shell` statt PATH-Eigenbau | P1, P2, U4 |
-| 1.3 | `no-littering`; `.gitignore` auf `var/`, `elpaca/`, `eln-cache/`, `local.el`, `dev/tmp/` reduzieren; `custom-file` nach `var/`, `custom.el` aus dem Repo; `local.el` für `env-jira-host-url` | S5, S6 |
+| ✅ 1.0 | Prüfskript unter `scripts/` (Batch-Laden der Konfiguration, Byte-Compile aller Module, Warnungen gesammelt ausgeben) und GitHub-Action, die es bei jedem Push ausführt — **zuerst, gegen den heutigen Stand.** Die Warnungen von heute sind die Baseline; jeder folgende Schritt zeigt, ob er welche hinzufügt. | — |
+| ✅ 1.1 | `early-init.el`: ~~GC-Grenze für den Start~~ (nicht ohne Messung, also Phase 3), `package-enable-at-startup nil` (verlangt elpaca ohnehin), Frame-Voreinstellungen (Leisten aus, maximiert) über `default-frame-alist` | S1 |
+| ✅ 1.2 | Paketverwaltung auf elpaca: Bootstrap, `elpaca-use-package-mode`, Lockdatei nach `etc/`, Rezepte für die eigenen Pakete auf ihre Repos; Bootstrap-Pakete (`diminish`, `smartrep`, …) als normale Deklarationen; `exec-path-from-shell` statt PATH-Eigenbau | P1, P2, U4 |
+| ✅ 1.3 | `no-littering`; `.gitignore` auf `var/`, `elpaca/`, `eln-cache/`, `local.el`, `dev/tmp/` reduzieren; `custom-file` nach `var/`, `custom.el` aus dem Repo; `local.el` für `env-jira-host-url` | S5, S6 |
 | 1.4 | Dateiköpfe mit `lexical-binding` und Commentary; Tabs zu Leerzeichen; Kommentare englisch | F1, F4 |
 | 1.5 | Umzug in `modules/` und `lisp/`: **nur `git mv` und Verschieben ganzer Blöcke**, kein Inhalt geändert, eigener Commit je Thema | S2–S4 |
 | 1.6 | Einstellungen vereinheitlichen: `custom-set-variables` → `:custom`/`setopt`, Grundeinstellungen in `(use-package emacs …)` | F2 |
@@ -389,6 +401,50 @@ zweite Fassung aus Git (bei `org` womöglich gewollt — Entscheidung in 2.10).
 Toter Code und obsolete Aufrufe (F5) bleiben in Phase 1 stehen, wo ihr
 Entfernen Verhalten ändert (`linum`), und fliegen, wo es keines ändert
 (`eval-sexp-fu-*`, Auskommentiertes).
+
+**Ergebnis 1.0–1.3** (Messwerte in der CLAUDE.md):
+
+- Die Baseline gibt es nur halb. Der Stand vor dem Umbau lädt im
+  Batch-Modus nicht: `(scroll-bar-mode -1)` gibt es in einem Emacs ohne
+  GUI nicht, und die Builds in CI haben keine. Die Zahl der Warnungen
+  von heute ist damit nicht messbar; die erste Zahl ist die nach 1.3.
+- Danach: Laden ok, 93 Pakete aus der Lockdatei, 0 Compile-Fehler, 52
+  Warnungen. Davon 23 „file has no `lexical-binding' directive“ (eine
+  je Konfigurationsdatei, das erledigt 1.4), 14 Funktionen aus Paketen,
+  die erst zur Laufzeit geladen werden, und 15 Einzelbefunde — darunter
+  B2 (`narrow-to-region` ohne Argumente) und das obsolete `linum`.
+- Eine Neuinstallation aus der Lockdatei ergibt dieselben Commits; ein
+  absichtlich älter gesetzter Commit wird genau so installiert; ein
+  fehlender Eintrag lässt `--verify-lock` scheitern.
+
+**Reihenfolge für 1.4–1.8:** 1.5 (Umzug) vor 1.4 (Dateiköpfe), weil der
+Dateikopf den Dateinamen trägt — sonst würde jeder Kopf zweimal
+geschrieben.
+
+**Umzug auf dem Mac**, einmal nach dem Ziehen dieses Stands. Vorher
+sichern; Emacs dabei beenden:
+
+```
+cd ~/.emacs.d
+cp -a . ~/emacs.d-backup-$(date +%F)
+
+mkdir -p var/projectile var/treemacs var/eshell
+[ -s custom.el ]               && mv custom.el var/custom.el
+[ -f recentf ]                 && mv recentf var/recentf-save.el
+[ -f bookmarks ]               && mv bookmarks var/bookmark-default.el
+[ -f projectile-bookmarks.eld ] && mv projectile-bookmarks.eld var/projectile/known-projects.el
+[ -f simple-bookmarks ]        && mv simple-bookmarks var/simple-bookmarks.el
+[ -f .cache/treemacs-persist ] && mv .cache/treemacs-persist var/treemacs/persist.org
+[ -f eshell/history ]          && mv eshell/history var/eshell/history
+[ -d transient ]               && mv transient var/transient
+
+# Nur noch Cache bzw. vom alten package.el; elpaca baut neu auf.
+rm -rf elpa projectile.cache auto-save-list .cache
+```
+
+Was danach in `git status` als unversioniert auftaucht, stammt aus dem
+alten Stand und gehört entweder nach `var/` oder weg. Der erste Start
+klont alle Pakete (einige Minuten).
 
 **Sichtung nach Phase 1:** Parallel-Instanz starten. Startet ohne Fehler
 und ohne Warnungen im `*Messages*`-Puffer; Theme und Modeline wie bisher;

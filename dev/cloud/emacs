@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Cloud sandbox only: Emacs for scripts/check, as in
+#   EMACS=dev/cloud/emacs scripts/check
+# Loads shim.el ahead of the check and rewrites package hosts the proxy
+# blocks to their emacsmirror copies on GitHub, which carry the same
+# commits, so a lock file written here is valid everywhere.
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+emacs="${EMACS_BIN:-/opt/emacs-31.1/bin/emacs}"
+
+n=${GIT_CONFIG_COUNT:-0}
+mirror() {
+  export "GIT_CONFIG_KEY_$n=url.https://github.com/emacsmirror/$2.insteadOf"
+  export "GIT_CONFIG_VALUE_$n=$1"
+  n=$((n + 1))
+}
+mirror https://paredit.org/paredit paredit
+mirror https://codeberg.org/fourier/ztree ztree
+mirror https://git.sr.ht/~tomterl/fullframe fullframe
+mirror https://git.sr.ht/~dieggsy/esh-autosuggest esh-autosuggest
+export GIT_CONFIG_COUNT=$n
+
+# Arguments as scripts/check passes them: --batch, --init-directory, then
+# the check itself, which must come after the shim.
+exec "$emacs" "$1" "$2" -l "$here/shim.el" "${@:3}"
