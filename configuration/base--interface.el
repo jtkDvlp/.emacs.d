@@ -203,6 +203,7 @@
 
 (use-package
   pkg--narrow
+  :ensure nil
   :load-path "configuration/"
   :commands narrow/narrow-dwim
   :bind*
@@ -247,6 +248,7 @@
 
 (use-package
   pkg--zoom
+  :ensure nil
   :demand t
   :load-path "configuration/"
   :requires smartrep
@@ -263,6 +265,7 @@
 
 (use-package
   pkg--window-mirror
+  :ensure nil
   :load-path "configuration/"
   :commands window-mirror/start-mirroring)
 

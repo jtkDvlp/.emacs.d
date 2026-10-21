@@ -3,10 +3,15 @@
 ;;; Commentary:
 
 ;; Runs before packages are activated and before the first frame is
-;; drawn.  Only what has to happen that early belongs here: frame
-;; settings that would otherwise flicker into view and out again.
+;; drawn.  Only what has to happen that early belongs here: switching
+;; off package.el in favour of elpaca, and frame settings that would
+;; otherwise flicker into view and out again.
 
 ;;; Code:
+
+;; elpaca manages the packages (see init.el); package.el must not
+;; activate anything first.
+(setq package-enable-at-startup nil)
 
 ;; NOTE: Frame parameters rather than calling `menu-bar-mode' and the
 ;; like: the first frame is created from them without ever drawing the

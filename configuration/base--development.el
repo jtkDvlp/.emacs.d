@@ -189,6 +189,7 @@
 
 (use-package
   sql
+  :ensure nil
   :commands (sql-mysql)
   :config
   (when (equal system-type 'windows-nt)
@@ -326,6 +327,7 @@
 
 (use-package
   pkg--ide
+  :ensure nil
   :load-path "configuration/"
   :config
   (ide/configure-frame-layout ide/default-layout)

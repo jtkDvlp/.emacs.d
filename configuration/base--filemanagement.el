@@ -136,6 +136,7 @@
 
 (use-package
   simple-bookmarks
+  :ensure (:host github :repo "jtkDvlp/simple-bookmarks")
 
   :config
   (defun sql-mysql-for (user password database server &optional buffername)

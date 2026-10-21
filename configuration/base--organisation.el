@@ -1,5 +1,6 @@
 (use-package
   org
+  :ensure nil
 
   :mode
   ("\\.org\\'" . org-mode)

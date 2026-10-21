@@ -121,7 +121,10 @@
     '(("\\<\\(HACK\\|NOTE\\|FIXME\\|TODO\\|BUG\\|INFO\\|IDEA\\|WATCHOUT\\|WTF\\)"
        1 font-lock-warning-face t)))))
 
-;; (load-theme 'spacemacs-dark t)
-(load-theme 'doom-one t)
+(use-package
+  doom-themes
+  :demand t
+  :config
+  (load-theme 'doom-one t))
 
 (provide 'base--apperance)

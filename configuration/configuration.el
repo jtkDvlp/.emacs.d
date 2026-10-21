@@ -1,43 +1,31 @@
-(require 'package)
+;; WATCHOUT: elpaca installs and loads packages only after init.  These
+;; two are called by top-level code of the modules below (and
+;; `:diminish' expands into calls of `diminish'), so they have to be
+;; there before that code runs.
+(use-package diminish
+  :ensure (:wait t)
+  :demand t)
 
-(setq package-archives
-      '(("melpa" . "http://melpa.org/packages/")
-        ("gnu" . "http://elpa.gnu.org/packages/"))
+(use-package smartrep
+  :ensure (:wait t)
+  :demand t)
 
-      package-enable-at-startup nil)
-
-(package-initialize)
-(when (not package-archive-contents)
-  (package-refresh-contents))
-
-(unless (package-installed-p 'doom-themes)
-  (package-install 'diminish)
-  (package-install 'smartrep)
-  ;; (package-install 'spacemacs-theme)
-  (package-install 'doom-themes)
-  (package-install 'exec-path-from-shell))
-
-(when (memq window-system '(mac ns x))
-
-  (let ((path (shell-command-to-string "echo -n $PATH")))
-    (setenv "PATH" path)
-    (setq exec-path (split-string-and-unquote path ":")))
-
+(use-package exec-path-from-shell
+  :if (memq window-system '(mac ns))
+  :demand t
+  :config
+  (exec-path-from-shell-initialize)
+  ;; NOTE: Only after reading PATH: `exec-path-from-shell' asks
+  ;; `shell-file-name', and PATH is set up for the login shell.
   (setq shell-file-name "/bin/bash"))
 
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file)
   (load custom-file))
 
-(require 'smartrep);
-(require 'use-package)
-
 (global-so-long-mode 1)
 
 (setq
- use-package-verbose t
- use-package-always-ensure t
-
  make-backup-files nil
  auto-save-default nil
  create-lockfiles nil)

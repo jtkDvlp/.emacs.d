@@ -36,6 +36,7 @@
 
 (use-package
   web-mode-edit-element
+  :ensure (:host github :repo "jtkDvlp/web-mode-edit-element")
   :after web-mode
   :diminish web-mode-edit-element-minor-mode
   :hook (web-mode . web-mode-edit-element-minor-mode)
