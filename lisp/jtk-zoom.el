@@ -31,4 +31,4 @@
   (interactive)
   (zoom/modify -1))
 
-(provide 'pkg--zoom)
+(provide 'jtk-zoom)

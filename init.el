@@ -105,6 +105,7 @@ Set in local.el; used by `org-insert-jira-issue'.")
 
 ;;;; Configuration
 
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "configuration" user-emacs-directory))
 (require 'configuration)
 

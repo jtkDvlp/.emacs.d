@@ -158,4 +158,4 @@
 (defvar ide/default-buffers
   `("*Help*" projectile-run-eshell treemacs))
 
-(provide 'pkg--ide)
+(provide 'jtk-ide)

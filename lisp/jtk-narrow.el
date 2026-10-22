@@ -6,4 +6,4 @@
 
 (defalias 'narrow/widen 'widen)
 
-(provide 'pkg--narrow)
+(provide 'jtk-narrow)

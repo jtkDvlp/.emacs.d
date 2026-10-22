@@ -326,9 +326,8 @@
         ("t j" . logview-go-to-difference-base-entry)))
 
 (use-package
-  pkg--ide
+  jtk-ide
   :ensure nil
-  :load-path "configuration/"
   :config
   (ide/configure-frame-layout ide/default-layout)
 

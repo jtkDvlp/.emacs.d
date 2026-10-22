@@ -87,4 +87,4 @@
       (add-hook 'post-command-hook 'window-mirror/mirror t)
     (remove-hook 'post-command-hook 'window-mirror/mirror)))
 
-(provide 'pkg--window-mirror)
+(provide 'jtk-window-mirror)

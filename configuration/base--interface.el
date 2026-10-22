@@ -202,9 +202,8 @@
    ("C-:" . er/contract-region)))
 
 (use-package
-  pkg--narrow
+  jtk-narrow
   :ensure nil
-  :load-path "configuration/"
   :commands narrow/narrow-dwim
   :bind*
   (("C--" . narrow/narrow-dwim)
@@ -253,10 +252,9 @@
    ("<tab>" . mc-hide-unmatched-lines-mode)))
 
 (use-package
-  pkg--zoom
+  jtk-zoom
   :ensure nil
   :demand t
-  :load-path "configuration/"
   :requires smartrep
   :config
   (smartrep-define-key
@@ -270,9 +268,8 @@
       ("3" . zoom/custom-3))))
 
 (use-package
-  pkg--window-mirror
+  jtk-window-mirror
   :ensure nil
-  :load-path "configuration/"
   :commands window-mirror/start-mirroring)
 
 ;; (use-package
