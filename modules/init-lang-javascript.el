@@ -32,38 +32,13 @@
     (transpose-lines 1)
     (forward-line -1)
     (indent-according-to-mode))
-  
-  :bind*
-  (:map js2-mode-map
-        ("C-<left>" . sp-backward-sexp)
-        ("M-<left>" . sp-forward-barf-sexp)
-        ("C-M-<left>" . sp-backward-barf-sexp)
-        
-        ("C-<right>" . sp-forward-sexp)
-        ("M-<right>" . sp-forward-slurp-sexp)
-        ("C-M-<right>" . sp-backward-slurp-sexp)
 
-        ("C-<up>" . sp-backward-up-sexp)
-        ;; ("M-<up>" . sp-convolute-sexp)
-
-        ("C-<down>" . sp-down-sexp)
-        
-        ("C-M-<up>" . js2-mode-forward-transpose)
-        ("C-M-<down>" . js2-mode-backward-transpose)
-        
-        ;; ("M-\"" . sp-wrap-doublequote)
-        ("C-(" . sp-wrap-round)
-        ("M-[" . sp-wrap-square)
-        ("M-{" . sp-wrap-curly)
-        
-        ;; ("C-M-(" . sp-rewrap-sexp)
-
-        ("C-k" . sp-kill-sexp)
-        ("C-S-K" . sp-unwrap-sexp)
-        
-        ("M-k" . sp-splice-sexp-killing-forward)
-        ;; ("M-K" . sp-splice-sexp-killing-backward)
-        ("C-M-k" . sp-splice-sexp-killing-around)))
+  ;; NOTE: Statements are lines, so moving one up or down transposes
+  ;; lines instead of s-expressions.
+  (jtk-structural-editing-bind
+   js2-mode-map
+   '(("C-M-<up>" . js2-mode-forward-transpose)
+     ("C-M-<down>" . js2-mode-backward-transpose))))
 
 (use-package
   js2-refactor
@@ -74,7 +49,7 @@
   :bind*
   (:map js2-mode-map
         ("M-<down>" . js2r-unwrap)
-        
+
         ("M-r r" . js2r-rename-var)
         ("M-r o" . js2r-debug-this)
         ("M-r f" . js2r-extract-function)

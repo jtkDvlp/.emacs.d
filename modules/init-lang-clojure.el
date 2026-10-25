@@ -18,41 +18,7 @@
 
   :config
   ;; (require 'smartparens-clojure)
-
-  :bind*
-  (:map clojure-mode-map
-        ("C-<left>" . sp-backward-sexp)
-        ("M-<left>" . sp-forward-barf-sexp)
-        ("C-M-<left>" . sp-backward-barf-sexp)
-
-        ("C-<right>" . sp-forward-sexp)
-        ("M-<right>" . sp-forward-slurp-sexp)
-        ("C-M-<right>" . sp-backward-slurp-sexp)
-
-        ("C-<up>" . sp-backward-up-sexp)
-        ("M-<up>" . sp-convolute-sexp)
-
-        ("C-<down>" . sp-down-sexp)
-        ("M-<down>" . sp-raise-sexp)
-
-        ("C-M-<up>" . sp-backward-transpose-sexp)
-        ("C-M-<down>" . sp-forward-transpose-sexp)
-
-        ("M-\"" . sp-wrap-doublequote)
-        ("C-(" . sp-wrap-round)
-        ("M-[" . sp-wrap-square)
-        ("M-{" . sp-wrap-curly)
-
-        ("C-M-(" . sp-rewrap-sexp)
-
-        ("C-k" . sp-kill-sexp)
-        ("C-S-K" . sp-unwrap-sexp)
-
-        ("M-k" . sp-splice-sexp-killing-forward)
-        ("M-K" . sp-splice-sexp-killing-backward)
-        ("C-M-k" . sp-splice-sexp-killing-around)
-
-        ("C-;" . comment-dwim)))
+  (jtk-structural-editing-bind clojure-mode-map))
 
 (use-package
   flycheck-clj-kondo
@@ -384,6 +350,12 @@
    (reg-remote-sub-raw 'defun)
    )
 
+  ;; NOTE: In the REPL comments go through smartparens, which keeps the
+  ;; parens of the input balanced.
+  (jtk-structural-editing-bind
+   cider-repl-mode-map
+   '(("C-;" . sp-comment-dwim)))
+
   :bind*
   (:map clojure-mode-map
         ("C-c M-j" . nil)
@@ -434,72 +406,6 @@
         ("M-u W" . cider-repl-user-quit-cljs-repl)
 
         :map cider-repl-mode-map
-        ("C-<left>" . sp-backward-sexp)
-        ("M-<left>" . sp-forward-barf-sexp)
-        ("C-M-<left>" . sp-backward-barf-sexp)
-
-        ("C-<right>" . sp-forward-sexp)
-        ("M-<right>" . sp-forward-slurp-sexp)
-        ("C-M-<right>" . sp-backward-slurp-sexp)
-
-        ("C-<up>" . sp-backward-up-sexp)
-        ("M-<up>" . sp-convolute-sexp)
-
-        ("C-<down>" . sp-down-sexp)
-        ("M-<down>" . sp-raise-sexp)
-
-        ("C-M-<up>" . sp-backward-transpose-sexp)
-        ("C-M-<down>" . sp-forward-transpose-sexp)
-
-        ("M-\"" . sp-wrap-doublequote)
-        ("C-(" . sp-wrap-round)
-        ("M-[" . sp-wrap-square)
-        ("M-{" . sp-wrap-curly)
-
-        ("C-M-(" . sp-rewrap-sexp)
-
-        ("C-k" . sp-kill-sexp)
-        ("C-S-K" . sp-unwrap-sexp)
-
-        ("M-k" . sp-splice-sexp-killing-forward)
-        ("M-K" . sp-splice-sexp-killing-backward)
-        ("C-M-k" . sp-splice-sexp-killing-around)
-
-        ("C-;" . sp-comment-dwim)
-
-        ("C-<left>" . sp-backward-sexp)
-        ("M-<left>" . sp-forward-barf-sexp)
-        ("C-M-<left>" . sp-backward-barf-sexp)
-
-        ("C-<right>" . sp-forward-sexp)
-        ("M-<right>" . sp-forward-slurp-sexp)
-        ("C-M-<right>" . sp-backward-slurp-sexp)
-
-        ("C-<up>" . sp-backward-up-sexp)
-        ("M-<up>" . sp-convolute-sexp)
-
-        ("C-<down>" . sp-down-sexp)
-        ("M-<down>" . sp-raise-sexp)
-
-        ("C-M-<up>" . sp-backward-transpose-sexp)
-        ("C-M-<down>" . sp-forward-transpose-sexp)
-
-        ("M-\"" . sp-wrap-doublequote)
-        ("C-(" . sp-wrap-round)
-        ("M-[" . sp-wrap-square)
-        ("M-{" . sp-wrap-curly)
-
-        ("C-M-(" . sp-rewrap-sexp)
-
-        ("C-k" . sp-kill-sexp)
-        ("C-S-K" . sp-unwrap-sexp)
-
-        ("M-k" . sp-splice-sexp-killing-forward)
-        ("M-K" . sp-splice-sexp-killing-backward)
-        ("C-M-k" . sp-splice-sexp-killing-around)
-
-        ("C-;" . sp-comment-dwim)
-
         ("C-c M-j" . nil)
         ("C-c C-M-j" . cider-switch-to-last-clojure-buffer)
 
