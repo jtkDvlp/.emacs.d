@@ -6,4 +6,4 @@
   (("\\.asp\\'" . basic-mode)
    ("\\.inc\\'" . basic-mode)))
 
-(provide 'lang--basic)
+(provide 'init-lang-basic)

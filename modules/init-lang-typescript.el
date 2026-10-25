@@ -64,4 +64,4 @@
    npm-mode-npm-install
    npm-mode-npm-run))
 
-(provide 'lang--typescript)
+(provide 'init-lang-typescript)

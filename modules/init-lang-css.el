@@ -26,4 +26,4 @@
   :config
   (setq css-indent-offset 2))
 
-(provide 'lang--css)
+(provide 'init-lang-css)

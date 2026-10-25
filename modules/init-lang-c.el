@@ -19,4 +19,4 @@
   :hook
   ((c++-mode . platformio-mode)))
 
-(provide 'lang--c)
+(provide 'init-lang-c)

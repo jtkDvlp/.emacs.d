@@ -13,4 +13,4 @@
   (setq csv-separators '(";" ",")
         csv-align-style 'auto))
 
-(provide 'file--csv)
+(provide 'init-lang-csv)

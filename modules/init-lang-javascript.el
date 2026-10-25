@@ -89,4 +89,4 @@
   :hook
   (js2-mode . indium-interaction-mode))
 
-(provide 'lang--javascript)
+(provide 'init-lang-javascript)

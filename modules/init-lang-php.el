@@ -50,4 +50,4 @@
 ;;   composer
 ;;   :commands composer)
 
-(provide 'lang--php)
+(provide 'init-lang-php)

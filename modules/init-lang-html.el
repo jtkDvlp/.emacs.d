@@ -139,4 +139,4 @@
 
 	("C-;" . web-mode-comment-or-uncomment)))
 
-(provide 'lang--html)
+(provide 'init-lang-html)

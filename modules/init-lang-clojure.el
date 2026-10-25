@@ -533,4 +533,4 @@
 
 	("C-_" . cider-repl-history-undo-other-window)))
 
-(provide 'lang--clojure)
+(provide 'init-lang-clojure)
