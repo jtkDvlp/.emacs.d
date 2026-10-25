@@ -98,12 +98,13 @@
 
 (show-paren-mode 1)
 
-(custom-set-variables '(show-paren-delay 0))
+(setopt show-paren-delay 0)
 
-(custom-set-variables '(frame-title-format (quote ((:eval (when (fboundp 'projectile-project-root)
-                                                            (when (projectile-project-root)
-                                                              (concat (projectile-project-name) " - "))))
-                                                   "%b"))))
+(setopt frame-title-format
+        '((:eval (when (fboundp 'projectile-project-root)
+                   (when (projectile-project-root)
+                     (concat (projectile-project-name) " - "))))
+          "%b"))
 
 (global-hl-line-mode 1)
 

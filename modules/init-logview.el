@@ -10,21 +10,21 @@
 (use-package
   logview
   :mode (("\\.log\\'" . logview-mode))
-  :config
-  (custom-set-variables
-   '(logview-additional-submodes
-     '(("electron"
-        (format . "TIMESTAMP LEVEL [NAME] - MESSAGE")
-        (levels . "SLF4J")
-        (timestamp . ("DateTime(ms) with zone"))
-        (aliases))
-       ("web-main"
-        (format . "TIMESTAMP IGNORED LEVEL [NAME] <THREAD> - MESSAGE")
-        (levels . "SLF4J")
-        (timestamp . ("DateTime(ms) with zone"))
-        (aliases))))
-   '(logview-additional-timestamp-formats
-     '(("DateTime(ms) with zone" . ((java-pattern . "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))))))
+  :custom
+  (logview-additional-submodes
+   '(("electron"
+      (format . "TIMESTAMP LEVEL [NAME] - MESSAGE")
+      (levels . "SLF4J")
+      (timestamp . ("DateTime(ms) with zone"))
+      (aliases))
+     ("web-main"
+      (format . "TIMESTAMP IGNORED LEVEL [NAME] <THREAD> - MESSAGE")
+      (levels . "SLF4J")
+      (timestamp . ("DateTime(ms) with zone"))
+      (aliases))))
+  (logview-additional-timestamp-formats
+   '(("DateTime(ms) with zone"
+      . ((java-pattern . "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")))))
 
   :bind*
   (:map logview-mode-map

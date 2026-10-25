@@ -34,41 +34,37 @@
   (setq scroll-conservatively n)
   (setq scroll-margin n))
 
-(custom-set-variables
- '(inhibit-startup-screen t)
- '(inhibit-startup-message t)
- '(inhibit-startup-echo-area-message t)
- '(truncate-partial-width-windows nil)
- '(echo-keystrokes 0.02)
- '(query-replace-highlight t)
- '(next-error-highlight t)
- '(next-error-highlight-no-select t))
+(setopt inhibit-startup-screen t
+        inhibit-startup-message t
+        truncate-partial-width-windows nil
+        echo-keystrokes 0.02
+        query-replace-highlight t
+        next-error-highlight t
+        next-error-highlight-no-select t)
 
 (set-default 'truncate-lines nil)
 
 (set-default 'indent-tabs-mode nil)
 
-(custom-set-variables
- '(transient-mark-mode t)
- '(highlight-nonselected-windows t)
- '(shift-select-mode t)
- '(x-select-enable-clipboard t)
- '(initial-major-mode (quote fundamental-mode))
- '(initial-buffer-choice "*empty*")
- '(ring-bell-function (quote ignore)))
+(setopt transient-mark-mode t
+        highlight-nonselected-windows t
+        shift-select-mode t
+        select-enable-clipboard t
+        initial-major-mode 'fundamental-mode
+        initial-buffer-choice "*empty*"
+        ring-bell-function 'ignore)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(custom-set-variables
- '(uniquify-buffer-name-style (quote forward))
- '(uniquify-separator "/")
- '(uniquify-after-kill-buffer-p t)
- '(uniquify-ignore-buffers-re "^\\*")
- '(backup-inhibited t)
- '(delete-by-moving-to-trash nil)
- '(compilation-ask-about-save nil)
- '(confirm-nonexistent-file-or-buffer nil)
- '(require-final-newline t))
+(setopt uniquify-buffer-name-style 'forward
+        uniquify-separator "/"
+        uniquify-after-kill-buffer-p t
+        uniquify-ignore-buffers-re "^\\*"
+        backup-inhibited t
+        delete-by-moving-to-trash nil
+        compilation-ask-about-save nil
+        confirm-nonexistent-file-or-buffer nil
+        require-final-newline t)
 
 (set-language-environment 'utf-8)
 
@@ -89,7 +85,7 @@
 
 (global-auto-revert-mode 1)
 
-(custom-set-variables '(global-auto-revert-non-file-buffers t))
+(setopt global-auto-revert-non-file-buffers t)
 
 (auto-compression-mode t)
 
