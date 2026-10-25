@@ -1,4 +1,4 @@
-;;; init-appearance.el --- Theme and visual aids
+;;; init-appearance.el --- Theme and visual aids -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

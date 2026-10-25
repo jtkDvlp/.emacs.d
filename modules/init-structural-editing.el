@@ -1,4 +1,4 @@
-;;; init-structural-editing.el --- Sexp editing
+;;; init-structural-editing.el --- Sexp editing -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

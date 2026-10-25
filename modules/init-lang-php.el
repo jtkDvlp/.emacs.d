@@ -1,4 +1,4 @@
-;;; init-lang-php.el --- PHP
+;;; init-lang-php.el --- PHP -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

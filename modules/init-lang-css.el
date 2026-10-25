@@ -1,4 +1,4 @@
-;;; init-lang-css.el --- Style sheets
+;;; init-lang-css.el --- Style sheets -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

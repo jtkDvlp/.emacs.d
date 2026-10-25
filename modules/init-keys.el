@@ -1,4 +1,4 @@
-;;; init-keys.el --- Keyboard infrastructure
+;;; init-keys.el --- Keyboard infrastructure -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

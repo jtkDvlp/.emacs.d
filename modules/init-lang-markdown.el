@@ -1,4 +1,4 @@
-;;; init-lang-markdown.el --- Markdown
+;;; init-lang-markdown.el --- Markdown -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

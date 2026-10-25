@@ -1,4 +1,4 @@
-;;; init-httpd.el --- Local web server
+;;; init-httpd.el --- Local web server -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

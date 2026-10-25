@@ -1,4 +1,4 @@
-;;; init-restclient.el --- HTTP requests
+;;; init-restclient.el --- HTTP requests -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

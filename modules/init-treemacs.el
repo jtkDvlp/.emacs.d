@@ -1,4 +1,4 @@
-;;; init-treemacs.el --- File tree side bar
+;;; init-treemacs.el --- File tree side bar -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

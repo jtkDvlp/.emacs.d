@@ -1,4 +1,4 @@
-;;; init-lang-typescript.el --- TypeScript
+;;; init-lang-typescript.el --- TypeScript -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

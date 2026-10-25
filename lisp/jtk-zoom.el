@@ -1,4 +1,4 @@
-;;; jtk-zoom.el --- Font size steps
+;;; jtk-zoom.el --- Font size steps -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

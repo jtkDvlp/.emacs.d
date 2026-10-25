@@ -1,4 +1,4 @@
-;;; init-lang-javascript.el --- JavaScript
+;;; init-lang-javascript.el --- JavaScript -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

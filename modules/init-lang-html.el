@@ -1,4 +1,4 @@
-;;; init-lang-html.el --- HTML and XML
+;;; init-lang-html.el --- HTML and XML -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

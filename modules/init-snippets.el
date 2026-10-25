@@ -1,4 +1,4 @@
-;;; init-snippets.el --- Snippets
+;;; init-snippets.el --- Snippets -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

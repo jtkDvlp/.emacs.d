@@ -1,4 +1,4 @@
-;;; jtk-window-mirror.el --- Mirror a window
+;;; jtk-window-mirror.el --- Mirror a window -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

@@ -1,4 +1,4 @@
-;;; jtk-narrow.el --- Narrowing
+;;; jtk-narrow.el --- Narrowing -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

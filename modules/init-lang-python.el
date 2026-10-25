@@ -1,4 +1,4 @@
-;;; init-lang-python.el --- Python
+;;; init-lang-python.el --- Python -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

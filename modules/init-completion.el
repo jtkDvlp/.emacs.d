@@ -1,4 +1,4 @@
-;;; init-completion.el --- Completion in buffers
+;;; init-completion.el --- Completion in buffers -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

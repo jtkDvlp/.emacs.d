@@ -1,4 +1,4 @@
-;;; init-bookmarks.el --- Bookmarks
+;;; init-bookmarks.el --- Bookmarks -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -18,6 +18,10 @@
 
   :config
   (defun sql-mysql-for (user password database server &optional buffername)
+    ;; WATCHOUT: sql has to be loaded before the `let'.  Its variables are
+    ;; only special once sql.el has defined them; bound earlier, the
+    ;; bindings are lexical and `sql-mysql' never sees them.
+    (require 'sql)
     (let ((sql-mysql-login-params (when (string-empty-p password) '(password)))
 	  (sql-user user)
 	  (sql-password password)

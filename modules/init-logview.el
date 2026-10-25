@@ -1,4 +1,4 @@
-;;; init-logview.el --- Log files
+;;; init-logview.el --- Log files -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

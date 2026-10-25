@@ -1,4 +1,4 @@
-;;; jtk-ide.el --- IDE-like window layout
+;;; jtk-ide.el --- IDE-like window layout -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

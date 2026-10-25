@@ -1,4 +1,4 @@
-;;; init-lang-clojure.el --- Clojure
+;;; init-lang-clojure.el --- Clojure -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

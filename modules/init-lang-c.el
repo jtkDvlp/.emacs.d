@@ -1,4 +1,4 @@
-;;; init-lang-c.el --- C++
+;;; init-lang-c.el --- C++ -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

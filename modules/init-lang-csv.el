@@ -1,4 +1,4 @@
-;;; init-lang-csv.el --- CSV files
+;;; init-lang-csv.el --- CSV files -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

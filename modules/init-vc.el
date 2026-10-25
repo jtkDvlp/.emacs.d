@@ -1,4 +1,4 @@
-;;; init-vc.el --- Version control
+;;; init-vc.el --- Version control -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

@@ -1,4 +1,4 @@
-;;; init-core.el --- Basic behaviour of Emacs
+;;; init-core.el --- Basic behaviour of Emacs -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

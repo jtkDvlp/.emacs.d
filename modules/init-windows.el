@@ -1,4 +1,4 @@
-;;; init-windows.el --- Windows, frames and screens
+;;; init-windows.el --- Windows, frames and screens -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

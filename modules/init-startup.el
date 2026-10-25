@@ -1,4 +1,4 @@
-;;; init-startup.el --- Start screen
+;;; init-startup.el --- Start screen -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

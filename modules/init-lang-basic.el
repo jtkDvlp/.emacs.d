@@ -1,4 +1,4 @@
-;;; init-lang-basic.el --- BASIC
+;;; init-lang-basic.el --- BASIC -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

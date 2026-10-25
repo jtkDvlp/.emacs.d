@@ -1,4 +1,4 @@
-;;; init-sql.el --- SQL clients
+;;; init-sql.el --- SQL clients -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

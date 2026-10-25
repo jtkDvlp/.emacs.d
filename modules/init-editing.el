@@ -1,4 +1,4 @@
-;;; init-editing.el --- Editing within a buffer
+;;; init-editing.el --- Editing within a buffer -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

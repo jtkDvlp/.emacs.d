@@ -1,4 +1,4 @@
-;;; init-lang-elisp.el --- Emacs Lisp
+;;; init-lang-elisp.el --- Emacs Lisp -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

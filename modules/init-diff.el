@@ -1,4 +1,4 @@
-;;; init-diff.el --- Comparing files
+;;; init-diff.el --- Comparing files -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

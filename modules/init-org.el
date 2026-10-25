@@ -1,4 +1,4 @@
-;;; init-org.el --- Org as a GTD system
+;;; init-org.el --- Org as a GTD system -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
