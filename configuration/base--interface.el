@@ -210,14 +210,6 @@
    ("C-+" . narrow/widen)))
 
 (use-package
-  which-key
-  :demand t
-  :diminish which-key-mode
-  :config
-  (which-key-mode)
-  (which-key-setup-minibuffer))
-
-(use-package
   undo-tree
   :demand t
   :diminish undo-tree-mode

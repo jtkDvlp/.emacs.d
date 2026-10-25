@@ -1099,15 +1099,6 @@
                                   :type git :protocol https :inherit t
                                   :depth treeless :ref
                                   "a3737f9d4f01baa449d68998bfd35c608777256e"))
- (which-key :source "elpaca-menu-lock-file" :recipe
-            (:package "which-key" :repo
-                      ("https://github.com/emacs-mirror/emacs"
-                       . "which-key")
-                      :tar nil :host gnu :branch "master" :files
-                      ("lisp/which-key.el" (:exclude ".git")) :source
-                      "elpaca-menu-lock-file" :id which-key :type git
-                      :protocol https :inherit t :depth treeless :ref
-                      "3354d07e5f8dafbf357a9df1edaabd3a30bbab67"))
  (with-editor :source "elpaca-menu-lock-file" :recipe
               (:package "with-editor" :fetcher github :repo
                         "magit/with-editor" :files

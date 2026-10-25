@@ -561,7 +561,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | ace-jump-mode | M | interface | Springen | ungepflegt → avy | |
 | ace-window | M | interface | Fensterwahl | gepflegt | Ja |
 | expand-region | M | interface | Auswahl erweitern | ok; expreg als Alternative | Ja |
-| which-key | M | interface | Tastenhilfe | eingebaut ab 30 | |
+| which-key | M | interface | Tastenhilfe | **entfernt** (2026-10-25): das Rezept klonte das ganze Emacs-Repository, der erste Start hing; nicht mehr gebraucht | |
 | undo-tree | M | interface | Undo-Baum | schwergewichtig → vundo | Ja |
 | multiple-cursors | M | interface | Mehrfach-Cursor | ok | Ja |
 | counsel-projectile / projectile | M | filemanagement | Projekte | → 2.1 / 2.3 | Ja |
