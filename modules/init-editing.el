@@ -35,10 +35,10 @@
 (use-package
   jtk-narrow
   :ensure nil
-  :commands narrow/narrow-dwim
+  :commands jtk-narrow-dwim
   :bind*
-  (("C--" . narrow/narrow-dwim)
-   ("C-+" . narrow/widen)))
+  (("C--" . jtk-narrow-dwim)
+   ("C-+" . jtk-narrow-widen)))
 
 (use-package
   undo-tree

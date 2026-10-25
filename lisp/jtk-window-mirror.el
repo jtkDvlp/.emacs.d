@@ -7,64 +7,64 @@
 
 ;;; Code:
 
-(defvar window-mirror--mirrors '())
-(defvar window-mirror--current-pairing-master nil)
+(defvar jtk-window-mirror--mirrors '())
+(defvar jtk-window-mirror--current-pairing-master nil)
 
-(defun window-mirror/start-mirroring ()
-  "Enables window-mirror-mode and starts pairing."
+(defun jtk-window-mirror-start-mirroring ()
+  "Enable `jtk-window-mirror-mode' and start pairing."
   (interactive)
-  (unless (bound-and-true-p window-mirror)
-    (window-mirror)
-    (window-mirror/start-pairing)))
+  (unless (bound-and-true-p jtk-window-mirror-mode)
+    (jtk-window-mirror-mode)
+    (jtk-window-mirror-start-pairing)))
 
-(defun window-mirror/start-pairing ()
+(defun jtk-window-mirror-start-pairing ()
   "Start pairing (current window becomes master)."
   (interactive)
   (let ((window (selected-window)))
-    (if (assoc window window-mirror--mirrors)
+    (if (assoc window jtk-window-mirror--mirrors)
         (message "window-mirror: window already mirrors")
-      (if window-mirror--current-pairing-master
+      (if jtk-window-mirror--current-pairing-master
           (message "window-mirror: other pairing already started")
-        (setq window-mirror--current-pairing-master window)
+        (setq jtk-window-mirror--current-pairing-master window)
         (message "window-mirror: pairing started")))))
 
-(defun window-mirror/cancel-pairing ()
+(defun jtk-window-mirror-cancel-pairing ()
   "Cancel pairing."
   (interactive)
-  (if window-mirror--current-pairing-master
+  (if jtk-window-mirror--current-pairing-master
       (progn
-        (setq window-mirror--current-pairing-master nil)
+        (setq jtk-window-mirror--current-pairing-master nil)
         (message "window-mirror: pairing canceled"))
     (message "window-mirror: no pairing started")))
 
-(defun window-mirror/pair ()
+(defun jtk-window-mirror-pair ()
   "Complete pairing (current window becomes slave)."
   (interactive)
-  (if window-mirror--current-pairing-master
+  (if jtk-window-mirror--current-pairing-master
       (progn
         (add-to-list
-         'window-mirror--mirrors
-         (cons window-mirror--current-pairing-master (selected-window)))
-        (setq window-mirror--current-pairing-master nil)
+         'jtk-window-mirror--mirrors
+         (cons jtk-window-mirror--current-pairing-master (selected-window)))
+        (setq jtk-window-mirror--current-pairing-master nil)
         (message "window-mirror: pairing completed"))
     (message "window-mirror: first start pairing")))
 
-(defun window-mirror/unpair ()
+(defun jtk-window-mirror-unpair ()
   "Terminate pairing."
   (interactive)
   (let* ((window (selected-window))
-         (mirror (assoc window window-mirror--mirrors))
-         (mirror (if mirror mirror (rassoc window window-mirror--mirrors))))
+         (mirror (assoc window jtk-window-mirror--mirrors))
+         (mirror (if mirror mirror (rassoc window jtk-window-mirror--mirrors))))
     (if mirror
         (progn
-          (setq window-mirror--mirrors
-                (assq-delete-all (car mirror) window-mirror--mirrors))
+          (setq jtk-window-mirror--mirrors
+                (assq-delete-all (car mirror) jtk-window-mirror--mirrors))
           (message "window-mirror: pairing terminated"))
       (message "window-mirror: no pairing found"))))
 
-(defun window-mirror/mirror ()
+(defun jtk-window-mirror--mirror ()
   "Mirror current window to slave if paired."
-  (let ((mirror (assoc (selected-window) window-mirror--mirrors)))
+  (let ((mirror (assoc (selected-window) jtk-window-mirror--mirrors)))
     (when mirror
       (let ((master-buffer (current-buffer))
             (master-point (point))
@@ -77,24 +77,24 @@
           (unless (equal master-point (point))
             (goto-char master-point)))))))
 
-(define-minor-mode window-mirror
+(define-minor-mode jtk-window-mirror-mode
   "Global minor mode for mirroring windows."
   nil
   (:eval
-   (if (and (equal '() window-mirror--mirrors)
-            (equal nil window-mirror--current-pairing-master))
+   (if (and (equal '() jtk-window-mirror--mirrors)
+            (equal nil jtk-window-mirror--current-pairing-master))
        "mirror(!)"
      (let ((window (selected-window)))
-       (if (or (equal window window-mirror--current-pairing-master)
-               (assoc window window-mirror--mirrors))
+       (if (or (equal window jtk-window-mirror--current-pairing-master)
+               (assoc window jtk-window-mirror--mirrors))
            "mirror(m)"
-         (if (rassoc window window-mirror--mirrors)
+         (if (rassoc window jtk-window-mirror--mirrors)
              "mirror(s)"
            "")))))
   :global t
-  (if (bound-and-true-p window-mirror) 
-      (add-hook 'post-command-hook 'window-mirror/mirror t)
-    (remove-hook 'post-command-hook 'window-mirror/mirror)))
+  (if (bound-and-true-p jtk-window-mirror-mode) 
+      (add-hook 'post-command-hook 'jtk-window-mirror--mirror t)
+    (remove-hook 'post-command-hook 'jtk-window-mirror--mirror)))
 
 (provide 'jtk-window-mirror)
 

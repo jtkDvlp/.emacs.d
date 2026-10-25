@@ -7,38 +7,38 @@
 
 ;;; Code:
 
-(defun zoom/apply (n)
+(defun jtk-zoom--apply (n)
   (set-face-attribute 'default (selected-frame) :height n))
 
-(defun zoom/default ()
+(defun jtk-zoom-default ()
   (interactive)
-  (zoom/apply 100))
+  (jtk-zoom--apply 100))
 
-(defun zoom/custom-1 ()
+(defun jtk-zoom-custom-1 ()
   (interactive)
-  (zoom/apply 150))
+  (jtk-zoom--apply 150))
 
-(defun zoom/custom-2 ()
+(defun jtk-zoom-custom-2 ()
   (interactive)
-  (zoom/apply 200))
+  (jtk-zoom--apply 200))
 
-(defun zoom/custom-3 ()
+(defun jtk-zoom-custom-3 ()
   (interactive)
-  (zoom/apply 300))
+  (jtk-zoom--apply 300))
 
-(defun zoom/modify (n)
+(defun jtk-zoom--modify (n)
   (let ((factor 10))
-    (zoom/apply
+    (jtk-zoom--apply
      (+ (face-attribute 'default :height)
         (* n factor)))))
 
-(defun zoom/inc ()
+(defun jtk-zoom-inc ()
   (interactive)
-  (zoom/modify 1))
+  (jtk-zoom--modify 1))
 
-(defun zoom/dec ()
+(defun jtk-zoom-dec ()
   (interactive)
-  (zoom/modify -1))
+  (jtk-zoom--modify -1))
 
 (provide 'jtk-zoom)
 

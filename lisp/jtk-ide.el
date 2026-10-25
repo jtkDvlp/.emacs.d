@@ -7,7 +7,7 @@
 
 ;;; Code:
 
-(defun ide/main-window ()
+(defun jtk-ide--main-window ()
   (let* ((most-top-left-window
           (window-at 0 0))
          
@@ -24,7 +24,7 @@
           (window-in-direction 'right nil t 1)
         most-top-left-window))))
 
-(defun ide/last-window-in-direction (direction &optional window)
+(defun jtk-ide--last-window-in-direction (direction &optional window)
   (let ((window
          (or window (selected-window))))
     
@@ -33,7 +33,7 @@
 
     window))
 
-(defun ide/nth-ide-window-in-direction (nth direction &optional window)
+(defun jtk-ide--nth-ide-window-in-direction (nth direction &optional window)
   (let ((origin-window
          (or window (selected-window)))
 
@@ -53,9 +53,9 @@
     (when (= index nth)
       origin-window)))
 
-(defun ide/display-buffer-in-ide-window (buffer options) 
+(defun jtk-ide-display-buffer-in-ide-window (buffer options) 
   (let* ((main-window
-          (ide/main-window))
+          (jtk-ide--main-window))
          
          (orientation
           (or (cdr (assoc 'orientation options)) 'vertical))
@@ -71,7 +71,7 @@
              (cdr (assoc 'size options))))
          
          (last-window-on-side
-          (ide/last-window-in-direction direction main-window))
+          (jtk-ide--last-window-in-direction direction main-window))
          
          (ide-window
           (if (eq main-window last-window-on-side)
@@ -81,7 +81,7 @@
                     (if (eq orientation 'horizontal) 'right 'below))
 
                    (ide-window-at-slot
-                    (ide/nth-ide-window-in-direction
+                    (jtk-ide--nth-ide-window-in-direction
                      slot direction last-window-on-side)))
               
               (if ide-window-at-slot
@@ -104,7 +104,7 @@
 
     ide-window))
 
-(defun ide/configure-frame-layout (layout &optional options) 
+(defun jtk-ide-configure-frame-layout (layout &optional options) 
   (let* ((window-parameters
           `(window-parameters . ((no-other-window . t)
                                  (no-delete-other-windows . t))))
@@ -118,7 +118,7 @@
           (mapcar (lambda (buffer-name-or-regex)
                     (setq horizontal-i (+ 1 horizontal-i))
                     `(,buffer-name-or-regex
-                      ide/display-buffer-in-ide-window
+                      jtk-ide-display-buffer-in-ide-window
                       (orientation . horizontal)
                       (slot . ,horizontal-i)
                       (size . ,horizontal-size)
@@ -134,7 +134,7 @@
           (mapcar (lambda (buffer-name-or-regex)
                     (setq vertical-i (+ 1 vertical-i))
                     `(,buffer-name-or-regex
-                      ide/display-buffer-in-ide-window
+                      jtk-ide-display-buffer-in-ide-window
                       (orientation . vertical)
                       (slot . ,vertical-i)
                       (size . ,vertical-size)
@@ -145,7 +145,7 @@
           window-resize-pixelwise t
           display-buffer-alist `(,@horizontal-display-buffers ,@vertical-display-buffers))))
 
-(defun ide/open-buffers (buffers-and-commands) 
+(defun jtk-ide-open-buffers (buffers-and-commands) 
   (let ((current-window (selected-window)))
     (mapc
      (lambda (buffer-or-command)
@@ -155,16 +155,16 @@
      buffers-and-commands)
     (select-window current-window)))
 
-(defun ide/enable-layout (layout defaults)
-  (ide/configure-frame-layout layout) 
-  (ide/open-buffers defaults))
+(defun jtk-ide-enable-layout (layout defaults)
+  (jtk-ide-configure-frame-layout layout) 
+  (jtk-ide-open-buffers defaults))
 
-(defvar ide/default-layout
+(defvar jtk-ide-default-layout
   `(("\\*\\(?:eshell\s[^\\*]*\\|compilation\\)\\*")
     ("\\*\\(?:help\\|cider-doc\\|grep\\|Completions\\)\\*"
      "\\*Flycheck error messages\\*")))
 
-(defvar ide/default-buffers
+(defvar jtk-ide-default-buffers
   `("*Help*" projectile-run-eshell treemacs))
 
 (provide 'jtk-ide)

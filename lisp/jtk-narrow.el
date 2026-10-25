@@ -6,13 +6,13 @@
 
 ;;; Code:
 
-(defun narrow/narrow-dwim (beginning end)
+(defun jtk-narrow-dwim (beginning end)
   (interactive "r")
   (if (use-region-p)
       (narrow-to-region)
     (narrow-to-defun t)))
 
-(defalias 'narrow/widen 'widen)
+(defalias 'jtk-narrow-widen 'widen)
 
 (provide 'jtk-narrow)
 

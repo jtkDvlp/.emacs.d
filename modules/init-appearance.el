@@ -148,12 +148,12 @@
   (smartrep-define-key
       global-map
       "M-+ f"
-    '(("#" . zoom/default)
-      ("+" . zoom/inc)
-      ("-" . zoom/dec)
-      ("1" . zoom/custom-1)
-      ("2" . zoom/custom-2)
-      ("3" . zoom/custom-3))))
+    '(("#" . jtk-zoom-default)
+      ("+" . jtk-zoom-inc)
+      ("-" . jtk-zoom-dec)
+      ("1" . jtk-zoom-custom-1)
+      ("2" . jtk-zoom-custom-2)
+      ("3" . jtk-zoom-custom-3))))
 
 (provide 'init-appearance)
 

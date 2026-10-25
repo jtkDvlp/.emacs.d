@@ -113,7 +113,7 @@
 (use-package
   jtk-window-mirror
   :ensure nil
-  :commands window-mirror/start-mirroring)
+  :commands jtk-window-mirror-start-mirroring)
 
 ;; (use-package
 ;;   google-translate
@@ -129,11 +129,11 @@
   jtk-ide
   :ensure nil
   :config
-  (ide/configure-frame-layout ide/default-layout)
+  (jtk-ide-configure-frame-layout jtk-ide-default-layout)
 
-  (defun ide/setup ()
+  (defun jtk-ide-setup ()
     (interactive)
-    (ide/open-buffers ide/default-buffers)))
+    (jtk-ide-open-buffers jtk-ide-default-buffers)))
 
 (provide 'init-windows)
 
