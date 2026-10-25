@@ -30,8 +30,8 @@ Conventional Commits trotzdem, damit die Historie lesbar bleibt.
 
 ## Aufbau (Ist-Stand)
 
-Phase 1 des Plans ist umgesetzt: die Struktur steht, die Pakete sind
-noch die alten (Phase 2 prüft sie).
+Phase 1 des Plans ist umgesetzt: die Struktur steht. Phase 2 prüft die
+Pakete Block für Block; erledigt ist 2.1 (Vervollständigung).
 
 | Pfad | Inhalt | versioniert |
 |---|---|---|
@@ -42,7 +42,7 @@ noch die alten (Phase 2 prüft sie).
 | `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `org`, `startup`, `structural-editing`, `completion`, `checking`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`. Jede Datei sagt im Kopf, was hineingehört. | ja |
 | `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. `init-lang-php` wird nicht geladen. | ja |
 | `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`ide`, `narrow`, `zoom`, `window-mirror`), Symbole mit Präfix `jtk-`. | ja |
-| `etc/elpaca-lock.eld` | Commit jedes Pakets (93, mit Abhängigkeiten und elpaca selbst). | ja |
+| `etc/elpaca-lock.eld` | Commit jedes Pakets (94, mit Abhängigkeiten und elpaca selbst). | ja |
 | `etc/yasnippet/snippets/` | Handgeschriebene yasnippet-Vorlagen. | ja |
 | `etc/eshell/aliases` | Handgeschriebene eshell-Aliase. | ja |
 | `etc/mc-list.el` | Von multiple-cursors **erzeugt**, aber inhaltlich gepflegt — deshalb versioniert. | ja |

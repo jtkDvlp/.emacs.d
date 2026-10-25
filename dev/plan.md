@@ -564,7 +564,7 @@ Je Block ein PR. Für jedes Paket dieselben Fragen, in dieser Reihenfolge:
 | 2.10 Organisation | org (GTD), dashboard | Unabhängig, aber persönlich — braucht dein Urteil mehr als Technik. | — |
 | 2.11 Aussehen | doom-themes, spaceline, linum, rainbow-mode, rainbow-delimiters, Hervorhebung von `TODO`/`WATCHOUT`, Fenstertitel | Zuletzt: die Modeline zeigt Segmente aus 2.3, 2.4 und 2.6 (Projekt, IDE-Fenster, Prüfergebnisse) — erst wenn die feststehen, lohnt ihr Umbau. | doom-modeline oder eingebaute Modeline, `display-line-numbers-mode`, hl-todo |
 
-#### 2.1 Vervollständigung — Vorschlag (2026-10-25, zur Entscheidung)
+#### ✅ 2.1 Vervollständigung (entschieden und umgesetzt 2026-10-25)
 
 **Ersatz:** ivy, counsel, swiper und counsel-projectile durch
 **vertico** (Liste im Minibuffer), **orderless** (Leerzeichen trennt
@@ -606,15 +606,21 @@ ivy-Einstellungen (beide nehmen dann einfach `completing-read`);
 `etc/mc-list.el` nennt `counsel-M-x` und `counsel-yank-pop`, die durch ihre
 Nachfolger ersetzt werden.
 
-**Offen — zu entscheiden:**
+**Entschieden:** vertico und Verwandte ja; Ersetzen über Export und
+Bearbeiten im Puffer; embark ohne eigene Taste, nur `C-o`.
 
-- Gehen wir auf vertico und Verwandte?
-- `C-r` in der Suche und `C-S-r`: einverstanden mit Export und Bearbeiten
-  im Puffer statt Ersetzen per Abfrage? Wenn nicht, behalte ich eine
-  eigene kleine Funktion für „Ersetzen ab Treffer“.
-- embark kann auf jedem Eintrag Aktionen anbieten (`embark-act`). Dafür
-  braucht es eine Taste; üblich ist `C-.`, das ist bei dir
-  `er/expand-region`. Vorschlag: vorerst keine, nur `C-o` zum Export.
+**Abweichung beim Umsetzen:** wgrep war freigegeben, wird aber nicht
+gebraucht. Emacs 31 macht grep-Puffer selbst bearbeitbar
+(`grep-edit-mode`: `e`, dann `C-c C-c`); geprüft an einem Puffer in der
+Form, die embark-consult beim Export erzeugt. Die Änderungen landen in
+den Puffern der Dateien und werden wie gewohnt gespeichert.
+
+**Ergänzt, weil der Schnappschuss es zeigte:** counsel belegte im
+Minibuffer `C-r` mit der Suche im Verlauf; das macht jetzt
+`consult-history`. Dazu kamen `savehist-mode` (vertico sortiert nach dem
+Verlauf, der jetzt Neustarts überlebt) und `recentf-mode` ab dem Start
+(`consult-recent-file` schaltet es, anders als `counsel-recentf`, nicht
+selbst ein).
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
@@ -642,7 +648,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | rainbow-mode | M | apperance | Farbwerte einfärben | ok; in jedem `prog-mode` fraglich | Ja |
 | rainbow-delimiters | M | apperance | Klammern einfärben | ok | Ja |
 | kmacro | e | interface | Makros | ok | |
-| ivy / counsel / swiper | M | interface | Vervollständigung, Suche | → 2.1 | Ja |
+| ivy / counsel / swiper | M | interface | Vervollständigung, Suche | **ersetzt** (2.1) durch vertico, orderless, marginalia, consult, embark, embark-consult | Ja |
 | winner | e | interface | Fensterlayout zurück | ok, ggf. `tab-bar-history` | Ja |
 | fullframe | M | interface | magit im Vollbild | ggf. `display-buffer-alist` | Ja |
 | buffer-move | M | interface | Puffer tauschen | → `windmove-swap-states-*` | Ja |
@@ -655,7 +661,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | which-key | M | interface | Tastenhilfe | **entfernt** (2026-10-25): das Rezept klonte das ganze Emacs-Repository, der erste Start hing; nicht mehr gebraucht | |
 | undo-tree | M | interface | Undo-Baum | schwergewichtig → vundo | Ja |
 | multiple-cursors | M | interface | Mehrfach-Cursor | ok | Ja |
-| counsel-projectile / projectile | M | filemanagement | Projekte | → 2.1 / 2.3 | Ja |
+| counsel-projectile / projectile | M | filemanagement | Projekte | counsel-projectile **entfernt** (2.1); projectile → 2.3 | Ja |
 | git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | prüfen | |
 | treemacs (+ -projectile, -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt | Ja |
 | simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | Ja |
