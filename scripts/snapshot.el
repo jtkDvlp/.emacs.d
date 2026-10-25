@@ -26,6 +26,10 @@
   "How deep prefix keymaps are followed.
 Deeper than any binding of the configuration; it only stops cycles.")
 
+(defconst snapshot-key-range-limit 255
+  "Ranges of at most this many characters are listed key by key.
+Larger ones, such as the self-inserting characters, stay one line.")
+
 (defun snapshot--declared-packages ()
   "Return the names of all `use-package' declarations, sorted."
   (let (names)
@@ -97,18 +101,35 @@ The check runs with a temporary HOME and from varying checkouts."
              (push map seen)
              (map-keymap-internal
               (lambda (event binding)
-                (unless (or (consp event)
-                            (memq event '(menu-bar tool-bar tab-bar)))
-                  (let ((keys (vconcat prefix (vector event)))
-                        (target (if (and (symbolp binding) (fboundp binding))
-                                    (indirect-function binding)
-                                  binding)))
-                    (if (keymapp target)
-                        (walk target keys (1+ depth))
-                      (push (format "key %s %s %s" name (key-description keys)
-                                    (snapshot--binding binding))
-                            lines)))))
-              map))))
+                (cond
+                 ((memq event '(menu-bar tool-bar tab-bar)))
+                 ;; WATCHOUT: Neighbouring characters with the same binding
+                 ;; arrive as one range (FROM . TO): C-r and C-s on one
+                 ;; command, for instance.  Skipping ranges hid them.
+                 ((and (consp event)
+                       (<= (- (cdr event) (car event))
+                           snapshot-key-range-limit))
+                  (dolist (char (number-sequence (car event) (cdr event)))
+                    (visit char binding prefix depth)))
+                 ((consp event)
+                  (push (format "key %s %s..%s %s" name
+                                (key-description (vconcat prefix
+                                                          (vector (car event))))
+                                (key-description (vector (cdr event)))
+                                (snapshot--binding binding))
+                        lines))
+                 (t (visit event binding prefix depth))))
+              map)))
+         (visit (event binding prefix depth)
+           (let ((keys (vconcat prefix (vector event)))
+                 (target (if (and (symbolp binding) (fboundp binding))
+                             (indirect-function binding)
+                           binding)))
+             (if (keymapp target)
+                 (walk target keys (1+ depth))
+               (push (format "key %s %s %s" name (key-description keys)
+                             (snapshot--binding binding))
+                     lines)))))
       (walk keymap [] 0))
     lines))
 
@@ -173,8 +194,11 @@ The check runs with a temporary HOME and from varying checkouts."
                        (snapshot--options)
                        (snapshot--hooks)
                        (snapshot--file-modes))))
-    (with-temp-file file
-      (insert (string-join (seq-uniq (sort lines #'string<)) "\n") "\n"))
+    ;; NOTE: Key ranges include Emacs' raw-byte characters, which UTF-8
+    ;; cannot encode; Emacs would then ask for a coding system.
+    (let ((coding-system-for-write 'utf-8-emacs-unix))
+      (with-temp-file file
+        (insert (string-join (seq-uniq (sort lines #'string<)) "\n") "\n")))
     (length lines)))
 
 (provide 'snapshot)
