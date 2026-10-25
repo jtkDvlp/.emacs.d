@@ -558,7 +558,7 @@ Je Block ein PR. Für jedes Paket dieselben Fragen, in dieser Reihenfolge:
 | 2.4 Fenster und Arbeitsbereiche | elscreen, winner, ace-window, buffer-move, fullframe, `pkg--ide`, `pkg--window-mirror`, ediff/ztree-Anbindung | Hängt an 2.3 (Arbeitsbereich je Projekt). elscreen ist seit Jahren ungepflegt. | `tab-bar-mode`, `windmove-swap-states-*`, Side-Windows in `display-buffer-alist` für das IDE-Layout |
 | 2.5 Editieren | undo-tree, ace-jump-mode, expand-region, multiple-cursors, smartparens, aggressive-indent, highlight-symbol, kmacro, narrow | Grundlage für die Sprachen; die gemeinsame sexp-Keymap aus 1.8 hängt an smartparens. | vundo + `undo-redo`, avy, expreg, symbol-overlay; smartparens vs. paredit/puni |
 | 2.6 Prüfen, Vervollständigen im Puffer, Snippets | company, company-quickhelp, flycheck, yasnippet, yasnippet-snippets | Vor den Sprachen, weil LSP (2.7) sich daran anschließt. | corfu + cape (auf `completion-at-point`), flymake (eingebaut, eglot nutzt es), yasnippet bleibt wohl |
-| 2.7 Sprach-Infrastruktur | — (heute je Sprache eigene Lösung: tide, elpy, xref-js2, company-php) | Grundsatzentscheidung einmal treffen statt je Sprache. | eglot (eingebaut) + tree-sitter-Modi (`*-ts-mode`) |
+| 2.7 Sprach-Infrastruktur (LSP) | — (heute je Sprache eigene Lösung: tide, elpy, xref-js2, company-php) | Grundsatzentscheidung einmal treffen statt je Sprache. Nach 2.1 und 2.6, weil ein LSP-Client Vervollständigung und Prüfung beliefert. | **Neu aufgenommen (2026-10-25):** LSP-Client plus Language-Server je Sprache, dazu tree-sitter-Modi (`*-ts-mode`); Kandidaten im Inventar unter „Neue Pakete“ |
 | 2.8 Sprachen | nach Gewicht: Clojure (cider, clj-refactor, parseedn, flycheck-clj-kondo, Einrückungsregeln, Leiningen-Helfer), Elisp, JS/TS (js2-mode, js2-refactor, xref-js2, indium, tide, npm-mode), HTML/CSS (web-mode, web-mode-edit-element, scss-/sass-mode), Python (elpy), C++ (platformio-mode), PHP, BASIC | Setzt 2.5–2.7 voraus. Clojure zuerst, weil es am meisten benutzt wird. | Clojure: clojure-lsp über eglot **neben** CIDER, ggf. clojure-ts-mode, `deps.edn` neben Leiningen. Übrige: meist eglot + `*-ts-mode` |
 | 2.9 Werkzeuge | magit (Gerrit), git-auto-commit-mode, ediff, ztree, eshell, eshell-up, esh-autosuggest, restclient, sql, simple-httpd, logview, csv-mode, markdown-mode, simple-bookmarks | Weitgehend unabhängig; nach den Grundlagen, weil Vervollständigung und Projekte hineinspielen. | magit bleibt; restclient ist meines Wissens archiviert → `verb` prüfen; eshell ggf. ergänzt um `eat` |
 | 2.10 Organisation | org (GTD), dashboard | Unabhängig, aber persönlich — braucht dein Urteil mehr als Technik. | — |
@@ -638,6 +638,33 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | c++-mode / platformio-mode | e/M | c | Arduino/PlatformIO | prüfen | |
 | basic-mode | M | basic | ASP/BASIC | Fehler B6 | |
 | php-mode / geben / company-php | M | php (inaktiv) | PHP | auskommentiert — löschen? | |
+
+### Neue Pakete (Kandidaten)
+
+Noch nicht in der Konfiguration; aufgenommen auf deinen Wunsch
+(2026-10-25). Entschieden wird im genannten Block.
+
+| Paket bzw. Programm | Art | Block | wofür | Einschätzung |
+|---|---|---|---|---|
+| eglot | Emacs-Paket, eingebaut seit 29 | 2.7 | LSP-Client | Favorit: setzt auf die Standard-Schnittstellen (`xref`, `flymake`, `eldoc`, `completion-at-point`), braucht kaum Konfiguration, kein Eintrag in der Lockdatei |
+| lsp-mode (+ lsp-ui, dap-mode) | Emacs-Paket, MELPA | 2.7 | LSP-Client, Gegenkandidat | mehr Oberfläche (Sideline, Debugger-Anbindung), aber eine eigene Welt mit eigener UI und deutlich mehr Konfiguration |
+| flycheck-eglot | Emacs-Paket, MELPA | 2.6/2.7 | eglot-Befunde in flycheck | nur falls flycheck bleibt; sonst nutzt eglot flymake direkt |
+| emacs-lsp-booster (+ eglot-booster) | Programm + Emacs-Paket | 2.7, Phase 3 | schnellere JSON-Verarbeitung | nur, wenn eine Messung Bedarf zeigt |
+| treesit-auto | Emacs-Paket, MELPA | 2.7 | `*-ts-mode` und Grammatiken automatisch | Alternative: Grammatiken von Hand per `treesit-language-source-alist` |
+| clojure-lsp | Language-Server | 2.8 Clojure | Navigation, Refactoring, clj-kondo-Befunde | **neben** CIDER, nicht statt; überschneidet sich mit clj-refactor und flycheck-clj-kondo |
+| clojure-ts-mode | Emacs-Paket, MELPA | 2.8 Clojure | tree-sitter-Modus für Clojure | Pflegestand und CIDER-Verträglichkeit prüfen |
+| typescript-language-server | Language-Server (npm) | 2.8 JS/TS | JavaScript und TypeScript | ersetzt tide, xref-js2 und Teile von js2-refactor |
+| basedpyright bzw. pyright, dazu ruff | Language-Server | 2.8 Python | Python | ersetzt elpy |
+| vscode-langservers-extracted | Language-Server (npm) | 2.8 HTML/CSS | HTML, CSS/SCSS, JSON | scss ist als benutzt markiert |
+| clangd | Language-Server | 2.8 C++ | C++, auch PlatformIO über `compile_commands.json` | |
+| marksman | Language-Server | 2.8 Markdown | Links und Überschriften in Markdown | optional |
+
+**WATCHOUT: Language-Server sind Programme außerhalb von Emacs.** Die
+Lockdatei pinnt sie nicht; ihre Version kommt aus Homebrew bzw. npm.
+Gleiche Versionen auf jedem Rechner (Q2) brauchen dafür einen eigenen
+Ort, etwa ein Brewfile im Repo — zu entscheiden in 2.7. Und CI prüft
+bisher nur Emacs-Pakete; ob die Action Server mitinstalliert, gehört
+zur selben Entscheidung.
 
 ---
 
