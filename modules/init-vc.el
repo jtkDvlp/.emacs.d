@@ -9,7 +9,7 @@
 
 (use-package
   magit
-  :requires (ivy fullframe)
+  :requires fullframe
   :bind*
   (("C-v" . nil)
    ("M-v g" . magit-status)
@@ -37,7 +37,6 @@
     (magit-push-to-gerrit-local-branch-or-commit (magit-get-current-branch)))
 
   :config
-  (setq magit-completing-read-function 'ivy-completing-read)
   (transient-append-suffix 'magit-push "e"
     '("P" "Push current branch to Gerrit" magit-push-to-gerrit-current-branch))
   (transient-append-suffix 'magit-push "e"

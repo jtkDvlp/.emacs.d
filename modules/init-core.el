@@ -85,6 +85,10 @@
 
 (global-auto-revert-mode 1)
 
+;; NOTE: From the start, not on first use: `consult-recent-file' (C-x C-f)
+;; only reads the list, it does not switch recentf on.
+(recentf-mode)
+
 (setopt global-auto-revert-non-file-buffers t)
 
 (auto-compression-mode t)

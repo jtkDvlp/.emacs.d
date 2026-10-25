@@ -9,6 +9,8 @@
 
 ;;; Code:
 
+(delete-selection-mode t)
+
 (use-package
   kmacro
   :ensure nil
