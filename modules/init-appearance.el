@@ -85,25 +85,8 @@
 (defface success-face
   '((t (:foreground "yellow" :background "#555577"))) "Green Highlight")
 
-(let ((n 0))
-  (setq scroll-step 1)
-  (setq scroll-conservatively n)
-  (setq scroll-margin n))
-
-(custom-set-variables
- '(inhibit-startup-screen t)
- '(inhibit-startup-message t)
- '(inhibit-startup-echo-area-message t)
- '(truncate-partial-width-windows nil)
- '(echo-keystrokes 0.02)
- '(query-replace-highlight t)
- '(next-error-highlight t)
- '(next-error-highlight-no-select t))
-
-(set-default 'truncate-lines nil)
-(set-default 'indent-tabs-mode nil)
-
 (show-paren-mode 1)
+
 (custom-set-variables '(show-paren-delay 0))
 
 (custom-set-variables '(frame-title-format (quote ((:eval (when (fboundp 'projectile-project-root)
@@ -127,4 +110,37 @@
   :config
   (load-theme 'doom-one t))
 
-(provide 'base--apperance)
+(use-package
+  prog-mode
+  :ensure nil
+
+  :config
+  (defun enable-prettify-symbols ()
+    (interactive)
+    (setq prettify-symbols-alist
+          '(("lambda" . 955) ; λ
+            ("fn" . 955) ; λ
+            ("sum" . 8721))) ; ∑
+    (prettify-symbols-mode))
+
+  :hook
+  ((prog-mode . enable-prettify-symbols)
+   (cider-repl-mode . enable-prettify-symbols)))
+
+(use-package
+  jtk-zoom
+  :ensure nil
+  :demand t
+  :requires smartrep
+  :config
+  (smartrep-define-key
+      global-map
+      "M-+ f"
+    '(("#" . zoom/default)
+      ("+" . zoom/inc)
+      ("-" . zoom/dec)
+      ("1" . zoom/custom-1)
+      ("2" . zoom/custom-2)
+      ("3" . zoom/custom-3))))
+
+(provide 'init-appearance)

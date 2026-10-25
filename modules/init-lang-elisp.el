@@ -47,4 +47,8 @@
 	("C-M-x" . eval-last-sexp)
 	("C-c M-k" . eval-buffer)))
 
+(defun dump (data)
+  (setq dump-buffer (get-buffer-create "*dump*"))
+  (print data dump-buffer))
+
 (provide 'init-lang-elisp)

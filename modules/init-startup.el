@@ -10,4 +10,4 @@
      (projects . 10)))
   (dashboard-setup-startup-hook))
 
-(provide 'base--startup)
+(provide 'init-startup)

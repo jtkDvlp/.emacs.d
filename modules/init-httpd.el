@@ -1,0 +1,32 @@
+(use-package
+  simple-httpd
+
+  :config
+  (defun httpd/start (&optional root port)
+    "Starts the server with given `root-directory' at given `port-number'"
+    (interactive "Dhttp-root: \nnhttp-port: \n")
+    (setf httpd-root root
+          httpd-port port)
+    (httpd-start)
+    (message "Started httpd on %s:%d, serving: %s"
+             (cl-case httpd-host
+               ((nil) "0.0.0.0")
+               ((local) "localhost")
+               (otherwise httpd-host))
+             port root))
+
+  (defalias 'httpd/stop 'httpd-stop)
+
+  (defun projectile-httpd/start ()
+    (interactive)
+    (httpd/start (projectile-project-root) 8080))
+
+  (defalias 'projectile-httpd/stop 'httpd/stop)
+
+  :commands
+  (httpd/start
+   httpd/stop
+   projectile-httpd/start
+   projectile-httpd/stop))
+
+(provide 'init-httpd)

@@ -135,4 +135,16 @@
 (use-package esh-autosuggest
   :hook (eshell-mode . esh-autosuggest-mode))
 
-(provide 'base--shell)
+(defun zshell ()
+  (interactive)
+  (ansi-term "/bin/zsh" "zshell"))
+
+(defalias 'zsh 'zshell)
+
+(defun replace-keymap-bindings (from to)
+  (map-keymap
+   (lambda (k f)
+     (define-key to (vector k) f))
+   from))
+
+(provide 'init-shell)

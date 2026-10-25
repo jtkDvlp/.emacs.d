@@ -1,3 +1,7 @@
+(defvar env-jira-host-url nil
+  "Base URL of the Jira instance, ending in a slash.
+Set in local.el; used by `org-insert-jira-issue'.")
+
 (use-package
   org
   :ensure nil
@@ -143,4 +147,4 @@
    ("C-k" . org-kill-line)
    ("C-S-k" . org-kill-item)))
 
-(provide 'base--organisation)
+(provide 'init-org)
