@@ -30,17 +30,18 @@ Conventional Commits trotzdem, damit die Historie lesbar bleibt.
 
 ## Aufbau (Ist-Stand)
 
-Phase 1 des Plans ist bis Schritt 1.3 umgesetzt; die Module liegen noch in
-`configuration/` und tragen ihre alten Namen.
+Phase 1 des Plans ist umgesetzt: die Struktur steht, die Pakete sind
+noch die alten (Phase 2 prüft sie).
 
 | Pfad | Inhalt | versioniert |
 |---|---|---|
 | `early-init.el` | package.el aus, native Kompilate nach `var/`, Frame ohne Leisten und maximiert. | ja |
-| `init.el` | elpaca-Installer (gepinnt über die Lockdatei), `elpaca-use-package`, no-littering, `local.el`, dann `configuration`. | ja |
-| `configuration/configuration.el` | Pakete, die vor allen Modulen da sein müssen (`diminish`, `smartrep`), PATH, Grundeinstellungen, `require` aller Module in fester Reihenfolge, zwei Hilfsfunktionen (`dump`, `replace-keymap-bindings`). | ja |
-| `configuration/base--*.el` | Grundfunktionen, grob nach Bereich (Aussehen, Bedienung, Dateien, Org, Start, Entwicklung, Shell). | ja |
-| `configuration/lang--*.el`, `file--csv.el` | Je Sprache bzw. Dateityp eine Datei. | ja |
-| `configuration/pkg--*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`ide`, `narrow`, `zoom`, `window-mirror`), per `use-package … :ensure nil :load-path` eingebunden. | ja |
+| `init.el` | Nimmt `lisp/` und `modules/` in den `load-path` und lädt die Module in fester Reihenfolge — sonst nichts. | ja |
+| `modules/init-packages.el` | elpaca-Installer (gepinnt über die Lockdatei), `elpaca-use-package`, no-littering, diminish. | ja |
+| `modules/init-core.el` | Grundverhalten ohne eigenes Thema: `local.el`, PATH, Sicherungen, Kodierung, Auto-Revert, Scrollen, Rückfragen. | ja |
+| `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `org`, `startup`, `structural-editing`, `completion`, `checking`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`. Jede Datei sagt im Kopf, was hineingehört. | ja |
+| `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. `init-lang-php` wird nicht geladen. | ja |
+| `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`ide`, `narrow`, `zoom`, `window-mirror`), Symbole mit Präfix `jtk-`. | ja |
 | `etc/elpaca-lock.eld` | Commit jedes Pakets (93, mit Abhängigkeiten und elpaca selbst). | ja |
 | `etc/yasnippet/snippets/` | Handgeschriebene yasnippet-Vorlagen. | ja |
 | `etc/eshell/aliases` | Handgeschriebene eshell-Aliase. | ja |
@@ -64,7 +65,8 @@ Damit das billig bleibt:
   git worktree add ~/emacs-next <branch>
   emacs --init-directory ~/emacs-next
   ```
-  Pakete landen dann in `~/emacs-next/elpa/` — der erste Start dauert.
+  Pakete landen dann in `~/emacs-next/elpaca/` — der erste Start dauert
+  einige Minuten.
 - Zu jedem Schritt gehört eine kurze Sichtungsliste: welche Tasten, welche
   Modi, welche Datei man öffnen soll, und was dabei passieren muss.
 
@@ -147,10 +149,24 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 - **Nach einem Paket-Update die Lockdatei fortschreiben**, sonst
   installiert ein neuer Rechner die alten Commits — und CI meldet die
   Abweichung erst, wenn sie gegen die Lockdatei prüft.
+- **Strukturelles Editieren hat eine Belegung für alle Sprachen**
+  (`jtk-structural-editing-keys` in `init-structural-editing`). Eine
+  Sprache ruft `jtk-structural-editing-bind` mit ihrer Mode-Map und nennt
+  nur ihre Abweichungen; wer dort Tasten wieder einzeln in `:bind`
+  schreibt, hat zwei Stellen, die auseinanderlaufen.
+- **Mit `lexical-binding` erreicht ein `let` die Variable eines Pakets nur,
+  wenn das Paket schon geladen ist.** Sonst bindet es lexikalisch, und das
+  Paket sieht den Wert nie. Vorher `require`n (so in `sql-mysql-for`) —
+  weder Byte-Compiler noch Schnappschuss bemerken den Fehler.
+- **Der Schnappschuss sieht nur, was geladen wird.** Ein Block, der an
+  einem nie geladenen Paket hängt, fehlt vorher wie nachher (so `tide`,
+  das auf das nicht installierte `typescript-mode` wartet). Für solche
+  Stellen gezielt nachladen und vergleichen.
 - **Ladereihenfolge entscheidet über globale Tasten.** `:bind*` schreibt in
   `override-global-map`; wer später lädt, gewinnt. So überschreibt
-  `base--organisation` heute `C--` aus `base--interface` (siehe Plan, B1).
-  Beim Neuschnitt der Module also die Reihenfolge der `require`s mitdenken.
+  `init-org` heute `C--` aus `init-editing` (siehe Plan, B1). Wer die
+  Reihenfolge der `require`s in `init.el` ändert, prüft das mit dem
+  Schnappschuss.
 - **`:bind*` mit `:map` wirkt wie `:bind`.** Die Belegung landet in der
   genannten Mode-Map, nicht in der Override-Map. Das Sternchen dort trägt
   nichts und täuscht Absicht vor.
@@ -161,8 +177,9 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   `paredit` aber nirgends ausdrücklich — es kommt als Abhängigkeit von
   `clj-refactor` mit (bestätigt: ohne `paredit` scheitert dessen
   Installation). Fällt `clj-refactor` weg, bricht die Funktion.
-- **`with-elscreen` wird in `elscreen`s `:init` definiert, aber von `ediff`
-  benutzt.** Wer `elscreen` ersetzt, muss die `ediff`-Einbindung mitnehmen.
+- **`with-elscreen` wird in `elscreen`s `:init` definiert (`init-windows`),
+  aber von `ediff` benutzt (`init-diff`).** Wer `elscreen` ersetzt, muss die
+  `ediff`-Einbindung mitnehmen.
 - **eshell-Tasten gehen über `eshell-mode-map*`**, weil eshell seine
   Mode-Map früher erst beim Start des Modus angelegt hat. Ob das in der
   Zielversion noch nötig ist, ist zu prüfen, bevor es wegfällt.
@@ -174,6 +191,7 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 | `a116aa1` (vor dem Umbau), CI, Emacs 31.1 ohne GUI | scheitert an `(scroll-bar-mode -1)` | — | — | — |
 | nach Phase 1, Schritt 1.3, Cloud, Emacs 31.1 ohne GUI | ok | 93 installiert, Lockdatei reproduziert | 0 | 52 |
 | nach Phase 1, Schritt 1.3, CI (macOS), Emacs 31.1 ohne GUI | ok | 93 installiert, Lockdatei reproduziert | 0 | 49 |
+| nach Phase 1 (ohne which-key), Cloud, Emacs 31.1 ohne GUI | ok | 92 installiert, Lockdatei reproduziert | 0 | 31 |
 
 Der Unterschied von 3 Warnungen: Die `ns-*`- und `mac-*`-Variablen gibt es
 nur unter macOS; in der Cloud meldet der Byte-Compiler sie als frei.

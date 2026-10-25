@@ -5,7 +5,7 @@ Stand: 2026-10-21. Grundlage ist der Commit `a116aa1` („Some settings“, Mär
 Plan entstand, läuft kein Emacs. Was als Fehler markiert ist, wurde nicht
 beobachtet, sondern aus dem Code geschlossen.
 
-**Fortschritt:** Phase 1, Schritte 1.0–1.3 sind umgesetzt (siehe dort);
+**Fortschritt:** Phase 1 ist umgesetzt (siehe dort, mit Ergebnis);
 der aktuelle Aufbau steht in der CLAUDE.md.
 
 Inhalt:
@@ -383,11 +383,11 @@ bis auf die CI-Läufe selbst, die auf GitHub stattfinden.
 | ✅ 1.1 | `early-init.el`: ~~GC-Grenze für den Start~~ (nicht ohne Messung, also Phase 3), `package-enable-at-startup nil` (verlangt elpaca ohnehin), Frame-Voreinstellungen (Leisten aus, maximiert) über `default-frame-alist` | S1 |
 | ✅ 1.2 | Paketverwaltung auf elpaca: Bootstrap, `elpaca-use-package-mode`, Lockdatei nach `etc/`, Rezepte für die eigenen Pakete auf ihre Repos; Bootstrap-Pakete (`diminish`, `smartrep`, …) als normale Deklarationen; `exec-path-from-shell` statt PATH-Eigenbau | P1, P2, U4 |
 | ✅ 1.3 | `no-littering`; `.gitignore` auf `var/`, `elpaca/`, `eln-cache/`, `local.el`, `dev/tmp/` reduzieren; `custom-file` nach `var/`, `custom.el` aus dem Repo; `local.el` für `env-jira-host-url` | S5, S6 |
-| 1.4 | Dateiköpfe mit `lexical-binding` und Commentary; Tabs zu Leerzeichen; Kommentare englisch | F1, F4 |
-| 1.5 | Umzug in `modules/` und `lisp/`: **nur `git mv` und Verschieben ganzer Blöcke**, kein Inhalt geändert, eigener Commit je Thema | S2–S4 |
-| 1.6 | Einstellungen vereinheitlichen: `custom-set-variables` → `:custom`/`setopt`, Grundeinstellungen in `(use-package emacs …)` | F2 |
-| 1.7 | Eigene Bibliotheken: Präfix `jtk-`, Hilfsfunktionen aus `:config` nach `lisp/` | F6 |
-| 1.8 | Eine Keymap für strukturelles Editieren statt sieben Kopien; Abweichungen je Sprache sichtbar machen (vorher Tabelle der heutigen Unterschiede, damit nichts still verloren geht) | F3 |
+| ✅ 1.4 | Dateiköpfe mit `lexical-binding` und Commentary; Tabs zu Leerzeichen; Kommentare englisch. ~~Zeilen über 80 Zeichen~~ → Phase 2, siehe unten | F1, F4 |
+| ✅ 1.5 | Umzug in `modules/` und `lisp/`: **nur `git mv` und Verschieben ganzer Blöcke**, kein Inhalt geändert, eigener Commit je Thema | S2–S4 |
+| ✅ 1.6 | Einstellungen vereinheitlichen: `custom-set-variables` → `:custom`/`setopt`. ~~`(use-package emacs …)`~~ — `setopt` in `init-core` sagt dasselbe ohne Makro | F2 |
+| ✅ 1.7 | Eigene Bibliotheken: Präfix `jtk-`. ~~Hilfsfunktionen aus `:config` nach `lisp/`~~ → Phase 2, siehe unten | F6 |
+| ✅ 1.8 | Eine Keymap für strukturelles Editieren statt sieben Kopien; Abweichungen je Sprache sichtbar machen (vorher Tabelle der heutigen Unterschiede, damit nichts still verloren geht) | F3 |
 
 **WATCHOUT für 1.2:** elpaca installiert und aktiviert Pakete
 **asynchron, nach** dem Durchlauf von `init.el`. Code außerhalb eines
@@ -490,6 +490,45 @@ rm -rf elpa projectile.cache auto-save-list .cache
 Was danach in `git status` als unversioniert auftaucht, stammt aus dem
 alten Stand und gehört entweder nach `var/` oder weg. Der erste Start
 klont alle Pakete (einige Minuten).
+
+**Ergebnis 1.4–1.8:**
+
+- Jeder Schritt wurde gegen den Schnappschuss geprüft (Tastenbelegungen,
+  Optionen, Hooks, Dateizuordnungen nach dem Laden aller Pakete). Leer
+  blieb der Diff bei: Umzug der Sprachmodule, Dateiköpfen,
+  `lexical-binding`, Tabs, Übersetzungen, toter Konfiguration. Beim
+  Aufteilen der `base--`-Module änderte sich nur die Reihenfolge in
+  `prog-mode-hook`; die dadurch getauschten Keymaps teilen keine Taste.
+  Bei `setopt` fiel `inhibit-startup-echo-area-message` weg (war `t` und
+  damit nie wirksam). Die `jtk-`-Umbenennung zeigt genau die neuen Namen,
+  die gemeinsame Struktur-Keymap genau die fünf neuen Tasten in
+  JavaScript.
+- Beim Aufteilen sind alle 107 Formen wortgleich wieder angekommen
+  (eigener Vergleich, Kommentare ausgenommen).
+- `lexical-binding` hätte eine Stelle still gebrochen: `sql-mysql-for`
+  (MySQL-Lesezeichen) bindet Variablen von `sql.el`, bevor es geladen
+  ist. Behoben; alle anderen `let`-Bindungen auf Paket-Variablen geprüft.
+- Warnungen: 31 statt 52 (nach 1.3).
+
+**Bewusst nach Phase 2 verschoben**, weil es die Stellen ohnehin anfasst
+und sonst zweimal: die 34 Zeilen über 80 Zeichen (ohne den elpaca-
+Installer, der wörtlich wie upstream bleibt), die Hilfsfunktionen in
+`:config` (F6), `:bind*` ohne Absicht (U1), `:requires` (U2), die
+Widersprüche in einzelnen Blöcken (U3).
+
+**Neue Befunde für Phase 2** (aus Schnappschuss und Prüfskript):
+
+- `which-key` entfernt (2026-10-25): Das GNU-ELPA-Rezept klonte das ganze
+  Emacs-Repository, auf dem Mac hing daran der erste Start. Das
+  Prüfskript scheitert seitdem an solchen Paketen.
+- `typescript-mode` ist nicht installiert — die aktuelle `tide`-Fassung
+  zieht es nicht mehr mit. Der ganze `tide`-Block (`:after
+  typescript-mode`) läuft deshalb nie; die TypeScript-Konfiguration ist
+  wirkungslos, B3 damit auch.
+- `basic-mode` ist nicht installiert (B6 bestätigt).
+- `scss-mode` ist installiert, lässt sich aber nicht laden.
+- `indium` legt `indium-chrome-profile/` im Wurzelverzeichnis an.
+- `success-face` ist ohne `eval-sexp-fu` unbenutzt.
 
 **Sichtung nach Phase 1:** Parallel-Instanz starten. Startet ohne Fehler
 und ohne Warnungen im `*Messages*`-Puffer; Theme und Modeline wie bisher;
