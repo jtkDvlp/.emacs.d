@@ -132,8 +132,14 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   `:ensure nil` **sofort**, auch wenn er weiter unten steht als ein
   Block, auf den er sich verlässt.
 - **Eingebaute und lokale Pakete brauchen `:ensure nil`.** Sonst sucht
-  elpaca ein Rezept (`pkg--*`, `sql`) oder holt eine zweite Fassung aus
+  elpaca ein Rezept (`jtk-*`, `sql`) oder holt eine zweite Fassung aus
   Git (`org`).
+- **Was mit Emacs ausgeliefert wird, nie über elpaca beziehen.** GNU ELPA
+  baut solche Pakete aus dem Emacs-Repository, und elpaca klont dann das
+  ganze Repository (bei `which-key` 1,8 GB für eine Datei). Auf dem Mac hing
+  der erste Start daran; in der Cloud und in CI fiel es nicht auf, weil
+  die Leitung schnell genug war. `scripts/check` scheitert seitdem an
+  jedem solchen Paket.
 - **no-littering muss vor allen Paketen kommen, deren Pfade es setzt**, und
   es setzt nur Vorgaben: Ein späteres `setq` gewinnt. So bleiben
   `eshell-rc-script` (`~/.eshellrc`) und `mc/list-file` (`etc/`) bewusst

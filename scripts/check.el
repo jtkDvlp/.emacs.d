@@ -128,6 +128,31 @@ A plist: `:file', `:lines' and `:unloadable'.")
              unless (eq status 'finished)
              collect (cons id status))))
 
+(declare-function elpaca<-recipe "elpaca")
+
+(defconst check-emacs-repository-regexp
+  (rx (or "github.com/emacs-mirror/emacs" "git.savannah.gnu.org/git/emacs")
+      (? ".git") eos)
+  "Matches the URL of Emacs' own repository.")
+
+(defvar check-emacs-repository-clones nil
+  "Packages elpaca would clone from Emacs' own repository.")
+
+(defun check-emacs-repository-clones ()
+  "Return the packages whose recipe clones Emacs' own repository.
+GNU ELPA builds packages that ship with Emacs (which-key, eglot, …)
+from the Emacs repository; elpaca follows that recipe and clones all of
+it, close to 2 GB, for a single file.  On a slow line the first start
+then seems to hang, as it did with which-key.  Such packages are to be
+used built in, with `:ensure nil'."
+  (when (fboundp 'elpaca--queued)
+    (cl-loop for (id . order) in (elpaca--queued)
+             for repo = (plist-get (elpaca<-recipe order) :repo)
+             for url = (if (consp repo) (car repo) repo)
+             when (and (stringp url)
+                       (string-match-p check-emacs-repository-regexp url))
+             collect id)))
+
 (declare-function elpaca-write-lock-file "elpaca")
 
 (defvar check-lock-change nil
@@ -269,6 +294,14 @@ Return an alist of (FILE . DIAGNOSTICS)."
                        unfinished ", ")
             "\n\n")))
 
+(defun check--report-emacs-repository-clones ()
+  "Return the report line on packages cloned from Emacs' repository."
+  (when check-emacs-repository-clones
+    (concat "**Cloned from the Emacs repository:** "
+            (mapconcat (lambda (id) (format "`%s`" id))
+                       check-emacs-repository-clones ", ")
+            " — built into Emacs, declare with `:ensure nil`\n\n")))
+
 (defun check--report-lock ()
   "Return the report line on the lock file, if it was written."
   (when check-lock-change
@@ -363,6 +396,7 @@ compiled."
    (format "## Configuration check\n\nGNU Emacs %s\n\n" emacs-version)
    (check--report-load)
    (check--report-packages unfinished)
+   (check--report-emacs-repository-clones)
    (check--report-lock)
    (check--report-snapshot)
    (if results
@@ -374,9 +408,11 @@ are missing, and every file would only report them.\n")))
 (defun check-failed-p (unfinished results)
   "Return non-nil if the check failed.
 That is: loading failed, a package in UNFINISHED did not install, a
-verified lock file changed, or a file in RESULTS has compile errors."
+package is cloned from Emacs' repository, a verified lock file
+changed, or a file in RESULTS has compile errors."
   (or check-load-error
       unfinished
+      check-emacs-repository-clones
       (check-lock-mismatch-p)
       (cl-some (lambda (result) (< 0 (check--count :error (cdr result))))
                results)))
@@ -392,6 +428,7 @@ verified lock file changed, or a file in RESULTS has compile errors."
   "Run the check, print the report and exit with its status."
   (check-load-configuration)
   (let ((unfinished (check-unfinished-packages)))
+    (setq check-emacs-repository-clones (check-emacs-repository-clones))
     ;; NOTE: Only a complete install is worth pinning.
     (unless (or check-load-error unfinished)
       (check-write-lock-file))
