@@ -43,7 +43,8 @@
         (projectile-run-eshell arg)
       (eshell arg)))
 
-  ;; OHA, weil eshell seine mode map nicht korrekt erstellt, und diese dadurch erst später zur Verfügung steht.
+  ;; NOTE: eshell used to create its mode map only when the mode starts,
+  ;; so bindings are collected in `eshell-mode-map*' and copied over then.
   (add-hook 'eshell-mode-hook
             (lambda ()
               (replace-keymap-bindings eshell-mode-map* eshell-mode-map)))

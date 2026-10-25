@@ -60,7 +60,8 @@
         ("f L" . logview-show-all-levels)
         ("F L" . logview-reset-level-filters)
 
-        ;; NOTE: Name ist mit "a" zu notieren, siehe auch `logview-edit-filters`
+        ;; NOTE: In `logview-edit-filters' a name filter is written with "a",
+        ;; hence the second key.
         ("f n" . logview-add-include-name-filter)
         ("f a" . logview-add-include-name-filter)
         ("f N" . logview-add-exclude-name-filter)
