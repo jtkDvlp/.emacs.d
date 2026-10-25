@@ -434,14 +434,30 @@ changed, or a file in RESULTS has compile errors."
       (check-write-lock-file))
     (let ((results (unless check-load-error
                      (check-compile-all))))
-      ;; NOTE: After compiling: the snapshot loads every package, which
-      ;; would hide the compiler's "might not be defined" warnings and
-      ;; make the count depend on whether a snapshot was asked for.
-      (unless (or check-load-error unfinished)
-        (check-take-snapshot))
       (check--write-report (check-report unfinished results))
       (kill-emacs (if (check-failed-p unfinished results) 1 0)))))
 
-(check-main)
+(defun check-snapshot-main ()
+  "Load the configuration, write the snapshot and exit.
+WATCHOUT: This runs in an Emacs of its own (see scripts/check).  In the
+same process as the check, compiling would load packages in file order
+before the snapshot, and the snapshot would load every package before
+compiling and hide its warnings; either way one result would depend on
+the other."
+  (check-load-configuration)
+  (let ((unfinished (check-unfinished-packages)))
+    (unless (or check-load-error unfinished)
+      (check-take-snapshot))
+    (check--write-report
+     (concat (check--report-load)
+             (check--report-packages unfinished)
+             (check--report-snapshot)))
+    (kill-emacs (if (and check-snapshot
+                         (not (plist-get check-snapshot :error)))
+                    0 1))))
+
+(if (check--snapshot-file)
+    (check-snapshot-main)
+  (check-main))
 
 ;;; check.el ends here

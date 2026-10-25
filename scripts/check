@@ -38,5 +38,17 @@ if [ -f "$HOME/.gitconfig" ]; then
   export GIT_CONFIG_GLOBAL="$HOME/.gitconfig"
 fi
 
-HOME="$home" "${EMACS:-emacs}" --batch --init-directory="$root" \
-    --load "$root/scripts/check.el" < /dev/null
+run() {
+  HOME="$home" "${EMACS:-emacs}" --batch --init-directory="$root" \
+      --load "$root/scripts/check.el" < /dev/null
+}
+
+# NOTE: The snapshot runs in an Emacs of its own, after the check; see
+# `check-snapshot-main' for why.
+snapshot="${CHECK_SNAPSHOT:-}"
+status=0
+CHECK_SNAPSHOT= run || status=$?
+if [ -n "$snapshot" ]; then
+  CHECK_SNAPSHOT="$snapshot" CHECK_LOCK= run || status=$?
+fi
+exit "$status"
