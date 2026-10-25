@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Load the configuration in batch mode and byte-compile it (see check.el).
+#
+# Usage: scripts/check [--report FILE] [--write-lock | --verify-lock]
+#                      [--snapshot FILE]
+#   --report FILE  also append the Markdown report to FILE
+#   --snapshot FILE
+#                  write every key binding, option and hook to FILE (see
+#                  snapshot.el); diff two of them to see what changed
+#   --write-lock   afterwards write etc/elpaca-lock.eld from what was
+#                  installed, e.g. after updating packages
+#   --verify-lock  the same, but fail if a commit changed: proves that
+#                  the committed lock file installs what it says
+# Environment:
+#   EMACS          Emacs binary to use (default: emacs)
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --report) export CHECK_REPORT="$2"; shift 2 ;;
+    --write-lock) export CHECK_LOCK=write; shift ;;
+    --verify-lock) export CHECK_LOCK=verify; shift ;;
+    --snapshot) export CHECK_SNAPSHOT="$(realpath -m "$2")"; shift 2 ;;
+    *) echo "unknown argument: $1" >&2; exit 2 ;;
+  esac
+done
+
+# NOTE: An isolated HOME keeps personal dotfiles (~/.eshellrc, ~/.gtd, a
+# real ~/.emacs.d) out of the result.
+home="$(mktemp -d)"
+trap 'rm -rf "$home"' EXIT
+
+# Package installs clone with git; keep the user's git settings (proxies,
+# URL rewrites) despite the isolated HOME.
+if [ -f "$HOME/.gitconfig" ]; then
+  export GIT_CONFIG_GLOBAL="$HOME/.gitconfig"
+fi
+
+run() {
+  HOME="$home" "${EMACS:-emacs}" --batch --init-directory="$root" \
+      --load "$root/scripts/check.el" < /dev/null
+}
+
+# NOTE: The snapshot runs in an Emacs of its own, after the check; see
+# `check-snapshot-main' for why.
+snapshot="${CHECK_SNAPSHOT:-}"
+status=0
+CHECK_SNAPSHOT= run || status=$?
+if [ -n "$snapshot" ]; then
+  CHECK_SNAPSHOT="$snapshot" CHECK_LOCK= run || status=$?
+fi
+exit "$status"

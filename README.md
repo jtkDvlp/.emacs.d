@@ -1,6 +1,20 @@
 # .emacs.d
 
-Please see the el-files within "configuration" for supported tools and languages, hopefully it's as clear and concise for you as it is for me.
+Personal Emacs configuration for the latest stable Emacs on macOS.
+
+## Layout
+
+- `early-init.el`, `init.el`: entry points; `init.el` only loads the
+  modules.
+- `modules/`: one module per topic (`init-editing.el`, `init-vc.el`, …)
+  and per language (`init-lang-clojure.el`, …); each file says in its
+  header what belongs in it.
+- `lisp/`: own libraries, prefixed `jtk-`.
+- `etc/`: hand-kept files packages read (snippets, eshell aliases) and
+  `elpaca-lock.eld`, which pins every package to a commit.
+- `var/`, `elpaca/`: generated, not versioned.
+- `scripts/check`: loads and byte-compiles the configuration in batch
+  mode; CI runs it on every push.
 
 ## keymap system / rules
 - there are global mappings for global commands to manage files, organize your work and better the user interface (ivy, winner, ace, whick-key ...)

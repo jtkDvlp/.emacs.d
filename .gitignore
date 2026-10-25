@@ -1,14 +1,12 @@
-elpa/
-elpy/
-transient/
-recentf
-projectile.cache
-projectile-bookmarks.eld
-auto-save-list/
-/simple-bookmarks
-/bookmarks
-/.cache/
-custom.el
-*.~undo-tree~
+# Generated: package clones, state, caches, native compilation (all
+# under var/ via no-littering and early-init.el).
+/elpaca/
+/var/
+
+# Machine-specific settings.
+/local.el
+
+# Throwaway files.
+/dev/tmp/
+
 .DS_Store
-.projectile
