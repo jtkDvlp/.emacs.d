@@ -23,10 +23,10 @@
     ;; bindings are lexical and `sql-mysql' never sees them.
     (require 'sql)
     (let ((sql-mysql-login-params (when (string-empty-p password) '(password)))
-	  (sql-user user)
-	  (sql-password password)
-	  (sql-database database)
-	  (sql-server server))
+          (sql-user user)
+          (sql-password password)
+          (sql-database database)
+          (sql-server server))
       (sql-mysql buffername)))
 
   (defun simple-bookmarks-interactive-add-mysql (&optional name user password database server more)

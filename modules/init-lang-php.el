@@ -14,7 +14,7 @@
 
   :bind
   (:map php-mode-map
-	("C-." . nil)))
+        ("C-." . nil)))
 
 (use-package
   geben
@@ -33,15 +33,15 @@
   ;;   (cl-case command
   ;;     (interactive (company-begin-backend 'company-simple-backend))
   ;;     (prefix (when (eq major-mode 'php-mode)
-  ;; 		(save-excursion
-  ;; 		  (let* ((pos (point))
-  ;; 			 (pos-m2 (- pos 2))
-  ;; 			 (text (buffer-substring pos-m2 pos)))
-  ;; 		    (if (string= text "->")
-  ;; 			(progn
-  ;; 			  (backward-char 2)
-  ;; 			  (company-grab-symbol))
-  ;; 		      (company-grab-symbol))))))
+  ;;            (save-excursion
+  ;;              (let* ((pos (point))
+  ;;                     (pos-m2 (- pos 2))
+  ;;                     (text (buffer-substring pos-m2 pos)))
+  ;;                (if (string= text "->")
+  ;;                    (progn
+  ;;                      (backward-char 2)
+  ;;                      (company-grab-symbol))
+  ;;                  (company-grab-symbol))))))
   ;;     (candidates (list (concat arg "_bar")))
   ;;     (meta (format "This value is named %s" arg))))
   
@@ -53,7 +53,7 @@
   :hook (php-mode . enable-company-php)
   :bind*
   (:map php-mode-map
-	("M-j" . ac-php-find-symbol-at-point)))
+        ("M-j" . ac-php-find-symbol-at-point)))
 
 ;; (use-package
 ;;   composer

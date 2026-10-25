@@ -21,38 +21,38 @@
 
   :bind*
   (:map clojure-mode-map
-	("C-<left>" . sp-backward-sexp)
-	("M-<left>" . sp-forward-barf-sexp)
-	("C-M-<left>" . sp-backward-barf-sexp)
+        ("C-<left>" . sp-backward-sexp)
+        ("M-<left>" . sp-forward-barf-sexp)
+        ("C-M-<left>" . sp-backward-barf-sexp)
 
-	("C-<right>" . sp-forward-sexp)
-	("M-<right>" . sp-forward-slurp-sexp)
-	("C-M-<right>" . sp-backward-slurp-sexp)
+        ("C-<right>" . sp-forward-sexp)
+        ("M-<right>" . sp-forward-slurp-sexp)
+        ("C-M-<right>" . sp-backward-slurp-sexp)
 
-	("C-<up>" . sp-backward-up-sexp)
-	("M-<up>" . sp-convolute-sexp)
+        ("C-<up>" . sp-backward-up-sexp)
+        ("M-<up>" . sp-convolute-sexp)
 
-	("C-<down>" . sp-down-sexp)
-	("M-<down>" . sp-raise-sexp)
+        ("C-<down>" . sp-down-sexp)
+        ("M-<down>" . sp-raise-sexp)
 
-	("C-M-<up>" . sp-backward-transpose-sexp)
-	("C-M-<down>" . sp-forward-transpose-sexp)
+        ("C-M-<up>" . sp-backward-transpose-sexp)
+        ("C-M-<down>" . sp-forward-transpose-sexp)
 
-	("M-\"" . sp-wrap-doublequote)
-	("C-(" . sp-wrap-round)
-	("M-[" . sp-wrap-square)
-	("M-{" . sp-wrap-curly)
+        ("M-\"" . sp-wrap-doublequote)
+        ("C-(" . sp-wrap-round)
+        ("M-[" . sp-wrap-square)
+        ("M-{" . sp-wrap-curly)
 
-	("C-M-(" . sp-rewrap-sexp)
+        ("C-M-(" . sp-rewrap-sexp)
 
-	("C-k" . sp-kill-sexp)
-	("C-S-K" . sp-unwrap-sexp)
+        ("C-k" . sp-kill-sexp)
+        ("C-S-K" . sp-unwrap-sexp)
 
-	("M-k" . sp-splice-sexp-killing-forward)
-	("M-K" . sp-splice-sexp-killing-backward)
-	("C-M-k" . sp-splice-sexp-killing-around)
+        ("M-k" . sp-splice-sexp-killing-forward)
+        ("M-K" . sp-splice-sexp-killing-backward)
+        ("C-M-k" . sp-splice-sexp-killing-around)
 
-	("C-;" . comment-dwim)))
+        ("C-;" . comment-dwim)))
 
 (use-package
   flycheck-clj-kondo
@@ -386,45 +386,45 @@
 
   :bind*
   (:map clojure-mode-map
-	("C-c M-j" . nil)
+        ("C-c M-j" . nil)
 
-	("C-c M-j J" . cider-jack-in-dwim)
-	("C-c M-j j" . cider-connect-clj)
+        ("C-c M-j J" . cider-jack-in-dwim)
+        ("C-c M-j j" . cider-connect-clj)
 
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
         ("C-c C-M-S-J" . cider-repl-switch-to-repl-buffer-and-ns)
 
-	("C-c M-j S" . cider-jack-in-cljs)
-	("C-c M-j s" . cider-connect-cljs)
+        ("C-c M-j S" . cider-jack-in-cljs)
+        ("C-c M-j s" . cider-connect-cljs)
 
-	("C-c M-j B" . cider-jack-in-clj&cljs)
-	("C-c M-j b" . cider-connect-clj&cljs)
+        ("C-c M-j B" . cider-jack-in-clj&cljs)
+        ("C-c M-j b" . cider-connect-clj&cljs)
 
-	:map cider-mode-map
-	("C-M-g" . cider-interrupt)
+        :map cider-mode-map
+        ("C-M-g" . cider-interrupt)
         ("C-c C-c" . cider-eval-dwim)
         ("C-M-x" . cider-eval-last-sexp)
-	("C-M-S-X" . cider-insert-last-sexp-in-repl)
-	("C-c M-k" . cider-load-buffer)
+        ("C-M-S-X" . cider-insert-last-sexp-in-repl)
+        ("C-c M-k" . cider-load-buffer)
 
-	("C-h h" . cider-doc)
-	("C-h H" . cider-javadoc)
+        ("C-h h" . cider-doc)
+        ("C-h H" . cider-javadoc)
 
-	("M-j d" . cider-find-var)
-	("M-j D" . cider-grimoire)
-	("M-j r" . cider-apropos)
-	("M-j f" . cider-find-resource)
-	("M-j n" . cider-find-ns)
-	("M-J" . cider-pop-back)
+        ("M-j d" . cider-find-var)
+        ("M-j D" . cider-grimoire)
+        ("M-j r" . cider-apropos)
+        ("M-j f" . cider-find-resource)
+        ("M-j n" . cider-find-ns)
+        ("M-J" . cider-pop-back)
 
-	("C-c M-j" . nil)
+        ("C-c M-j" . nil)
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
         ("C-c C-M-S-J" . cider-repl-switch-to-repl-buffer-and-ns)
 
-	("C-c M-q" . cider-quit)
-	("C-c M-r" . cider-restart)
+        ("C-c M-q" . cider-quit)
+        ("C-c M-r" . cider-restart)
         ("C-c M-o" . cider-find-and-clear-repl-output)
-	("C-c M-c" . cider-completion-flush-caches)
+        ("C-c M-c" . cider-completion-flush-caches)
 
         ("M-u" . nil)
         ("M-u s" . cider-repl-user-system-start)
@@ -433,96 +433,96 @@
         ("M-u w" . cider-repl-user-switch-cljs-repl)
         ("M-u W" . cider-repl-user-quit-cljs-repl)
 
-       	:map cider-repl-mode-map
-	("C-<left>" . sp-backward-sexp)
-	("M-<left>" . sp-forward-barf-sexp)
-	("C-M-<left>" . sp-backward-barf-sexp)
+        :map cider-repl-mode-map
+        ("C-<left>" . sp-backward-sexp)
+        ("M-<left>" . sp-forward-barf-sexp)
+        ("C-M-<left>" . sp-backward-barf-sexp)
 
-	("C-<right>" . sp-forward-sexp)
-	("M-<right>" . sp-forward-slurp-sexp)
-	("C-M-<right>" . sp-backward-slurp-sexp)
+        ("C-<right>" . sp-forward-sexp)
+        ("M-<right>" . sp-forward-slurp-sexp)
+        ("C-M-<right>" . sp-backward-slurp-sexp)
 
-	("C-<up>" . sp-backward-up-sexp)
-	("M-<up>" . sp-convolute-sexp)
+        ("C-<up>" . sp-backward-up-sexp)
+        ("M-<up>" . sp-convolute-sexp)
 
-	("C-<down>" . sp-down-sexp)
-	("M-<down>" . sp-raise-sexp)
+        ("C-<down>" . sp-down-sexp)
+        ("M-<down>" . sp-raise-sexp)
 
-	("C-M-<up>" . sp-backward-transpose-sexp)
-	("C-M-<down>" . sp-forward-transpose-sexp)
+        ("C-M-<up>" . sp-backward-transpose-sexp)
+        ("C-M-<down>" . sp-forward-transpose-sexp)
 
-	("M-\"" . sp-wrap-doublequote)
-	("C-(" . sp-wrap-round)
-	("M-[" . sp-wrap-square)
-	("M-{" . sp-wrap-curly)
+        ("M-\"" . sp-wrap-doublequote)
+        ("C-(" . sp-wrap-round)
+        ("M-[" . sp-wrap-square)
+        ("M-{" . sp-wrap-curly)
 
-	("C-M-(" . sp-rewrap-sexp)
+        ("C-M-(" . sp-rewrap-sexp)
 
-	("C-k" . sp-kill-sexp)
-	("C-S-K" . sp-unwrap-sexp)
+        ("C-k" . sp-kill-sexp)
+        ("C-S-K" . sp-unwrap-sexp)
 
-	("M-k" . sp-splice-sexp-killing-forward)
-	("M-K" . sp-splice-sexp-killing-backward)
-	("C-M-k" . sp-splice-sexp-killing-around)
+        ("M-k" . sp-splice-sexp-killing-forward)
+        ("M-K" . sp-splice-sexp-killing-backward)
+        ("C-M-k" . sp-splice-sexp-killing-around)
 
-	("C-;" . sp-comment-dwim)
+        ("C-;" . sp-comment-dwim)
 
-	("C-<left>" . sp-backward-sexp)
-	("M-<left>" . sp-forward-barf-sexp)
-	("C-M-<left>" . sp-backward-barf-sexp)
+        ("C-<left>" . sp-backward-sexp)
+        ("M-<left>" . sp-forward-barf-sexp)
+        ("C-M-<left>" . sp-backward-barf-sexp)
 
-	("C-<right>" . sp-forward-sexp)
-	("M-<right>" . sp-forward-slurp-sexp)
-	("C-M-<right>" . sp-backward-slurp-sexp)
+        ("C-<right>" . sp-forward-sexp)
+        ("M-<right>" . sp-forward-slurp-sexp)
+        ("C-M-<right>" . sp-backward-slurp-sexp)
 
-	("C-<up>" . sp-backward-up-sexp)
-	("M-<up>" . sp-convolute-sexp)
+        ("C-<up>" . sp-backward-up-sexp)
+        ("M-<up>" . sp-convolute-sexp)
 
-	("C-<down>" . sp-down-sexp)
-	("M-<down>" . sp-raise-sexp)
+        ("C-<down>" . sp-down-sexp)
+        ("M-<down>" . sp-raise-sexp)
 
-	("C-M-<up>" . sp-backward-transpose-sexp)
-	("C-M-<down>" . sp-forward-transpose-sexp)
+        ("C-M-<up>" . sp-backward-transpose-sexp)
+        ("C-M-<down>" . sp-forward-transpose-sexp)
 
-	("M-\"" . sp-wrap-doublequote)
-	("C-(" . sp-wrap-round)
-	("M-[" . sp-wrap-square)
-	("M-{" . sp-wrap-curly)
+        ("M-\"" . sp-wrap-doublequote)
+        ("C-(" . sp-wrap-round)
+        ("M-[" . sp-wrap-square)
+        ("M-{" . sp-wrap-curly)
 
-	("C-M-(" . sp-rewrap-sexp)
+        ("C-M-(" . sp-rewrap-sexp)
 
-	("C-k" . sp-kill-sexp)
-	("C-S-K" . sp-unwrap-sexp)
+        ("C-k" . sp-kill-sexp)
+        ("C-S-K" . sp-unwrap-sexp)
 
-	("M-k" . sp-splice-sexp-killing-forward)
-	("M-K" . sp-splice-sexp-killing-backward)
-	("C-M-k" . sp-splice-sexp-killing-around)
+        ("M-k" . sp-splice-sexp-killing-forward)
+        ("M-K" . sp-splice-sexp-killing-backward)
+        ("C-M-k" . sp-splice-sexp-killing-around)
 
-	("C-;" . sp-comment-dwim)
+        ("C-;" . sp-comment-dwim)
 
-	("C-c M-j" . nil)
+        ("C-c M-j" . nil)
         ("C-c C-M-j" . cider-switch-to-last-clojure-buffer)
 
-	("RET" . cider-repl-return)
-	("C-<return>" . cider-repl-newline-and-indent)
-	("C-S-<return>" . cider-repl-newline-and-indent)
+        ("RET" . cider-repl-return)
+        ("C-<return>" . cider-repl-newline-and-indent)
+        ("C-S-<return>" . cider-repl-newline-and-indent)
 
-	;; ("M-p" . history)
-	;; ("M-n" . history)
+        ;; ("M-p" . history)
+        ;; ("M-n" . history)
 
-	("M-P" . cider-repl-history)
+        ("M-P" . cider-repl-history)
 
-	("C-M-g" . cider-interrupt)
+        ("C-M-g" . cider-interrupt)
 
-	("C-h h" . cider-doc)
-	("C-h H" . cider-javadoc)
+        ("C-h h" . cider-doc)
+        ("C-h H" . cider-javadoc)
 
-	("M-j d" . cider-find-var)
-	("M-j D" . cider-grimoire)
-	("M-j r" . cider-apropos)
-	("M-j f" . cider-find-resource)
-	("M-j n" . cider-find-ns)
-	("M-J" . cider-pop-back)
+        ("M-j d" . cider-find-var)
+        ("M-j D" . cider-grimoire)
+        ("M-j r" . cider-apropos)
+        ("M-j f" . cider-find-resource)
+        ("M-j n" . cider-find-ns)
+        ("M-J" . cider-pop-back)
 
         ("M-u" . nil)
         ("M-u s" . cider-repl-user-system-start)
@@ -531,18 +531,18 @@
         ("M-u w" . cider-repl-user-switch-cljs-repl)
         ("M-u W" . cider-repl-user-quit-cljs-repl)
 
-	("C-c M-q" . cider-quit)
-	("C-c M-r" . cider-restart)
+        ("C-c M-q" . cider-quit)
+        ("C-c M-r" . cider-restart)
         ("C-c M-o" . cider-find-and-clear-repl-output)
 
-	:map cider-repl-history-mode-map
-	("M-p" . cider-repl-history-backward)
-	("M-n" . cider-repl-history-forward)
+        :map cider-repl-history-mode-map
+        ("M-p" . cider-repl-history-backward)
+        ("M-n" . cider-repl-history-forward)
 
-	("C-s" . cider-repl-history-occur)
-	("C-r" . nil)
+        ("C-s" . cider-repl-history-occur)
+        ("C-r" . nil)
 
-	("C-_" . cider-repl-history-undo-other-window)))
+        ("C-_" . cider-repl-history-undo-other-window)))
 
 (provide 'init-lang-clojure)
 
