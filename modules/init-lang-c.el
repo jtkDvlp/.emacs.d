@@ -1,3 +1,11 @@
+;;; init-lang-c.el --- C++
+
+;;; Commentary:
+
+;; c++-mode, also for Arduino sketches, and PlatformIO.
+
+;;; Code:
+
 (use-package
   c++-mode
   :ensure nil
@@ -20,3 +28,5 @@
   ((c++-mode . platformio-mode)))
 
 (provide 'init-lang-c)
+
+;;; init-lang-c.el ends here

@@ -1,3 +1,11 @@
+;;; init-lang-css.el --- Style sheets
+
+;;; Commentary:
+
+;; CSS, SCSS and Sass.
+
+;;; Code:
+
 (use-package
   scss-mode
 
@@ -27,3 +35,5 @@
   (setq css-indent-offset 2))
 
 (provide 'init-lang-css)
+
+;;; init-lang-css.el ends here

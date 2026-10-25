@@ -1,3 +1,11 @@
+;;; init-startup.el --- Start screen
+
+;;; Commentary:
+
+;; The dashboard with recent files and projects.
+
+;;; Code:
+
 (use-package
   dashboard
   :demand t
@@ -11,3 +19,5 @@
   (dashboard-setup-startup-hook))
 
 (provide 'init-startup)
+
+;;; init-startup.el ends here

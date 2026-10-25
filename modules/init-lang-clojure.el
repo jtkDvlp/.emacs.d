@@ -1,3 +1,14 @@
+;;; init-lang-clojure.el --- Clojure
+
+;;; Commentary:
+
+;; clojure-mode with structural editing keys, clj-kondo, clj-refactor
+;; and CIDER: jack-in with Leiningen profiles, figwheel-main builds,
+;; starting and stopping the user system, and indentation rules for
+;; common macros.
+
+;;; Code:
+
 (use-package
   clojure-mode
 
@@ -534,3 +545,5 @@
 	("C-_" . cider-repl-history-undo-other-window)))
 
 (provide 'init-lang-clojure)
+
+;;; init-lang-clojure.el ends here

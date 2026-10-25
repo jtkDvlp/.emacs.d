@@ -1,3 +1,12 @@
+;;; init-bookmarks.el --- Bookmarks
+
+;;; Commentary:
+
+;; simple-bookmarks for files, directories and MySQL connections.  The
+;; bookmark file lives under var/: database bookmarks hold passwords.
+
+;;; Code:
+
 (use-package
   simple-bookmarks
   :ensure (:host github :repo "jtkDvlp/simple-bookmarks")
@@ -40,3 +49,5 @@
    ("M-- m k" . simple-bookmarks-interactive-remove-from-all)))
 
 (provide 'init-bookmarks)
+
+;;; init-bookmarks.el ends here

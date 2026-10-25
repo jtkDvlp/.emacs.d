@@ -1,3 +1,11 @@
+;;; init-lang-typescript.el --- TypeScript
+
+;;; Commentary:
+
+;; tide for TypeScript, and npm commands.
+
+;;; Code:
+
 (use-package
   tide
 
@@ -65,3 +73,5 @@
    npm-mode-npm-run))
 
 (provide 'init-lang-typescript)
+
+;;; init-lang-typescript.el ends here

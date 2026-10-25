@@ -1,3 +1,12 @@
+;;; jtk-window-mirror.el --- Mirror a window
+
+;;; Commentary:
+
+;; A global minor mode that keeps a second window on the buffer and
+;; point of a first one, e.g. for pairing on two screens.
+
+;;; Code:
+
 (defvar window-mirror--mirrors '())
 (defvar window-mirror--current-pairing-master nil)
 
@@ -88,3 +97,5 @@
     (remove-hook 'post-command-hook 'window-mirror/mirror)))
 
 (provide 'jtk-window-mirror)
+
+;;; jtk-window-mirror.el ends here

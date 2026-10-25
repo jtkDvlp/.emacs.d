@@ -1,3 +1,11 @@
+;;; init-lang-csv.el --- CSV files
+
+;;; Commentary:
+
+;; csv-mode with aligned columns.
+
+;;; Code:
+
 (use-package
   csv-mode
 
@@ -14,3 +22,5 @@
         csv-align-style 'auto))
 
 (provide 'init-lang-csv)
+
+;;; init-lang-csv.el ends here

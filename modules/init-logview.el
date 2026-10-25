@@ -1,3 +1,12 @@
+;;; init-logview.el --- Log files
+
+;;; Commentary:
+
+;; logview with submodes for the own log formats and keys for
+;; filtering and navigating entries.
+
+;;; Code:
+
 (use-package
   logview
   :mode (("\\.log\\'" . logview-mode))
@@ -90,3 +99,5 @@
         ("t j" . logview-go-to-difference-base-entry)))
 
 (provide 'init-logview)
+
+;;; init-logview.el ends here

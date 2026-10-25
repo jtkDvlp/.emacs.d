@@ -1,3 +1,11 @@
+;;; init-lang-markdown.el --- Markdown
+
+;;; Commentary:
+
+;; markdown-mode, with GitHub flavour for READMEs.
+
+;;; Code:
+
 (use-package
   markdown-mode
   :commands (markdown-mode gfm-mode)
@@ -7,3 +15,5 @@
   :init (setq markdown-command "multimarkdown"))
 
 (provide 'init-lang-markdown)
+
+;;; init-lang-markdown.el ends here

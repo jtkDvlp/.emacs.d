@@ -1,3 +1,14 @@
+;;; init-editing.el --- Editing within a buffer
+
+;;; Commentary:
+
+;; Keyboard macros, jumping, growing the region, narrowing, undo,
+;; multiple cursors, comments, trailing whitespace, indentation and
+;; symbol highlighting.  Editing by s-expressions is in
+;; init-structural-editing.
+
+;;; Code:
+
 (use-package
   kmacro
   :ensure nil
@@ -113,3 +124,5 @@
       ("r" . (highlight-symbol-query-replace)))))
 
 (provide 'init-editing)
+
+;;; init-editing.el ends here

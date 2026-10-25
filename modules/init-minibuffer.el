@@ -1,3 +1,12 @@
+;;; init-minibuffer.el --- Minibuffer completion
+
+;;; Commentary:
+
+;; ivy, counsel and swiper: choosing files, buffers and commands, and
+;; searching in a buffer or a git repository.
+
+;;; Code:
+
 (use-package
   ivy
   :demand t
@@ -48,3 +57,5 @@
    ("C-r" . swiper-query-replace)))
 
 (provide 'init-minibuffer)
+
+;;; init-minibuffer.el ends here

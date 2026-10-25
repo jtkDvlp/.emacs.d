@@ -1,3 +1,12 @@
+;;; init-lang-php.el --- PHP
+
+;;; Commentary:
+
+;; php-mode, the geben debugger and completion.  Not loaded: init.el
+;; has it commented out.
+
+;;; Code:
+
 (use-package
   php-mode
   :mode
@@ -51,3 +60,5 @@
 ;;   :commands composer)
 
 (provide 'init-lang-php)
+
+;;; init-lang-php.el ends here

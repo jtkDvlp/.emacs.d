@@ -1,3 +1,11 @@
+;;; jtk-narrow.el --- Narrowing
+
+;;; Commentary:
+
+;; Narrow to the region if active, else to the defun.
+
+;;; Code:
+
 (defun narrow/narrow-dwim (beginning end)
   (interactive "r")
   (if (use-region-p)
@@ -7,3 +15,5 @@
 (defalias 'narrow/widen 'widen)
 
 (provide 'jtk-narrow)
+
+;;; jtk-narrow.el ends here

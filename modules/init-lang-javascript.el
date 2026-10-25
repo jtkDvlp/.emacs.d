@@ -1,3 +1,12 @@
+;;; init-lang-javascript.el --- JavaScript
+
+;;; Commentary:
+
+;; js2-mode with refactoring, cross references and the indium
+;; debugger.
+
+;;; Code:
+
 (use-package
   js2-mode
   :mode
@@ -90,3 +99,5 @@
   (js2-mode . indium-interaction-mode))
 
 (provide 'init-lang-javascript)
+
+;;; init-lang-javascript.el ends here

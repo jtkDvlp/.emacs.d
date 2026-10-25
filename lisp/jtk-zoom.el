@@ -1,3 +1,12 @@
+;;; jtk-zoom.el --- Font size steps
+
+;;; Commentary:
+
+;; Set the font height of the frame to fixed sizes, or step it up and
+;; down.
+
+;;; Code:
+
 (defun zoom/apply (n)
   (set-face-attribute 'default (selected-frame) :height n))
 
@@ -32,3 +41,5 @@
   (zoom/modify -1))
 
 (provide 'jtk-zoom)
+
+;;; jtk-zoom.el ends here

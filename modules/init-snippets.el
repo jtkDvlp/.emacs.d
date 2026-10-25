@@ -1,3 +1,12 @@
+;;; init-snippets.el --- Snippets
+
+;;; Commentary:
+
+;; yasnippet with the yasnippet-snippets collection; own snippets are
+;; under etc/yasnippet/snippets/.
+
+;;; Code:
+
 (use-package
   yasnippet-snippets
   :defer t)
@@ -18,3 +27,5 @@
         ("C-c" . nil)))
 
 (provide 'init-snippets)
+
+;;; init-snippets.el ends here

@@ -1,3 +1,14 @@
+;;; init-appearance.el --- Theme and visual aids
+
+;;; Commentary:
+
+;; The theme, the spaceline mode line, line numbers, highlighting of
+;; parens, the current line, colours, delimiters and keywords like
+;; `WATCHOUT', prettified symbols, font size steps and the frame
+;; title.
+
+;;; Code:
+
 (use-package
   spaceline
   :demand t
@@ -144,3 +155,5 @@
       ("3" . zoom/custom-3))))
 
 (provide 'init-appearance)
+
+;;; init-appearance.el ends here

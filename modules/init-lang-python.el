@@ -1,3 +1,11 @@
+;;; init-lang-python.el --- Python
+
+;;; Commentary:
+
+;; elpy, with keys for structural editing.
+
+;;; Code:
+
 ;; pip install jedi rope flake8 autopep8 yapf black
 (use-package
   elpy
@@ -49,3 +57,5 @@
    elpy-get-info-from-shell t))
 
 (provide 'init-lang-python)
+
+;;; init-lang-python.el ends here

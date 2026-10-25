@@ -1,3 +1,15 @@
+;;; init-core.el --- Basic behaviour of Emacs
+
+;;; Commentary:
+
+;; Settings of Emacs itself that belong to no topic of their own:
+;; machine-specific settings from local.el, PATH, backups and lock
+;; files, encoding, reverting changed files, scrolling, prompts.
+;; Anything tied to one package or topic goes into that topic's
+;; module.
+
+;;; Code:
+
 ;; local.el is not versioned: it holds what differs between machines.
 (load (expand-file-name "local.el" user-emacs-directory) 'noerror)
 
@@ -89,3 +101,5 @@
       eldoc-echo-area-use-multiline-p t)
 
 (provide 'init-core)
+
+;;; init-core.el ends here

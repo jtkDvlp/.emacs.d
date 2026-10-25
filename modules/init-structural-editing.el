@@ -1,3 +1,12 @@
+;;; init-structural-editing.el --- Sexp editing
+
+;;; Commentary:
+
+;; smartparens and commands on top of it.  The language modules bind
+;; these commands to the same keys in each language.
+
+;;; Code:
+
 (use-package
   smartparens
   :diminish smartparens-mode
@@ -30,3 +39,5 @@
    (cider-repl-mode . smartparens-mode)))
 
 (provide 'init-structural-editing)
+
+;;; init-structural-editing.el ends here

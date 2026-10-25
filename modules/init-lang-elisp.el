@@ -1,3 +1,12 @@
+;;; init-lang-elisp.el --- Emacs Lisp
+
+;;; Commentary:
+
+;; Keys for structural editing, evaluating and finding definitions,
+;; and a helper to dump values while debugging.
+
+;;; Code:
+
 (use-package
   elisp-mode
   :ensure nil
@@ -52,3 +61,5 @@
   (print data dump-buffer))
 
 (provide 'init-lang-elisp)
+
+;;; init-lang-elisp.el ends here

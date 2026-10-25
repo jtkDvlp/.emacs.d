@@ -1,3 +1,12 @@
+;;; jtk-ide.el --- IDE-like window layout
+
+;;; Commentary:
+
+;; Shows shells, compilation, help and errors in fixed side windows
+;; around the main window, via `display-buffer-alist'.
+
+;;; Code:
+
 (defun ide/main-window ()
   (let* ((most-top-left-window
 	  (window-at 0 0))
@@ -159,3 +168,5 @@
   `("*Help*" projectile-run-eshell treemacs))
 
 (provide 'jtk-ide)
+
+;;; jtk-ide.el ends here

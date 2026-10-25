@@ -1,3 +1,12 @@
+;;; init-lang-html.el --- HTML and XML
+
+;;; Commentary:
+
+;; web-mode for HTML, XML and XSL, and web-mode-edit-element for
+;; editing by elements.
+
+;;; Code:
+
 (use-package
   web-mode
   :mode
@@ -140,3 +149,5 @@
 	("C-;" . web-mode-comment-or-uncomment)))
 
 (provide 'init-lang-html)
+
+;;; init-lang-html.el ends here

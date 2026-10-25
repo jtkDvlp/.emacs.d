@@ -1,3 +1,11 @@
+;;; init-checking.el --- On-the-fly syntax checking
+
+;;; Commentary:
+
+;; flycheck in programming modes.
+
+;;; Code:
+
 (use-package
   flycheck
   :diminish
@@ -10,3 +18,5 @@
   (set-default 'flycheck-disabled-checkers '(sass)))
 
 (provide 'init-checking)
+
+;;; init-checking.el ends here

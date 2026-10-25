@@ -1,14 +1,15 @@
-;;; init.el --- Entry point of the configuration -*- lexical-binding: t; -*-
+;;; init-packages.el --- Package manager -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
-;; Sets up the package manager, keeps generated files out of the way,
-;; reads the machine-specific settings, then loads the configuration
-;; modules.  What has to happen before the first frame is in
-;; early-init.el.
+;; Bootstraps elpaca, pinned to the commits in etc/elpaca-lock.eld,
+;; and makes `use-package' install through it.  Also what has to be in
+;; place before any other package loads: no-littering, which sets the
+;; paths packages write to, and diminish, which `:diminish' in the
+;; other modules expands into.  How a package is configured belongs to
+;; its topic module, not here.
 
 ;;; Code:
-
 
 (defvar elpaca-lock-file
   (expand-file-name "etc/elpaca-lock.eld" user-emacs-directory)
@@ -106,3 +107,5 @@ Written with `elpaca-write-lock-file' after updating packages.")
   :demand t)
 
 (provide 'init-packages)
+
+;;; init-packages.el ends here

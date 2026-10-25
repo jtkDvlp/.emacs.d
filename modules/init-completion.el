@@ -1,3 +1,11 @@
+;;; init-completion.el --- Completion in buffers
+
+;;; Commentary:
+
+;; company, with documentation pop-ups.
+
+;;; Code:
+
 (use-package
   company
   :diminish (company-mode eldoc-mode)
@@ -16,3 +24,5 @@
   :config (setq company-quickhelp-delay 0.2))
 
 (provide 'init-completion)
+
+;;; init-completion.el ends here

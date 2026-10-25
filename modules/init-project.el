@@ -1,3 +1,12 @@
+;;; init-project.el --- Projects
+
+;;; Commentary:
+
+;; projectile with counsel: switching projects and finding files,
+;; directories and buffers within one.
+
+;;; Code:
+
 (use-package
   counsel-projectile
   :diminish projectile-mode
@@ -47,3 +56,5 @@
    ("C-x K" . projectile-kill-buffers)))
 
 (provide 'init-project)
+
+;;; init-project.el ends here

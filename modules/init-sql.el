@@ -1,3 +1,11 @@
+;;; init-sql.el --- SQL clients
+
+;;; Commentary:
+
+;; Options for the MySQL client of sql.el.
+
+;;; Code:
+
 (use-package
   sql
   :ensure nil
@@ -7,3 +15,5 @@
     (setq sql-mysql-options '("-C" "-t" "-f" "-n"))))
 
 (provide 'init-sql)
+
+;;; init-sql.el ends here

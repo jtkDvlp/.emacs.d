@@ -1,3 +1,12 @@
+;;; init-diff.el --- Comparing files
+
+;;; Commentary:
+
+;; ediff, each session on a screen of its own, and ztree for
+;; directories.
+
+;;; Code:
+
 (use-package
   ediff
   :ensure nil
@@ -28,3 +37,5 @@
         ztree-draw-unicode-lines t))
 
 (provide 'init-diff)
+
+;;; init-diff.el ends here

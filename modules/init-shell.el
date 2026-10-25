@@ -1,3 +1,12 @@
+;;; init-shell.el --- Shells
+
+;;; Commentary:
+
+;; eshell with a project-aware prompt, history and commands; aliases
+;; are in etc/eshell/aliases.  Also zsh in a terminal.
+
+;;; Code:
+
 (use-package eshell
   :ensure nil
   :commands (eshell)
@@ -148,3 +157,5 @@
    from))
 
 (provide 'init-shell)
+
+;;; init-shell.el ends here

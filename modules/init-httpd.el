@@ -1,3 +1,12 @@
+;;; init-httpd.el --- Local web server
+
+;;; Commentary:
+
+;; simple-httpd with commands to serve a directory or the current
+;; project.
+
+;;; Code:
+
 (use-package
   simple-httpd
 
@@ -30,3 +39,5 @@
    projectile-httpd/stop))
 
 (provide 'init-httpd)
+
+;;; init-httpd.el ends here

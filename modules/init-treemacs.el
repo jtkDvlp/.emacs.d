@@ -1,3 +1,11 @@
+;;; init-treemacs.el --- File tree side bar
+
+;;; Commentary:
+
+;; treemacs and its integrations with projectile, dired and magit.
+
+;;; Code:
+
 (use-package
   treemacs
   :config
@@ -77,3 +85,5 @@
   :after treemacs magit)
 
 (provide 'init-treemacs)
+
+;;; init-treemacs.el ends here

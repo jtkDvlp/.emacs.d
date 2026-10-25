@@ -1,3 +1,12 @@
+;;; init-org.el --- Org as a GTD system
+
+;;; Commentary:
+
+;; Capture templates, agenda and refile targets for ~/.gtd/, links to
+;; Jira issues and element-wise movement keys.
+
+;;; Code:
+
 (defvar env-jira-host-url nil
   "Base URL of the Jira instance, ending in a slash.
 Set in local.el; used by `org-insert-jira-issue'.")
@@ -148,3 +157,5 @@ Set in local.el; used by `org-insert-jira-issue'.")
    ("C-S-k" . org-kill-item)))
 
 (provide 'init-org)
+
+;;; init-org.el ends here

@@ -1,3 +1,13 @@
+;;; init-windows.el --- Windows, frames and screens
+
+;;; Commentary:
+
+;; Undoing window changes, full-frame views, moving buffers between
+;; windows, screens per project (elscreen), choosing windows,
+;; mirroring a window and the IDE-like layout.
+
+;;; Code:
+
 (use-package
   winner
   :ensure nil
@@ -126,3 +136,5 @@
     (ide/open-buffers ide/default-buffers)))
 
 (provide 'init-windows)
+
+;;; init-windows.el ends here

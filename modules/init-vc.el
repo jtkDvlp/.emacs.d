@@ -1,3 +1,12 @@
+;;; init-vc.el --- Version control
+
+;;; Commentary:
+
+;; magit, including pushes for review to Gerrit, and
+;; git-auto-commit-mode.
+
+;;; Code:
+
 (use-package
   magit
   :requires (ivy fullframe)
@@ -49,3 +58,5 @@
    gac-debounce-interval (* 10 60)))
 
 (provide 'init-vc)
+
+;;; init-vc.el ends here
