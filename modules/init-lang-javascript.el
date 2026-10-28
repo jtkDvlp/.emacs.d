@@ -46,7 +46,7 @@
   :diminish js2-refactor-mode
   :hook
   (js2-mode . js2-refactor-mode)
-  :bind*
+  :bind
   (:map js2-mode-map
         ("M-<down>" . js2r-unwrap)
 
@@ -60,7 +60,7 @@
   :after js2-mode
   :hook
   (xref-backend-functions . xref-js2-xref-backend)
-  :bind*
+  :bind
   (:map js2-mode-map
         ("M-j d" . xref-find-definitions)
         ("M-j r" . xref-find-references)

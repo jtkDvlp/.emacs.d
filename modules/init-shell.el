@@ -14,10 +14,14 @@
   :init
   (defvar eshell-mode-map* (make-sparse-keymap))
 
-  :bind*
-  (("M-! s s" . eshell-dwim)
-   ("M-! s S" . eshell)
-   ("M-! s c" . shell-command)
+  :bind
+  (:map jtk-run-map
+        :prefix-map jtk-shell-map
+        :prefix "s"
+        :prefix-docstring "Shells: eshell, and a single shell command."
+        ("s" . eshell-dwim)
+        ("S" . eshell)
+        ("c" . shell-command)
 
    :map eshell-mode-map*
    ("<up>" . previous-line)

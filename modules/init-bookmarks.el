@@ -39,18 +39,21 @@
 
   (simple-bookmarks-init)
 
-  :bind*
-  (("M-- f l" . simple-bookmarks-interactive-execute-file)
-   ("M-- f c" . simple-bookmarks-interactive-add-file)
-   ("M-- f k" . simple-bookmarks-interactive-remove-file)
+  :bind
+  (:prefix-map jtk-bookmarks-map
+   :prefix "M--"
+   :prefix-docstring "Bookmarks of files (f), directories (d), MySQL (m)."
+   ("f l" . simple-bookmarks-interactive-execute-file)
+   ("f c" . simple-bookmarks-interactive-add-file)
+   ("f k" . simple-bookmarks-interactive-remove-file)
 
-   ("M-- d l" . simple-bookmarks-interactive-execute-directory)
-   ("M-- d c" . simple-bookmarks-interactive-add-directory)
-   ("M-- d k" . simple-bookmarks-interactive-remove-directory)
+   ("d l" . simple-bookmarks-interactive-execute-directory)
+   ("d c" . simple-bookmarks-interactive-add-directory)
+   ("d k" . simple-bookmarks-interactive-remove-directory)
 
-   ("M-- m l" . simple-bookmarks-interactive-execute-mysql)
-   ("M-- m c" . simple-bookmarks-interactive-add-mysql)
-   ("M-- m k" . simple-bookmarks-interactive-remove-from-all)))
+   ("m l" . simple-bookmarks-interactive-execute-mysql)
+   ("m c" . simple-bookmarks-interactive-add-mysql)
+   ("m k" . simple-bookmarks-interactive-remove-from-all)))
 
 (provide 'init-bookmarks)
 

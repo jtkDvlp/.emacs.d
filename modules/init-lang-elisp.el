@@ -17,7 +17,7 @@
   :config
   (jtk-structural-editing-bind emacs-lisp-mode-map)
 
-  :bind*
+  :bind
   (:map emacs-lisp-mode-map
         ("M-j d" . find-function-at-point)
         ("M-j f" . find-function-at-point)

@@ -20,7 +20,7 @@
       (winner-undo)))
   :config
   (winner-mode)
-  :bind*
+  :bind
   (("C-M-#" . toggle-fullframe-window)))
 
 (use-package
@@ -32,10 +32,13 @@
   buffer-move
   :config (setq buffer-move-stay-after-swap t)
   :bind
-  (("C-M-' <up>" . buf-move-up)
-   ("C-M-' <down>" . buf-move-down)
-   ("C-M-' <left>" . buf-move-left)
-   ("C-M-' <right>" . buf-move-right)))
+  (:prefix-map jtk-buffer-move-map
+   :prefix "C-M-'"
+   :prefix-docstring "Moving the buffer to the neighbouring window."
+   ("<up>" . buf-move-up)
+   ("<down>" . buf-move-down)
+   ("<left>" . buf-move-left)
+   ("<right>" . buf-move-right)))
 
 (use-package
   elscreen
@@ -59,12 +62,14 @@
         (elscreen-screen-nickname project-name))
       nil))
 
-  :bind*
-  (("M-' c" . projectile-elscreen-create)
-   ("M-' C" . elscreen-clone)
+  ;; NOTE: M-' loads elscreen on first use; elscreen then puts its map
+  ;; there itself.
+  :bind-keymap
+  ("M-'" . elscreen-map)
 
-   :map elscreen-map
-   ("c" . elscreen-create)
+  :bind
+  (:map elscreen-map
+   ("c" . projectile-elscreen-create)
    ("C" . elscreen-clone)
    ("k" . elscreen-kill)
    ("K" . elscreen-kill-screen-and-buffers)
@@ -100,9 +105,12 @@
 
 (use-package
   ace-window
+  :bind
+  (("M-#" . ace-window))
+
+  ;; NOTE: Org binds C-# in tables; the global meaning wins.
   :bind*
-  (("M-#" . ace-window)
-   ("C-#" . aw-flip-window))
+  (("C-#" . aw-flip-window))
 
   :config
   (setq

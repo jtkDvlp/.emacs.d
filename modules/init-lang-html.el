@@ -118,7 +118,7 @@
   (keymap-set web-mode-edit-element-minor-mode-map
               "C-a" 'jtk-html-attribute-map)
 
-  :bind*
+  :bind
   (:map web-mode-edit-element-minor-mode-map
         ("C-<left>" . web-mode-element-backward)
         ("M-<left>" . web-mode-edit-element-elements-contract-over-border)

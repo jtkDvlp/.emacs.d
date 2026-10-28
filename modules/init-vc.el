@@ -10,13 +10,15 @@
 (use-package
   magit
   :requires fullframe
-  :bind*
-  (("C-v" . nil)
-   ("M-v g" . magit-status)
-   ("M-v l" . magit-log-current)
-   ("M-v L" . magit-log-all)
-   ("M-v b" . magit-blame)
-   ("M-v B" . magit-log-buffer-file))
+  :bind
+  (:prefix-map jtk-vc-map
+   :prefix "M-v"
+   :prefix-docstring "Git: status, logs and blame."
+   ("g" . magit-status)
+   ("l" . magit-log-current)
+   ("L" . magit-log-all)
+   ("b" . magit-blame)
+   ("B" . magit-log-buffer-file))
 
   :init
   (defun magit-push-to-gerrit-local-branch-or-commit-to-branch (source target)

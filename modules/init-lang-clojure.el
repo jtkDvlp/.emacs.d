@@ -356,7 +356,7 @@
    cider-repl-mode-map
    '(("C-;" . sp-comment-dwim)))
 
-  :bind*
+  :bind
   (:map clojure-mode-map
         ("C-c M-j" . nil)
 

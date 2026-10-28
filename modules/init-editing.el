@@ -15,30 +15,41 @@
   kmacro
   :ensure nil
 
-  :bind*
-  (("M-! m s" . start-kbd-macro)
-   ("M-! m S" . kmacro-end-macro)
-   ("M-! m m" . kmacro-end-and-call-macro)))
+  :bind
+  (:map jtk-run-map
+        :prefix-map jtk-macro-map
+        :prefix "m"
+        :prefix-docstring "Keyboard macros."
+        ("s" . start-kbd-macro)
+        ("S" . kmacro-end-macro)
+        ("m" . kmacro-end-and-call-macro)))
 
 (use-package
   ace-jump-mode
   :bind
   (("C-j" . ace-jump-char-mode)
    ("C-S-j" . ace-jump-mode-pop-mark)
-   ("M-j" . nil)
-   ("M-j l" . ace-jump-line-mode)))
+
+   ;; NOTE: Languages add their jumps to definitions under M-j in their
+   ;; own maps; Emacs looks up a prefix in all active maps.
+   :prefix-map jtk-jump-map
+   :prefix "M-j"
+   :prefix-docstring "Jumping: lines here, definitions in the languages."
+   ("l" . ace-jump-line-mode)))
 
 (use-package
   expand-region
+  :bind
+  (("C-." . er/expand-region))
+
+  ;; NOTE: clojure-mode binds C-: as well; the global meaning wins.
   :bind*
-  (("C-." . er/expand-region)
-   ("C-:" . er/contract-region)))
+  (("C-:" . er/contract-region)))
 
 (use-package
   jtk-narrow
   :ensure nil
-  :commands jtk-narrow-dwim
-  :bind*
+  :bind
   (("C--" . jtk-narrow-dwim)
    ("C-+" . jtk-narrow-widen)))
 
@@ -62,16 +73,19 @@
   :config
   (define-key mc/keymap (kbd "<return>") nil)
 
-  :bind*
-  (("M-c m" . mc/mark-more-like-this-extended)
-   ("M-c x" . mc/mark-all-like-this-dwim)
-   ("M-c a" . mc/mark-all-like-this)
-   ("M-c l" . mc/edit-lines)
+  :bind
+  (:prefix-map jtk-multiple-cursors-map
+   :prefix "M-c"
+   :prefix-docstring "Multiple cursors: marking (m x a l), inserting (i)."
+   ("m" . mc/mark-more-like-this-extended)
+   ("x" . mc/mark-all-like-this-dwim)
+   ("a" . mc/mark-all-like-this)
+   ("l" . mc/edit-lines)
 
-   ("M-c i n" . mc/insert-numbers)
-   ("M-c i l" . mc/insert-letters)
-   ("M-c i s" . mc/sort-region)
-   ("M-c i r" . mc/reverse-region)
+   ("i n" . mc/insert-numbers)
+   ("i l" . mc/insert-letters)
+   ("i s" . mc/sort-region)
+   ("i r" . mc/reverse-region)
 
    :map mc/keymap
    ("<tab>" . mc-hide-unmatched-lines-mode)))

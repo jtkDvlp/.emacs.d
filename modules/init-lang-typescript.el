@@ -28,7 +28,7 @@
    '(("C-M-<up>" . js2-mode-forward-transpose)
      ("C-M-<down>" . js2-mode-backward-transpose)))
 
-  :bind*
+  :bind
   (:map tide-mode-map
         ("M-j d" . tide-jump-to-definition)
         ("M-J" . tide-jump-back)

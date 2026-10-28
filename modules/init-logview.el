@@ -26,7 +26,7 @@
    '(("DateTime(ms) with zone"
       . ((java-pattern . "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")))))
 
-  :bind*
+  :bind
   (:map logview-mode-map
         ("C-c C-c" . logview-choose-submode)
 

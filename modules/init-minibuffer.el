@@ -70,10 +70,9 @@
    ;; NOTE: Both keys search the same way. Replacing goes through the
    ;; export: C-o, then `e' in the grep buffer, C-c C-c to apply.
    ("C-S-s" . jtk-git-grep-dwim)
-   ("C-S-r" . jtk-git-grep-dwim))
+   ("C-S-r" . jtk-git-grep-dwim)
 
-  :bind*
-  (("C-S-Y" . consult-yank-pop)
+   ("C-S-Y" . consult-yank-pop)
 
    ;; NOTE: As counsel had it: search the history of the current prompt.
    :map minibuffer-local-map

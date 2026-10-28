@@ -11,7 +11,7 @@
   elpy
   :hook (python-mode . elpy-enable)
 
-  :bind*
+  :bind
   (:map python-mode-map
         ("M-j d" . elpy-goto-definition)
         ("M-J" . pop-tag-mark))
