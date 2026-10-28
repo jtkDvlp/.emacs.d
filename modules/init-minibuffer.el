@@ -91,6 +91,12 @@
   embark-consult
   :after (embark consult))
 
+;; NOTE: In exported lines and grep results the file follows point, also
+;; while editing them: moving to a line shows it in its file.  C-c C-f
+;; toggles.  occur-edit-mode resets local modes, hence its own hook.
+(dolist (hook '(occur-mode-hook occur-edit-mode-hook grep-mode-hook))
+  (add-hook hook #'next-error-follow-minor-mode))
+
 (provide 'init-minibuffer)
 
 ;;; init-minibuffer.el ends here
