@@ -247,8 +247,8 @@ fallen dort ganz weg, und der Fehler mit ihnen.
 
 | Nr. | Ort | Was passiert (vermutlich) |
 |---|---|---|
-| B1 | `base--organisation.el:125` | `("C--" . org-narrow-to-subtree)` steht vor `:map org-mode-map`, also **global** in der Override-Map. Weil Org nach `base--interface` lädt, verdrängt es dort `narrow/narrow-dwim`: `C--` lädt in jedem Puffer Org und ruft `org-narrow-to-subtree`. |
-| B2 | `pkg--narrow.el:4` | `(narrow-to-region)` ohne Argumente — bei aktiver Region ein Fehler „wrong number of arguments“. Vom Byte-Compiler bestätigt. |
+| B1 ✅ (2.2) | `base--organisation.el:125` | `("C--" . org-narrow-to-subtree)` steht vor `:map org-mode-map`, also **global** in der Override-Map. Weil Org nach `base--interface` lädt, verdrängt es dort `narrow/narrow-dwim`: `C--` lädt in jedem Puffer Org und ruft `org-narrow-to-subtree`. |
+| B2 ✅ (2.2) | `pkg--narrow.el:4` | `(narrow-to-region)` ohne Argumente — bei aktiver Region ein Fehler „wrong number of arguments“. Vom Byte-Compiler bestätigt. |
 | B3 | `lang--typescript.el:9` | `before-save`-Hook auf `tide-formater-before-save`; die Funktion heißt `tide-format-before-save`. Und der Hook ist global, nicht pufferlokal. Sobald einmal eine TS-Datei offen war, sollte **jedes** Speichern mit einem Fehler abbrechen. |
 | B4 | `lang--javascript.el:83` | `"M-J "` (mit Leerzeichen) auf `xref-pop-maker-stack` — die Funktion heißt `xref-pop-marker-stack`, seit Emacs 29 `xref-go-back`. |
 | B5 | `lang--typescript.el:57` | `"C-C M-j"` — großes C, also `C-S-c`; gemeint war wohl `C-c`. |
@@ -622,6 +622,58 @@ Verlauf, der jetzt Neustarts überlebt) und `recentf-mode` ab dem Start
 (`consult-recent-file` schaltet es, anders als `counsel-recentf`, nicht
 selbst ein).
 
+#### ✅ 2.2 Tastatur-Infrastruktur (entschieden und umgesetzt 2026-10-28)
+
+**Ersatz:** smartrep durch das eingebaute **`repeat-mode`**. Die vier
+Wiederhol-Präfixe sind `defvar-keymap`s mit `:repeat`:
+
+| Präfix | Map | Wiederholbare Tasten |
+|---|---|---|
+| `M-+ f` | `jtk-zoom-map` | `# + - 1 2 3` (Schriftgröße) |
+| `M-+ w` | `jtk-frame-map` | `#` (Frame maximieren) |
+| `M-m` | `jtk-highlight-symbol-map` | `n p r` (Symbol vor, zurück, ersetzen) |
+| `C-a` in HTML | `jtk-html-attribute-map` | `C-<left>`, `C-<right>`, `C-M-<left>`, `C-M-<right>`, `C-(`, `C-M-(`, `C-k`, `M-SPC` (Attribute) |
+
+Mit `repeat-mode` gelten auch die Wiederhol-Maps, die Emacs mitbringt
+(`C-x o o`, `C-x u u`, `M-g n n` …). `repeat-check-key` steht auf dem
+Standard `t`: Eine Map greift nur, wenn die letzte Taste des Aufrufs in
+ihr steht — `M-x highlight-symbol-next` startet also keine Folge.
+
+**Entschieden und umgesetzt:**
+
+| Nr. | Was | Ergebnis |
+|---|---|---|
+| A | Wiederholtasten | `repeat-mode` statt smartrep, mit Emacs' eigenen Maps; smartrep aus der Lockdatei |
+| B | `:bind*` | `:bind` als Regel. Nur `C-#` (Org-Tabellen) und `C-:` (clojure-mode) bleiben in der Override-Map |
+| C | Fehler B1, B2 | Org legt `C--` in `org-mode-map`; `jtk-narrow-dwim` verengt auf die Region |
+| D | `("C-v" . nil)` | gestrichen, wirkte nie |
+| E | Tastenhilfe | `C-h` nach einem Präfix ruft `embark-prefix-help-command` |
+| F | Verlaufssuche im Minibuffer | `M-P` (wie eshell und CIDER-REPL); `C-r` dort ohne eigene Belegung |
+| G | Präfixe | benannte Präfix-Map je Modul, Tabelle in der README |
+| H | Kleinkram | `C-m`/`RET`-Trennung nach `init-keys`; macOS-Modifier ohne `when` |
+
+`diminish` bleibt bis 2.11.
+
+**Was der Vergleich der wirksamen Tasten zeigte:** Verglichen wurde je
+Puffertyp (Grundmodus, Elisp, Org, Clojure, HTML mit
+`web-mode-edit-element`, Logview, Minibuffer, vertico), was
+`key-binding` für jede belegte Taste liefert, vorher gegen nachher. Außer
+den Präfixen, die jetzt einen Namen statt einer namenlosen Keymap
+liefern, änderte sich nur:
+
+| Taste | Puffer | vorher | nachher |
+|---|---|---|---|
+| `C--` | alle außer Org | `org-narrow-to-subtree` (B1) | `jtk-narrow-dwim` |
+| `C-- s`, `C-- t`, `C-+` | Logview | von der Override-Map verdeckt | logviews eigene Befehle |
+| `C-r` | Minibuffer | `consult-history` | `consult-line` (die globale Belegung) |
+| `M-P` | Minibuffer | — | `consult-history` |
+| `M-'` | Minibuffer | `M-' c`/`C` aus der Override-Map | `undefined`, wie elscreen es dort setzt |
+
+**Nebenbei aufgefallen:** Die elscreen-Tasten unter `M-'` außer `c`
+und `C` wirkten erst, nachdem elscreen geladen war; davor kannte `M-'`
+nur die beiden Override-Tasten. Jetzt lädt `M-'` elscreen beim ersten
+Druck (`:bind-keymap`), und alle Tasten wirken sofort.
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -640,7 +692,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 |---|---|---|---|---|---|
 | use-package | e | configuration | Deklaration | bleibt | Ja |
 | diminish | M | Bootstrap | Modeline-Lichter ausblenden | hängt an 2.11 | Ja |
-| smartrep | M | Bootstrap | Wiederholtasten | → `repeat-mode` | Ja |
+| smartrep | M | Bootstrap | Wiederholtasten | **ersetzt** (2.2) durch `repeat-mode` | Ja |
 | exec-path-from-shell | M | Bootstrap | PATH aus Login-Shell | installiert, **nie benutzt** — einsetzen | |
 | doom-themes | M | apperance | Theme `doom-one` | gepflegt | |
 | spaceline | M | apperance | Modeline | kaum noch gepflegt | |
