@@ -51,8 +51,6 @@
   :hook (web-mode . web-mode-edit-element-minor-mode)
 
   :config
-  (require 'html-mode-expansions)
-
   (defun web-mode-element-forward ()
     (interactive)
     (when (looking-at-p "[\s\n]+")
@@ -89,7 +87,11 @@
   (defun web-mode-attribute-select-content ()
     (interactive)
     (web-mode-edit-element-attributes-end-inside)
-    (call-interactively 'er/mark-inside-quotes))
+    (let ((quote (char-after))
+          (end (point)))
+      (when (memq quote '(?\" ?'))
+        (skip-chars-backward (string ?^ quote))
+        (push-mark end nil t))))
 
   (defun web-mode-attribute-rename ()
     (interactive)
@@ -97,7 +99,7 @@
               (looking-at-p "[\s\n]+"))
       (web-mode-attribute-next))
     (web-mode-attribute-beginning)
-    (call-interactively 'er/mark-word))
+    (mark-word))
 
   (defvar-keymap jtk-html-attribute-map
     :doc "Editing the attributes of an element; the keys repeat."

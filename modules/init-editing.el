@@ -48,22 +48,24 @@
         ("h" . eldoc-doc-buffer)))
 
 (use-package
-  ace-jump-mode
+  avy
   :bind
-  (("C-j" . ace-jump-char-mode)
-   ("C-S-j" . ace-jump-mode-pop-mark)
+  (("C-j" . avy-goto-char)
+   ("C-S-j" . avy-pop-mark)
 
    :map jtk-jump-map
-   ("l" . ace-jump-line-mode)))
+   ("l" . avy-goto-line)))
 
+;; NOTE: Grows the region by subword, word, list, string, comment,
+;; paragraph or defun, and by tree-sitter nodes where a mode has them.
 (use-package
-  expand-region
+  expreg
   :bind
-  (("C-." . er/expand-region))
+  (("C-." . expreg-expand))
 
   ;; NOTE: clojure-mode binds C-: as well; the global meaning wins.
   :bind*
-  (("C-:" . er/contract-region)))
+  (("C-:" . expreg-contract)))
 
 (use-package
   jtk-narrow
