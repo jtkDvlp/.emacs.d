@@ -706,13 +706,25 @@ es ab 2.7 zwei Projektbegriffe.
 | `C-x F` | `projectile-find-file` | `project-find-file` |
 | `C-x d` / `C-x D` | `projectile-dired` / `projectile-find-dir` | `project-dired` / `project-find-dir` |
 | `C-x K` | `projectile-kill-buffers` | `project-kill-buffers` |
-| `C-x x f` | `projectile-switch-project` (gleich die Dateiauswahl) | `project-switch-project` (erst ein Menü: Datei, grep, eshell, magit …) |
+| `C-x x f` | `projectile-switch-project` (gleich die Dateiauswahl) | `project-switch-project`, danach eine Auswahl wie überall, was im Projekt geschehen soll (`jtk-project-act`, siehe unten) |
 | `C-x C-S-F` | `projectile-recentf` | `consult-project-buffer` (wie `C-x B`; die Liste enthält die zuletzt benutzten Dateien des Projekts) |
 | `M-! s s` | `projectile-run-eshell` | `project-eshell` |
 | `M-' c` | `projectile-elscreen-create` | `jtk-elscreen-create-for-project` (umbenannt) |
 | `M-x` | `projectile-httpd/start`, `…/stop` | `jtk-httpd-start-project`, `jtk-httpd-stop-project` (umbenannt) |
 
-Dazu kommt Emacs' Projekt-Map auf `C-x p`.
+Dazu kommt Emacs' Projekt-Map auf `C-x p`, ergänzt um `m` für magit.
+
+**Was nach dem Projektwechsel geschieht**, wählt man in einer Liste wie
+jede andere Auswahl (vertico) statt in project.els Ein-Tasten-Menü im
+Echo-Bereich: Datei, Verzeichnis, Puffer und zuletzt benutzte Dateien,
+git grep, Magit (statt VC-Dir), eshell, Dired, beliebiger Befehl. Ein
+Modul fügt Einträge für seine Art Projekt hinzu
+(`jtk-project-actions`, mit Markerdateien); Clojure bietet in Projekten
+mit `project.clj`, `deps.edn`, `shadow-cljs.edn` oder `bb.edn` CIDERs
+jack-in und connect an. Der Befehl läuft im Projektordner, weil CIDER
+das Projekt aus dem aktuellen Verzeichnis nimmt. Geprüft im Batch: im
+git-Projekt acht Einträge, im Leiningen-Projekt dazu drei für CIDER;
+der gewählte Befehl lief im gewählten Projekt.
 
 **Umgesetzt:** Wurzel und Name des Projekts kommen aus `lisp/jtk-project.el`
 (`jtk-project-root`, `jtk-project-name`) — für Fenstertitel,
