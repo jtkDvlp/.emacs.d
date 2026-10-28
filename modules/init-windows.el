@@ -44,10 +44,10 @@
   elscreen
 
   :commands
-  (elscreen-create projectile-elscreen-create)
+  (elscreen-create jtk-elscreen-create-for-project)
 
   :init
-  (defun projectile-elscreen-create ()
+  (defun jtk-elscreen-create-for-project ()
     (interactive)
     (let* ((project-root
             (when (fboundp 'projectile-project-root)
@@ -69,7 +69,7 @@
 
   :bind
   (:map elscreen-map
-   ("c" . projectile-elscreen-create)
+   ("c" . jtk-elscreen-create-for-project)
    ("C" . elscreen-clone)
    ("k" . elscreen-kill)
    ("K" . elscreen-kill-screen-and-buffers)

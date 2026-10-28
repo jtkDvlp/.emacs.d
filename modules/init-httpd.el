@@ -26,17 +26,17 @@
 
   (defalias 'httpd/stop 'httpd-stop)
 
-  (defun projectile-httpd/start ()
+  (defun jtk-httpd-start-project ()
     (interactive)
     (httpd/start (projectile-project-root) 8080))
 
-  (defalias 'projectile-httpd/stop 'httpd/stop)
+  (defalias 'jtk-httpd-stop-project 'httpd/stop)
 
   :commands
   (httpd/start
    httpd/stop
-   projectile-httpd/start
-   projectile-httpd/stop))
+   jtk-httpd-start-project
+   jtk-httpd-stop-project))
 
 (provide 'init-httpd)
 
