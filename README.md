@@ -43,7 +43,8 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 | `C-M-'` | `jtk-buffer-move-map` | `init-windows` | moving the buffer to a neighbouring window |
 | `M-v` | `jtk-vc-map` | `init-vc` | git |
 | `C-M--` | `jtk-org-map` | `init-org` | capturing, agenda |
-| `C-x x` | `ctl-x-x-map` (Emacs) | `init-project`, `init-treemacs` | projects, file tree |
+| `C-x p` | `project-prefix-map` (Emacs) | `init-project` | project commands: find, grep, shell, compile, magit (`m`) |
+| `C-x x` | `ctl-x-x-map` (Emacs) | `init-project`, `init-treemacs` | switching projects, file tree |
 | `C-a` in HTML | `jtk-html-attribute-map` | `init-lang-html` | editing attributes (repeats) |
 
 ## todo

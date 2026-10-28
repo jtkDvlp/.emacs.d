@@ -693,6 +693,52 @@ und `C` wirkten erst, nachdem elscreen geladen war; davor kannte `M-'`
 nur die beiden Override-Tasten. Jetzt lädt `M-'` elscreen beim ersten
 Druck (`:bind-keymap`), und alle Tasten wirken sofort.
 
+#### ✅ 2.3 Projekte (entschieden und umgesetzt 2026-10-28)
+
+**Ersatz:** projectile durch das eingebaute **project.el**. consult,
+xref, magit und ab 2.7 eglot fragen ohnehin project.el; projectile-mode
+hängte sich bisher selbst dort ein (`project-find-functions`), sodass
+alle über projectile liefen. Verworfen: projectile behalten — dann gäbe
+es ab 2.7 zwei Projektbegriffe.
+
+| Taste | vorher | nachher |
+|---|---|---|
+| `C-x F` | `projectile-find-file` | `project-find-file` |
+| `C-x d` / `C-x D` | `projectile-dired` / `projectile-find-dir` | `project-dired` / `project-find-dir` |
+| `C-x K` | `projectile-kill-buffers` | `project-kill-buffers` |
+| `C-x x f` | `projectile-switch-project` (gleich die Dateiauswahl) | `project-switch-project` (erst ein Menü: Datei, grep, eshell, magit …) |
+| `C-x C-S-F` | `projectile-recentf` | `consult-project-buffer` (wie `C-x B`; die Liste enthält die zuletzt benutzten Dateien des Projekts) |
+| `M-! s s` | `projectile-run-eshell` | `project-eshell` |
+| `M-' c` | `projectile-elscreen-create` | `jtk-elscreen-create-for-project` (umbenannt) |
+| `M-x` | `projectile-httpd/start`, `…/stop` | `jtk-httpd-start-project`, `jtk-httpd-stop-project` (umbenannt) |
+
+Dazu kommt Emacs' Projekt-Map auf `C-x p`.
+
+**Umgesetzt:** Wurzel und Name des Projekts kommen aus `lisp/jtk-project.el`
+(`jtk-project-root`, `jtk-project-name`) — für Fenstertitel,
+eshell-Prompt, elscreen, httpd, CIDER-Helfer und HTML-Vorschau. Die
+ignorierten Ordner stehen in `project-vc-ignores`; `.projectile` bleibt
+eine Projektwurzel. Das IDE-Layout kennt den eshell-Puffernamen von
+project.el. consults projectile-Adapter und treemacs-projectile fallen
+weg.
+
+**Geprüft** in einem Test-Repository: Wurzel absolut, Name, Fenstertitel
+und eshell-Prompt wie zuvor; `node_modules/` und `dist/` fehlen in der
+Dateiliste, ein Unterordner mit `.projectile` ist ein eigenes Projekt;
+`project-eshell` heißt `*repo-eshell*` und landet im IDE-Fenster.
+`project-current` kostet 0,015 ms je Aufruf (Emacs 31.1, 1000 Aufrufe),
+der Fenstertitel braucht also keinen Zwischenspeicher.
+
+**Unterschied, der bleibt:** Ein Ordner **ohne git** mit `project.clj`,
+`deps.edn` oder `package.json` war für projectile ein Projekt, für
+project.el ist er keins. Abhilfe bei Bedarf: diese Dateien in
+`project-vc-extra-root-markers` aufnehmen — dann wird allerdings auch
+jedes Unterprojekt in einem git-Repository zu einem eigenen Projekt.
+
+**Nebenbei:** Das Dashboard holte seine Projektliste schon immer aus
+project.el (`dashboard-projects-backend` ist `project-el`), nicht aus
+projectile; die Liste füllt sich jetzt mit den benutzten Projekten.
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -732,9 +778,9 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | which-key | M | interface | Tastenhilfe | **entfernt** (2026-10-25): das Rezept klonte das ganze Emacs-Repository, der erste Start hing; nicht mehr gebraucht | |
 | undo-tree | M | interface | Undo-Baum | schwergewichtig → vundo | Ja |
 | multiple-cursors | M | interface | Mehrfach-Cursor | ok | Ja |
-| counsel-projectile / projectile | M | filemanagement | Projekte | counsel-projectile **entfernt** (2.1); projectile → 2.3 | Ja |
+| counsel-projectile / projectile | M | filemanagement | Projekte | counsel-projectile **entfernt** (2.1); projectile **ersetzt** (2.3) durch project.el, bleibt aber als Abhängigkeit von platformio-mode installiert | Ja |
 | git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | prüfen | |
-| treemacs (+ -projectile, -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt | Ja |
+| treemacs (+ -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt; treemacs-projectile **entfernt** (2.3), treemacs fragt project.el | Ja |
 | simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | Ja |
 | org | e | organisation | GTD | bleibt | |
 | dashboard (+ page-break-lines) | M | startup | Startbildschirm | gepflegt | |

@@ -31,8 +31,8 @@ Conventional Commits trotzdem, damit die Historie lesbar bleibt.
 ## Aufbau (Ist-Stand)
 
 Phase 1 des Plans ist umgesetzt: die Struktur steht. Phase 2 prüft die
-Pakete Block für Block; erledigt sind 2.1 (Vervollständigung) und 2.2
-(Tastatur-Infrastruktur).
+Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
+(Tastatur-Infrastruktur) und 2.3 (Projekte).
 
 | Pfad | Inhalt | versioniert |
 |---|---|---|
@@ -42,8 +42,8 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung) und 2.2
 | `modules/init-core.el` | Grundverhalten ohne eigenes Thema: `local.el`, PATH, Sicherungen, Kodierung, Auto-Revert, Scrollen, Rückfragen. | ja |
 | `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `org`, `startup`, `structural-editing`, `completion`, `checking`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`. Jede Datei sagt im Kopf, was hineingehört. | ja |
 | `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. `init-lang-php` wird nicht geladen. | ja |
-| `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`ide`, `narrow`, `zoom`, `window-mirror`), Symbole mit Präfix `jtk-`. | ja |
-| `etc/elpaca-lock.eld` | Commit jedes Pakets (92, mit Abhängigkeiten und elpaca selbst). | ja |
+| `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`ide`, `narrow`, `project`, `zoom`, `window-mirror`), Symbole mit Präfix `jtk-`. | ja |
+| `etc/elpaca-lock.eld` | Commit jedes Pakets (91, mit Abhängigkeiten und elpaca selbst). | ja |
 | `etc/yasnippet/snippets/` | Handgeschriebene yasnippet-Vorlagen. | ja |
 | `etc/eshell/aliases` | Handgeschriebene eshell-Aliase. | ja |
 | `etc/mc-list.el` | Von multiple-cursors **erzeugt**, aber inhaltlich gepflegt — deshalb versioniert. | ja |
@@ -185,6 +185,14 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   Präfix.** `("M-' c" . …)` mit `:bind` scheitert mit „starts with
   non-prefix key“, solange `M-'` noch `abbrev-prefix-mark` ist; in der
   Override-Map fiel das nie auf. Erst den Präfix als Map binden.
+- **Projektwurzel über `jtk-project-root`, nicht `project-root`.**
+  `project-root` kürzt das Home-Verzeichnis zu `~`; wer die Wurzel mit
+  `buffer-file-name` oder einem eshell-Pfad vergleicht, findet dann
+  nichts. `jtk-project-root` liefert sie absolut.
+- **Einträge in `project-vc-ignores` mit Schrägstrich am Ende.** Aus
+  `"node_modules"` macht project.el das git-Muster `**/node_modules`, das
+  den Inhalt des Ordners nicht trifft; erst `"node_modules/"` wird zu
+  `**/node_modules/**`.
 - **`:bind*` mit `:map` wirkt wie `:bind`.** Die Belegung landet in der
   genannten Mode-Map, nicht in der Override-Map. Das Sternchen dort trägt
   nichts und täuscht Absicht vor.
@@ -213,6 +221,7 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 | nach 2.1, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 94 Einträgen | 0 | 31 |
 | nach 2.2, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 93 Einträgen reproduziert | 0 | 25 |
 | nach 2.2 mit avy und expreg, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 92 Einträgen reproduziert | 0 | 25 |
+| nach 2.3, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 91 Einträgen reproduziert | 0 | 23 |
 
 Der Unterschied von 3 Warnungen bis 2.1: Die `ns-*`- und `mac-*`-Variablen
 gibt es nur unter macOS; in der Cloud meldete der Byte-Compiler sie als
