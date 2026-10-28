@@ -12,8 +12,8 @@
         c-electric-star
         cljr-slash
         comment-dwim
-        counsel-M-x
-        counsel-yank-pop
+        consult-yank-pop
+        execute-extended-command
         haml-electric-backspace
         indent-for-tab-command
         kill-region

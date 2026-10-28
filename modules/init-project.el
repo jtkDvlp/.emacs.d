@@ -2,23 +2,23 @@
 
 ;;; Commentary:
 
-;; projectile with counsel: switching projects and finding files,
+;; projectile: switching projects and finding files,
 ;; directories and buffers within one.
 
 ;;; Code:
 
 (use-package
-  counsel-projectile
+  projectile
   :diminish projectile-mode
 
   :config
   (setq
-   projectile-completion-system 'ivy
+   projectile-completion-system 'default
    projectile-file-exists-remote-cache-expire 300
    projectile-file-exists-local-cache-expire nil
    projectile-enable-idle-timer t
    projectile-mode-line-prefix " ")
-  (counsel-projectile-mode)
+  (projectile-mode)
   (add-to-list 'projectile-globally-ignored-directories "node_modules")
   (add-to-list 'projectile-globally-ignored-directories "dist")
   (add-to-list 'projectile-globally-ignored-directories "elpa")
@@ -30,22 +30,22 @@
     (save-some-buffers t))
 
   :bind
-  (("C-x b" . counsel-switch-buffer)
-   ("C-x B" . counsel-projectile-switch-to-buffer)
+  (("C-x b" . consult-buffer)
+   ("C-x B" . consult-project-buffer)
 
-   ("C-x f" . counsel-find-file)
-   ("C-x F" . counsel-projectile-find-file)
+   ("C-x f" . find-file)
+   ("C-x F" . projectile-find-file)
 
-   ("C-x C-f" . counsel-recentf)
+   ("C-x C-f" . consult-recent-file)
    ("C-x C-S-F" . projectile-recentf)
 
    ("C-x d" . projectile-dired)
-   ("C-x D" . counsel-projectile-find-dir)
+   ("C-x D" . projectile-find-dir)
 
    ("C-x C-d" . nil)
 
-   ("C-x x f" . counsel-projectile-switch-project)
-   ("C-x x F" . counsel-projectile)
+   ("C-x x f" . projectile-switch-project)
+   ("C-x x F" . consult-project-buffer)
 
    ("C-q" . switch-to-prev-buffer)
 

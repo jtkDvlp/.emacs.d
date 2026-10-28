@@ -564,6 +564,64 @@ Je Block ein PR. Für jedes Paket dieselben Fragen, in dieser Reihenfolge:
 | 2.10 Organisation | org (GTD), dashboard | Unabhängig, aber persönlich — braucht dein Urteil mehr als Technik. | — |
 | 2.11 Aussehen | doom-themes, spaceline, linum, rainbow-mode, rainbow-delimiters, Hervorhebung von `TODO`/`WATCHOUT`, Fenstertitel | Zuletzt: die Modeline zeigt Segmente aus 2.3, 2.4 und 2.6 (Projekt, IDE-Fenster, Prüfergebnisse) — erst wenn die feststehen, lohnt ihr Umbau. | doom-modeline oder eingebaute Modeline, `display-line-numbers-mode`, hl-todo |
 
+#### ✅ 2.1 Vervollständigung (entschieden und umgesetzt 2026-10-25)
+
+**Ersatz:** ivy, counsel, swiper und counsel-projectile durch
+**vertico** (Liste im Minibuffer), **orderless** (Leerzeichen trennt
+Suchbegriffe in beliebiger Reihenfolge, wie bei ivy), **marginalia**
+(Zusatzinfos neben den Einträgen, etwa Tastenbelegung bei `M-x`),
+**consult** (Befehle mit Vorschau: Puffer, Zeilen, grep, Verlauf) und
+**embark** mit **embark-consult** (Aktionen auf einem Eintrag, Export in
+einen Puffer). Alle setzen auf `completing-read` auf: Jeder Befehl, der
+eine Auswahl fragt — auch magit, projectile und die CIDER-Helfer —,
+bekommt dieselbe Oberfläche ohne eigenen Klebstoff. Verworfen:
+ivy behalten (eigene Welt, siehe Abschnitt 1); nur eingebautes
+`fido-vertical-mode` (keine Vorschau, kein Gegenstück zu `swiper`).
+
+**Tasten bleiben, wo sie sind.** Was sich dahinter ändert:
+
+| Taste | heute | künftig | Unterschied für dich |
+|---|---|---|---|
+| (alle Auswahlen) | `ivy-mode` | `vertico-mode` + orderless + marginalia | gleiche Bedienung; 15 Zeilen, Umlauf am Ende wie bisher |
+| `M-x`, `C-h f`, `C-h v` … | von `counsel-mode` umgelenkt | die eingebauten Befehle in vertico | Tastenbelegung und Doku-Zeile stehen per marginalia daneben |
+| `C-o` in einer Auswahl | `ivy-occur` | `embark-export` | dasselbe: Liste in einen Puffer |
+| `C-s`, `C-r` | `swiper` | `consult-line` | mit Vorschau beim Blättern |
+| `C-r` in der Suche | `swiper-query-replace` | — | **entfällt:** stattdessen `C-o` (Export nach occur), dort `e` zum Bearbeiten |
+| `C-S-s` | `counsel-git-grep` (Region als Vorgabe) | `consult-git-grep` (Region als Vorgabe) | mit Vorschau |
+| `C-S-r` | `counsel-git-grep-query-replace` | `consult-git-grep`, `C-o`, dann bearbeiten (Paket **wgrep**) | Ersetzen über mehrere Dateien in einem bearbeitbaren grep-Puffer statt per Abfrage |
+| `C-S-y` | `counsel-yank-pop` | `consult-yank-pop` | mit Vorschau |
+| `C-x b` | `counsel-switch-buffer` | `consult-buffer` | zeigt auch zuletzt geöffnete Dateien (wie `ivy-use-virtual-buffers`) |
+| `C-x B` | `counsel-projectile-switch-to-buffer` | `consult-project-buffer` | Puffer und zuletzt benutzte Dateien des Projekts |
+| `C-x f` | `counsel-find-file` | `find-file` | — |
+| `C-x F` | `counsel-projectile-find-file` | `projectile-find-file` | — |
+| `C-x C-f` | `counsel-recentf` | `consult-recent-file` | mit Vorschau |
+| `C-x D` | `counsel-projectile-find-dir` | `projectile-find-dir` | — |
+| `C-x x f` | `counsel-projectile-switch-project` | `projectile-switch-project` | — |
+| `C-x x F` | `counsel-projectile` (Puffer und Dateien in einer Liste) | `consult-project-buffer` | wie `C-x B` |
+| `M-P` in eshell | `counsel-esh-history` | `consult-history` | — |
+
+**Nebenbei:** `delete-selection-mode` stand in counsels `:config` und
+zieht nach `init-editing`; `magit` und `projectile` verlieren ihre
+ivy-Einstellungen (beide nehmen dann einfach `completing-read`);
+`etc/mc-list.el` nennt `counsel-M-x` und `counsel-yank-pop`, die durch ihre
+Nachfolger ersetzt werden.
+
+**Entschieden:** vertico und Verwandte ja; Ersetzen über Export und
+Bearbeiten im Puffer; embark ohne eigene Taste, nur `C-o`.
+
+**Abweichung beim Umsetzen:** wgrep war freigegeben, wird aber nicht
+gebraucht. Emacs 31 macht grep-Puffer selbst bearbeitbar
+(`grep-edit-mode`: `e`, dann `C-c C-c`); geprüft an einem Puffer in der
+Form, die embark-consult beim Export erzeugt. Die Änderungen landen in
+den Puffern der Dateien und werden wie gewohnt gespeichert.
+
+**Ergänzt, weil der Schnappschuss es zeigte:** counsel belegte im
+Minibuffer `C-r` mit der Suche im Verlauf; das macht jetzt
+`consult-history`. Dazu kamen `savehist-mode` (vertico sortiert nach dem
+Verlauf, der jetzt Neustarts überlebt) und `recentf-mode` ab dem Start
+(`consult-recent-file` schaltet es, anders als `counsel-recentf`, nicht
+selbst ein).
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -590,7 +648,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | rainbow-mode | M | apperance | Farbwerte einfärben | ok; in jedem `prog-mode` fraglich | Ja |
 | rainbow-delimiters | M | apperance | Klammern einfärben | ok | Ja |
 | kmacro | e | interface | Makros | ok | |
-| ivy / counsel / swiper | M | interface | Vervollständigung, Suche | → 2.1 | Ja |
+| ivy / counsel / swiper | M | interface | Vervollständigung, Suche | **ersetzt** (2.1) durch vertico, orderless, marginalia, consult, embark, embark-consult | Ja |
 | winner | e | interface | Fensterlayout zurück | ok, ggf. `tab-bar-history` | Ja |
 | fullframe | M | interface | magit im Vollbild | ggf. `display-buffer-alist` | Ja |
 | buffer-move | M | interface | Puffer tauschen | → `windmove-swap-states-*` | Ja |
@@ -603,7 +661,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | which-key | M | interface | Tastenhilfe | **entfernt** (2026-10-25): das Rezept klonte das ganze Emacs-Repository, der erste Start hing; nicht mehr gebraucht | |
 | undo-tree | M | interface | Undo-Baum | schwergewichtig → vundo | Ja |
 | multiple-cursors | M | interface | Mehrfach-Cursor | ok | Ja |
-| counsel-projectile / projectile | M | filemanagement | Projekte | → 2.1 / 2.3 | Ja |
+| counsel-projectile / projectile | M | filemanagement | Projekte | counsel-projectile **entfernt** (2.1); projectile → 2.3 | Ja |
 | git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | prüfen | |
 | treemacs (+ -projectile, -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt | Ja |
 | simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | Ja |
