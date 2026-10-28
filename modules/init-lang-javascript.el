@@ -58,13 +58,13 @@
 (use-package
   xref-js2
   :after js2-mode
+  :init
+  ;; NOTE: Buffer-local: the backend answers for every buffer, so on the
+  ;; global hook it would take over xref in all modes without their own.
+  (defun jtk-xref-js2-enable ()
+    (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))
   :hook
-  (xref-backend-functions . xref-js2-xref-backend)
-  :bind
-  (:map js2-mode-map
-        ("M-j d" . xref-find-definitions)
-        ("M-j r" . xref-find-references)
-        ("M-J " . xref-pop-maker-stack)))
+  (js2-mode . jtk-xref-js2-enable))
 
 (use-package
   indium

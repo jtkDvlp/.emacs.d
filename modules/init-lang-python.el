@@ -13,8 +13,7 @@
 
   :bind
   (:map python-mode-map
-        ("M-j d" . elpy-goto-definition)
-        ("M-J" . pop-tag-mark))
+        ("M-j d" . elpy-goto-definition))
   
   :config
   (jtk-structural-editing-bind python-mode-map)

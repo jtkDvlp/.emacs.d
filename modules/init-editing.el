@@ -2,7 +2,8 @@
 
 ;;; Commentary:
 
-;; Keyboard macros, jumping, growing the region, narrowing, undo,
+;; Keyboard macros, jumping (to definitions, references and lines),
+;; documentation at point, growing the region, narrowing, undo,
 ;; multiple cursors, comments, trailing whitespace, indentation and
 ;; symbol highlighting.  Editing by s-expressions is in
 ;; init-structural-editing.
@@ -24,17 +25,35 @@
         ("S" . kmacro-end-macro)
         ("m" . kmacro-end-and-call-macro)))
 
+;; NOTE: The same keys jump in every language: each mode, and later
+;; each language server, tells xref and eldoc where to look.  A language
+;; binds a key in its own map only where it has something better.
+(use-package
+  xref
+  :ensure nil
+  :bind
+  (("M-J" . xref-go-back)
+
+   :prefix-map jtk-jump-map
+   :prefix "M-j"
+   :prefix-docstring "Jumping: to definitions (d), references (r), lines (l)."
+   ("d" . xref-find-definitions)
+   ("r" . xref-find-references)))
+
+(use-package
+  eldoc
+  :ensure nil
+  :bind
+  (:map help-map
+        ("h" . eldoc-doc-buffer)))
+
 (use-package
   ace-jump-mode
   :bind
   (("C-j" . ace-jump-char-mode)
    ("C-S-j" . ace-jump-mode-pop-mark)
 
-   ;; NOTE: Languages add their jumps to definitions under M-j in their
-   ;; own maps; Emacs looks up a prefix in all active maps.
-   :prefix-map jtk-jump-map
-   :prefix "M-j"
-   :prefix-docstring "Jumping: lines here, definitions in the languages."
+   :map jtk-jump-map
    ("l" . ace-jump-line-mode)))
 
 (use-package

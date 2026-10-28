@@ -31,14 +31,13 @@
   :bind
   (:map tide-mode-map
         ("M-j d" . tide-jump-to-definition)
-        ("M-J" . tide-jump-back)
 
         ("C-h h" . tide-documentation-at-point)
 
         ("M-r r" . tide-rename-symbol)
         ("M-r f" . tide-rename-file)
 
-        ("C-C M-j" . tide-restart-server)))
+        ("C-c M-j" . tide-restart-server)))
 
 (use-package
   npm-mode
