@@ -78,6 +78,9 @@ kommt der Backtrace dazu. Es endet mit einem Fehler, wenn das Laden oder
 eine Datei scheitert — Warnungen allein nicht, ihre Zahl ist das Maß. Die
 GitHub-Action (`.github/workflows/check.yml`, macOS, Emacs 31.1) führt es
 bei jedem Push aus und legt den Bericht in die Zusammenfassung des Laufs.
+Der Prüfschritt hat ein Zeitlimit von 15 Minuten (sonst 2,5 bis 3,5), und
+ein Download unter 1 KB/s für 60 s scheitert — drei Läufe hingen vorher
+stundenlang an einem stehenden Download.
 Ein anderes Emacs wählt man über `EMACS=/pfad/zu/emacs scripts/check`.
 
 `--snapshot FILE` schreibt nach dem Laden — und nachdem jedes deklarierte
