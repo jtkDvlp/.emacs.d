@@ -22,7 +22,7 @@
   (require 'yasnippet-snippets)
   (yas-reload-all)
 
-  :bind*
+  :bind
   (:map yas-minor-mode-map
         ("C-c" . nil)))
 

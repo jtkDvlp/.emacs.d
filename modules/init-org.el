@@ -128,17 +128,20 @@ Set in local.el; used by `org-insert-jira-issue'.")
           (org-kill-list-item)
         (org-cut-special))))
 
-  :bind*
-  (("C-M-- <RET>" . org-capture)
-   ("C-M-- t" . org-capture-todo)
-   ("C-M-- T" . org-capture-todo-deadline)
-   ("C-M-- j" . org-capture-journal)
-   ("C-M-- c" . org-capture-calendar)
-   ("C-M-- a" . org-agenda)
-
-   ("C--" . org-narrow-to-subtree)
+  :bind
+  (:prefix-map jtk-org-map
+   :prefix "C-M--"
+   :prefix-docstring "Capturing into the GTD files, and the agenda."
+   ("<RET>" . org-capture)
+   ("t" . org-capture-todo)
+   ("T" . org-capture-todo-deadline)
+   ("j" . org-capture-journal)
+   ("c" . org-capture-calendar)
+   ("a" . org-agenda)
 
    :map org-mode-map
+   ("C--" . org-narrow-to-subtree)
+
    ("M-i l" . org-insert-link)
    ("M-i j" . org-insert-jira-issue)
    ("M-i d" . org-deadline)

@@ -143,17 +143,18 @@
   jtk-zoom
   :ensure nil
   :demand t
-  :requires smartrep
   :config
-  (smartrep-define-key
-      global-map
-      "M-+ f"
-    '(("#" . jtk-zoom-default)
-      ("+" . jtk-zoom-inc)
-      ("-" . jtk-zoom-dec)
-      ("1" . jtk-zoom-custom-1)
-      ("2" . jtk-zoom-custom-2)
-      ("3" . jtk-zoom-custom-3))))
+  (defvar-keymap jtk-zoom-map
+    :doc "Font size of the frame; the keys repeat."
+    :prefix t
+    :repeat t
+    "#" #'jtk-zoom-default
+    "+" #'jtk-zoom-inc
+    "-" #'jtk-zoom-dec
+    "1" #'jtk-zoom-custom-1
+    "2" #'jtk-zoom-custom-2
+    "3" #'jtk-zoom-custom-3)
+  (keymap-set jtk-view-map "f" 'jtk-zoom-map))
 
 (provide 'init-appearance)
 

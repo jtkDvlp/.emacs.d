@@ -3,7 +3,7 @@
 
 (setq mc/cmds-to-run-for-all
       '(
-        ace-jump-mode-pop-mark
+        avy-pop-mark
         basic-electric-colon
         c-electric-colon
         c-electric-lt-gt
@@ -14,6 +14,8 @@
         comment-dwim
         consult-yank-pop
         execute-extended-command
+        expreg-contract
+        expreg-expand
         haml-electric-backspace
         indent-for-tab-command
         kill-region

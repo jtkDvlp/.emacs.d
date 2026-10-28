@@ -70,17 +70,26 @@
    ;; NOTE: Both keys search the same way. Replacing goes through the
    ;; export: C-o, then `e' in the grep buffer, C-c C-c to apply.
    ("C-S-s" . jtk-git-grep-dwim)
-   ("C-S-r" . jtk-git-grep-dwim))
+   ("C-S-r" . jtk-git-grep-dwim)
 
-  :bind*
-  (("C-S-Y" . consult-yank-pop)
+   ("C-S-Y" . consult-yank-pop)
 
-   ;; NOTE: As counsel had it: search the history of the current prompt.
+   ;; NOTE: Searching the history of the prompt is M-P everywhere: here,
+   ;; in eshell and in the CIDER REPL.
    :map minibuffer-local-map
-   ("C-r" . consult-history)))
+   ("M-P" . consult-history)
+
+   ;; NOTE: Does nothing here; the global C-r would search the lines of
+   ;; the prompt.
+   ("C-r" . ignore)))
 
 (use-package
   embark
+  :custom
+  ;; NOTE: C-h after a prefix lists its keys to choose from, with their
+  ;; descriptions; it stands in for which-key.
+  (prefix-help-command #'embark-prefix-help-command)
+
   :bind
   (:map minibuffer-local-map
         ("C-o" . embark-export)))

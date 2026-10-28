@@ -70,7 +70,7 @@
         treemacs-width                         40
         treemacs-width-is-initially-locked     nil)
 
-  :bind*
+  :bind
   (("C-x x d" . treemacs-dwim)
    ("C-x x D" . treemacs-hide)))
 

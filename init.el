@@ -12,8 +12,9 @@
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 
 ;; WATCHOUT: The order matters.  init-packages sets up the package
-;; manager every later module relies on; and where two modules bind the
-;; same global key, the later one wins (plan, B1: `C--').
+;; manager every later module relies on, init-keys the prefixes several
+;; modules share; and where two modules bind the same key, the later one
+;; wins.
 (require 'init-packages)
 (require 'init-core)
 (require 'init-keys)

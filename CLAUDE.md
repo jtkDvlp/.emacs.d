@@ -31,7 +31,8 @@ Conventional Commits trotzdem, damit die Historie lesbar bleibt.
 ## Aufbau (Ist-Stand)
 
 Phase 1 des Plans ist umgesetzt: die Struktur steht. Phase 2 prüft die
-Pakete Block für Block; erledigt ist 2.1 (Vervollständigung).
+Pakete Block für Block; erledigt sind 2.1 (Vervollständigung) und 2.2
+(Tastatur-Infrastruktur).
 
 | Pfad | Inhalt | versioniert |
 |---|---|---|
@@ -42,7 +43,7 @@ Pakete Block für Block; erledigt ist 2.1 (Vervollständigung).
 | `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `org`, `startup`, `structural-editing`, `completion`, `checking`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`. Jede Datei sagt im Kopf, was hineingehört. | ja |
 | `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. `init-lang-php` wird nicht geladen. | ja |
 | `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`ide`, `narrow`, `zoom`, `window-mirror`), Symbole mit Präfix `jtk-`. | ja |
-| `etc/elpaca-lock.eld` | Commit jedes Pakets (94, mit Abhängigkeiten und elpaca selbst). | ja |
+| `etc/elpaca-lock.eld` | Commit jedes Pakets (92, mit Abhängigkeiten und elpaca selbst). | ja |
 | `etc/yasnippet/snippets/` | Handgeschriebene yasnippet-Vorlagen. | ja |
 | `etc/eshell/aliases` | Handgeschriebene eshell-Aliase. | ja |
 | `etc/mc-list.el` | Von multiple-cursors **erzeugt**, aber inhaltlich gepflegt — deshalb versioniert. | ja |
@@ -77,6 +78,9 @@ kommt der Backtrace dazu. Es endet mit einem Fehler, wenn das Laden oder
 eine Datei scheitert — Warnungen allein nicht, ihre Zahl ist das Maß. Die
 GitHub-Action (`.github/workflows/check.yml`, macOS, Emacs 31.1) führt es
 bei jedem Push aus und legt den Bericht in die Zusammenfassung des Laufs.
+Der Prüfschritt hat ein Zeitlimit von 15 Minuten (sonst 2,5 bis 3,5), und
+ein Download unter 1 KB/s für 60 s scheitert — drei Läufe hingen vorher
+stundenlang an einem stehenden Download.
 Ein anderes Emacs wählt man über `EMACS=/pfad/zu/emacs scripts/check`.
 
 `--snapshot FILE` schreibt nach dem Laden — und nachdem jedes deklarierte
@@ -129,8 +133,8 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 - **elpaca installiert asynchron, nach `init.el`.** Ein `use-package` mit
   `:ensure t` (der Standard) wird erst danach ausgewertet. Code auf
   oberster Ebene, der ein Paket aufruft, läuft also vorher ins Leere —
-  dafür gibt es `:ensure (:wait t)` (`diminish`, `smartrep`,
-  `elpaca-use-package`, `no-littering`). Umgekehrt läuft ein Block mit
+  dafür gibt es `:ensure (:wait t)` (`diminish`, `elpaca-use-package`,
+  `no-littering`). Umgekehrt läuft ein Block mit
   `:ensure nil` **sofort**, auch wenn er weiter unten steht als ein
   Block, auf den er sich verlässt.
 - **Eingebaute und lokale Pakete brauchen `:ensure nil`.** Sonst sucht
@@ -162,11 +166,25 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   einem nie geladenen Paket hängt, fehlt vorher wie nachher (so `tide`,
   das auf das nicht installierte `typescript-mode` wartet). Für solche
   Stellen gezielt nachladen und vergleichen.
-- **Ladereihenfolge entscheidet über globale Tasten.** `:bind*` schreibt in
-  `override-global-map`; wer später lädt, gewinnt. So überschreibt
-  `init-org` heute `C--` aus `init-editing` (siehe Plan, B1). Wer die
-  Reihenfolge der `require`s in `init.el` ändert, prüft das mit dem
+- **Globale Tasten mit `:bind`, nicht mit `:bind*`.** `:bind*` schreibt in
+  `override-global-map` und schlägt damit jede Mode — so verdeckte Org
+  einst mit `C--` das globale Verengen (Plan, B1) und die Override-Map
+  logviews eigenes `C-- s`. Ausnahmen mit Begründung im Code: `C-#` und
+  `C-:`. Bei zwei Modulen auf derselben Taste gewinnt das später geladene;
+  wer die Reihenfolge in `init.el` ändert, prüft das mit dem
   Schnappschuss.
+- **Jeder globale Präfix ist eine benannte Map seines Moduls**
+  (`jtk-<thema>-map`; Tabelle in der README). Ein einfacher Präfix über
+  `:bind (:prefix-map … :prefix …)`, einer mit Wiederholtasten als
+  `defvar-keymap` mit `:prefix t` und `:repeat t` — use-package kann
+  `:prefix-map` und `:repeat-map` nicht verbinden. Präfixe, die mehrere
+  Module teilen (`M-!`, `M-+`), stehen in `init-keys`.
+- **Mit `:demand t` läuft `:config` vor den `:bind`-Formen.** Was in
+  `:config` eine per `:bind` gefüllte Map liest, sieht sie leer.
+- **Unter einer globalen Taste, die ein Befehl ist, gibt es keinen
+  Präfix.** `("M-' c" . …)` mit `:bind` scheitert mit „starts with
+  non-prefix key“, solange `M-'` noch `abbrev-prefix-mark` ist; in der
+  Override-Map fiel das nie auf. Erst den Präfix als Map binden.
 - **`:bind*` mit `:map` wirkt wie `:bind`.** Die Belegung landet in der
   genannten Mode-Map, nicht in der Override-Map. Das Sternchen dort trägt
   nichts und täuscht Absicht vor.
@@ -192,9 +210,14 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 | nach Phase 1, Schritt 1.3, Cloud, Emacs 31.1 ohne GUI | ok | 93 installiert, Lockdatei reproduziert | 0 | 52 |
 | nach Phase 1, Schritt 1.3, CI (macOS), Emacs 31.1 ohne GUI | ok | 93 installiert, Lockdatei reproduziert | 0 | 49 |
 | nach Phase 1 (ohne which-key), Cloud, Emacs 31.1 ohne GUI | ok | 92 installiert, Lockdatei reproduziert | 0 | 31 |
+| nach 2.1, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 94 Einträgen | 0 | 31 |
+| nach 2.2, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 93 Einträgen reproduziert | 0 | 25 |
+| nach 2.2 mit avy und expreg, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 92 Einträgen reproduziert | 0 | 25 |
 
-Der Unterschied von 3 Warnungen: Die `ns-*`- und `mac-*`-Variablen gibt es
-nur unter macOS; in der Cloud meldet der Byte-Compiler sie als frei.
+Der Unterschied von 3 Warnungen bis 2.1: Die `ns-*`- und `mac-*`-Variablen
+gibt es nur unter macOS; in der Cloud meldete der Byte-Compiler sie als
+frei. Seit 2.2 steht das `setq` auf oberster Ebene statt in einem `when`,
+und dort warnt er nicht — Cloud und CI sollten jetzt gleich zählen.
 
 **Startzeit (GUI, Mac):** `emacs-init-time` 0,387 s (gemessen nach
 Schritt 1.3, 2026-10-21).

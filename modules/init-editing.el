@@ -2,7 +2,8 @@
 
 ;;; Commentary:
 
-;; Keyboard macros, jumping, growing the region, narrowing, undo,
+;; Keyboard macros, jumping (to definitions, references and lines),
+;; documentation at point, growing the region, narrowing, undo,
 ;; multiple cursors, comments, trailing whitespace, indentation and
 ;; symbol highlighting.  Editing by s-expressions is in
 ;; init-structural-editing.
@@ -15,30 +16,61 @@
   kmacro
   :ensure nil
 
-  :bind*
-  (("M-! m s" . start-kbd-macro)
-   ("M-! m S" . kmacro-end-macro)
-   ("M-! m m" . kmacro-end-and-call-macro)))
-
-(use-package
-  ace-jump-mode
   :bind
-  (("C-j" . ace-jump-char-mode)
-   ("C-S-j" . ace-jump-mode-pop-mark)
-   ("M-j" . nil)
-   ("M-j l" . ace-jump-line-mode)))
+  (:map jtk-run-map
+        :prefix-map jtk-macro-map
+        :prefix "m"
+        :prefix-docstring "Keyboard macros."
+        ("s" . start-kbd-macro)
+        ("S" . kmacro-end-macro)
+        ("m" . kmacro-end-and-call-macro)))
+
+;; NOTE: The same keys jump in every language: each mode, and later
+;; each language server, tells xref and eldoc where to look.  A language
+;; binds a key in its own map only where it has something better.
+(use-package
+  xref
+  :ensure nil
+  :bind
+  (("M-J" . xref-go-back)
+
+   :prefix-map jtk-jump-map
+   :prefix "M-j"
+   :prefix-docstring "Jumping: to definitions (d), references (r), lines (l)."
+   ("d" . xref-find-definitions)
+   ("r" . xref-find-references)))
 
 (use-package
-  expand-region
+  eldoc
+  :ensure nil
+  :bind
+  (:map help-map
+        ("h" . eldoc-doc-buffer)))
+
+(use-package
+  avy
+  :bind
+  (("C-j" . avy-goto-char)
+   ("C-S-j" . avy-pop-mark)
+
+   :map jtk-jump-map
+   ("l" . avy-goto-line)))
+
+;; NOTE: Grows the region by subword, word, list, string, comment,
+;; paragraph or defun, and by tree-sitter nodes where a mode has them.
+(use-package
+  expreg
+  :bind
+  (("C-." . expreg-expand))
+
+  ;; NOTE: clojure-mode binds C-: as well; the global meaning wins.
   :bind*
-  (("C-." . er/expand-region)
-   ("C-:" . er/contract-region)))
+  (("C-:" . expreg-contract)))
 
 (use-package
   jtk-narrow
   :ensure nil
-  :commands jtk-narrow-dwim
-  :bind*
+  :bind
   (("C--" . jtk-narrow-dwim)
    ("C-+" . jtk-narrow-widen)))
 
@@ -62,16 +94,19 @@
   :config
   (define-key mc/keymap (kbd "<return>") nil)
 
-  :bind*
-  (("M-c m" . mc/mark-more-like-this-extended)
-   ("M-c x" . mc/mark-all-like-this-dwim)
-   ("M-c a" . mc/mark-all-like-this)
-   ("M-c l" . mc/edit-lines)
+  :bind
+  (:prefix-map jtk-multiple-cursors-map
+   :prefix "M-c"
+   :prefix-docstring "Multiple cursors: marking (m x a l), inserting (i)."
+   ("m" . mc/mark-more-like-this-extended)
+   ("x" . mc/mark-all-like-this-dwim)
+   ("a" . mc/mark-all-like-this)
+   ("l" . mc/edit-lines)
 
-   ("M-c i n" . mc/insert-numbers)
-   ("M-c i l" . mc/insert-letters)
-   ("M-c i s" . mc/sort-region)
-   ("M-c i r" . mc/reverse-region)
+   ("i n" . mc/insert-numbers)
+   ("i l" . mc/insert-letters)
+   ("i s" . mc/sort-region)
+   ("i r" . mc/reverse-region)
 
    :map mc/keymap
    ("<tab>" . mc-hide-unmatched-lines-mode)))
@@ -106,8 +141,8 @@
   :demand t
   :diminish highlight-symbol-mode
 
-  :commands
-  (highlight-symbol)
+  :bind
+  (("<C-m>" . highlight-symbol))
 
   :hook
   ((prog-mode . highlight-symbol-mode)
@@ -115,15 +150,15 @@
 
   :config
   (setq highlight-symbol-idle-delay 1.5)
-  (define-key input-decode-map [?\C-m] [C-m])
-  (global-set-key (kbd "<C-m>") #'highlight-symbol)
-  (global-unset-key (kbd "M-m"))
 
-  (smartrep-define-key
-      global-map "M-m"
-    '(("n" . (highlight-symbol-next))
-      ("p" . (highlight-symbol-prev))
-      ("r" . (highlight-symbol-query-replace)))))
+  (defvar-keymap jtk-highlight-symbol-map
+    :doc "Moving between and replacing the symbol; the keys repeat."
+    :prefix t
+    :repeat t
+    "n" #'highlight-symbol-next
+    "p" #'highlight-symbol-prev
+    "r" #'highlight-symbol-query-replace)
+  (keymap-global-set "M-m" 'jtk-highlight-symbol-map))
 
 (provide 'init-editing)
 

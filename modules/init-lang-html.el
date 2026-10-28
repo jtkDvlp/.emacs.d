@@ -51,8 +51,6 @@
   :hook (web-mode . web-mode-edit-element-minor-mode)
 
   :config
-  (require 'html-mode-expansions)
-
   (defun web-mode-element-forward ()
     (interactive)
     (when (looking-at-p "[\s\n]+")
@@ -89,7 +87,11 @@
   (defun web-mode-attribute-select-content ()
     (interactive)
     (web-mode-edit-element-attributes-end-inside)
-    (call-interactively 'er/mark-inside-quotes))
+    (let ((quote (char-after))
+          (end (point)))
+      (when (memq quote '(?\" ?'))
+        (skip-chars-backward (string ?^ quote))
+        (push-mark end nil t))))
 
   (defun web-mode-attribute-rename ()
     (interactive)
@@ -97,25 +99,28 @@
               (looking-at-p "[\s\n]+"))
       (web-mode-attribute-next))
     (web-mode-attribute-beginning)
-    (call-interactively 'er/mark-word))
+    (mark-word))
 
-  (smartrep-define-key
-      web-mode-edit-element-minor-mode-map
-      "C-a"
-    '(("C-<left>" . web-mode-attribute-backward)
-      ("C-<right>" . web-mode-attribute-forward)
+  (defvar-keymap jtk-html-attribute-map
+    :doc "Editing the attributes of an element; the keys repeat."
+    :prefix t
+    :repeat t
+    "C-<left>" #'web-mode-attribute-backward
+    "C-<right>" #'web-mode-attribute-forward
 
-      ("C-M-<left>" . web-mode-edit-element-attributes-transpose-backward)
-      ("C-M-<right>" . web-mode-attribute-transpose)
+    "C-M-<left>" #'web-mode-edit-element-attributes-transpose-backward
+    "C-M-<right>" #'web-mode-attribute-transpose
 
-      ("C-(" . web-mode-attribute-insert)
-      ("C-M-(" . web-mode-attribute-rename)
+    "C-(" #'web-mode-attribute-insert
+    "C-M-(" #'web-mode-attribute-rename
 
-      ("C-k" . web-mode-attribute-kill)
+    "C-k" #'web-mode-attribute-kill
 
-      ("M-SPC" . web-mode-attribute-select-content)))
+    "M-SPC" #'web-mode-attribute-select-content)
+  (keymap-set web-mode-edit-element-minor-mode-map
+              "C-a" 'jtk-html-attribute-map)
 
-  :bind*
+  :bind
   (:map web-mode-edit-element-minor-mode-map
         ("C-<left>" . web-mode-element-backward)
         ("M-<left>" . web-mode-edit-element-elements-contract-over-border)

@@ -356,7 +356,7 @@
    cider-repl-mode-map
    '(("C-;" . sp-comment-dwim)))
 
-  :bind*
+  :bind
   (:map clojure-mode-map
         ("C-c M-j" . nil)
 
@@ -387,7 +387,6 @@
         ("M-j r" . cider-apropos)
         ("M-j f" . cider-find-resource)
         ("M-j n" . cider-find-ns)
-        ("M-J" . cider-pop-back)
 
         ("C-c M-j" . nil)
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
@@ -428,7 +427,6 @@
         ("M-j r" . cider-apropos)
         ("M-j f" . cider-find-resource)
         ("M-j n" . cider-find-ns)
-        ("M-J" . cider-pop-back)
 
         ("M-u" . nil)
         ("M-u s" . cider-repl-user-system-start)
