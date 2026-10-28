@@ -9,6 +9,8 @@
 
 ;;; Code:
 
+(require 'jtk-project)
+
 (use-package
   clojure-mode
 
@@ -69,7 +71,7 @@
 
   (defun lein-project-clj-filepath ()
     (thread-first
-      (projectile-project-root)
+      (jtk-project-root)
       (concat "project.clj")))
 
   (defun lein-project-clj-content (filepath)
@@ -185,7 +187,7 @@
 
   (defun cider-figwheel-main-profiles ()
     (thread-last
-      (projectile-project-root)
+      (jtk-project-root)
       (directory-files)
       (seq-filter (lambda (filename) (s-ends-with? ".cljs.edn" filename)))
       (seq-map (lambda (build-filename) (substring build-filename 0 (- 0 (length ".cljs.edn")))))))

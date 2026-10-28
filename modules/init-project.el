@@ -2,29 +2,25 @@
 
 ;;; Commentary:
 
-;; projectile: switching projects and finding files,
-;; directories and buffers within one.
+;; project.el: switching projects and finding files, directories and
+;; buffers within one.  Emacs' own project keys are under C-x p; magit,
+;; consult, xref and eglot ask project.el what the project is.
 
 ;;; Code:
 
 (use-package
-  projectile
-  :diminish projectile-mode
+  project
+  :ensure nil
+
+  :custom
+  ;; NOTE: As with projectile, a .projectile file marks a project root,
+  ;; also within a git repository.
+  (project-vc-extra-root-markers '(".projectile"))
+  ;; NOTE: Files git ignores are left out anyway; these directories stay
+  ;; out where git does not ignore them.
+  (project-vc-ignores '("node_modules/" "dist/" "elpa/" "cache/" ".cache/"))
 
   :config
-  (setq
-   projectile-completion-system 'default
-   projectile-file-exists-remote-cache-expire 300
-   projectile-file-exists-local-cache-expire nil
-   projectile-enable-idle-timer t
-   projectile-mode-line-prefix " ")
-  (projectile-mode)
-  (add-to-list 'projectile-globally-ignored-directories "node_modules")
-  (add-to-list 'projectile-globally-ignored-directories "dist")
-  (add-to-list 'projectile-globally-ignored-directories "elpa")
-  (add-to-list 'projectile-globally-ignored-directories "cache")
-  (add-to-list 'projectile-globally-ignored-directories ".cache")
-
   (defun save-all-buffers ()
     (interactive)
     (save-some-buffers t))
@@ -34,17 +30,20 @@
    ("C-x B" . consult-project-buffer)
 
    ("C-x f" . find-file)
-   ("C-x F" . projectile-find-file)
+   ("C-x F" . project-find-file)
 
    ("C-x C-f" . consult-recent-file)
-   ("C-x C-S-F" . projectile-recentf)
+   ;; NOTE: The project's buffers list its recent files as well.
+   ("C-x C-S-F" . consult-project-buffer)
 
-   ("C-x d" . projectile-dired)
-   ("C-x D" . projectile-find-dir)
+   ("C-x d" . project-dired)
+   ("C-x D" . project-find-dir)
 
    ("C-x C-d" . nil)
 
-   ("C-x x f" . projectile-switch-project)
+   ;; NOTE: Asks for the project, then offers what to do there: find a
+   ;; file, grep, eshell, magit and more.
+   ("C-x x f" . project-switch-project)
    ("C-x x F" . consult-project-buffer)
 
    ("C-q" . switch-to-prev-buffer)
@@ -53,7 +52,7 @@
    ("C-x C-S-S" . save-all-buffers)
 
    ("C-x k" . kill-buffer)
-   ("C-x K" . projectile-kill-buffers)))
+   ("C-x K" . project-kill-buffers)))
 
 (provide 'init-project)
 

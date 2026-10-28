@@ -45,7 +45,6 @@
   (marginalia-mode))
 
 (declare-function consult-git-grep "consult")
-(declare-function projectile-project-root "projectile")
 
 (defun jtk-git-grep-dwim ()
   "Search the git repository, starting with the active region if any."
@@ -58,11 +57,6 @@
 
 (use-package
   consult
-  :custom
-  ;; NOTE: projectile decides what a project is, for the project
-  ;; buffers of `consult-buffer' and `consult-project-buffer' too.
-  (consult-project-function (lambda (_) (projectile-project-root)))
-
   :bind
   (("C-s" . consult-line)
    ("C-r" . consult-line)

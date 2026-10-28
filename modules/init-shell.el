@@ -7,6 +7,8 @@
 
 ;;; Code:
 
+(require 'jtk-project)
+
 (use-package eshell
   :ensure nil
   :commands (eshell)
@@ -43,8 +45,8 @@
 
   (defun eshell-dwim (arg)
     (interactive "P")
-    (if (projectile-project-root)
-        (projectile-run-eshell arg)
+    (if (jtk-project-root)
+        (call-interactively #'project-eshell)
       (eshell arg)))
 
   ;; NOTE: eshell used to create its mode map only when the mode starts,
@@ -79,15 +81,15 @@
                   (replace-regexp-in-string home "~" pwd))
 
                  (project?
-                  (when (and local? (fboundp 'projectile-project-root))
-                    (projectile-project-root)))
+                  (when local?
+                    (jtk-project-root)))
 
                  (project-root
                   project?)
 
                  (project-name
                   (when project?
-                    (funcall projectile-project-name-function project-root)))
+                    (jtk-project-name)))
 
                  (project-based-path
                   (when project?

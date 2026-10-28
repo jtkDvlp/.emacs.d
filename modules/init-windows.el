@@ -8,6 +8,8 @@
 
 ;;; Code:
 
+(require 'jtk-project)
+
 (use-package
   winner
   :ensure nil
@@ -48,15 +50,9 @@
 
   :init
   (defun jtk-elscreen-create-for-project ()
+    "Create a screen named after the current project."
     (interactive)
-    (let* ((project-root
-            (when (fboundp 'projectile-project-root)
-              (projectile-project-root)))
-
-           (project-name
-            (when project-root
-              (funcall projectile-project-name-function project-root))))
-
+    (let ((project-name (jtk-project-name)))
       (elscreen-create)
       (when project-name
         (elscreen-screen-nickname project-name))

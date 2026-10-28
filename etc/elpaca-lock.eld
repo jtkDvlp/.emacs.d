@@ -1022,16 +1022,6 @@
                            :type git :protocol https :inherit t :depth
                            treeless :ref
                            "2ab5a3c89fa01bbbd99de9b8986908b2bc5a7b49"))
- (treemacs-projectile :source "elpaca-menu-lock-file" :recipe
-                      (:package "treemacs-projectile" :fetcher github
-                                :repo "Alexander-Miller/treemacs"
-                                :files
-                                ("src/extra/treemacs-projectile.el")
-                                :source "elpaca-menu-lock-file" :id
-                                treemacs-projectile :type git
-                                :protocol https :inherit t :depth
-                                treeless :ref
-                                "2ab5a3c89fa01bbbd99de9b8986908b2bc5a7b49"))
  (undo-tree :source "elpaca-menu-lock-file" :recipe
             (:package "undo-tree" :repo
                       ("https://gitlab.com/tsc25/undo-tree"

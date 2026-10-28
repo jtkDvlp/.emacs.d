@@ -2,7 +2,8 @@
 
 ;;; Commentary:
 
-;; treemacs and its integrations with projectile, dired and magit.
+;; treemacs and its integrations with dired and magit; it finds the
+;; current project through project.el.
 
 ;;; Code:
 
@@ -73,9 +74,6 @@
   :bind
   (("C-x x d" . treemacs-dwim)
    ("C-x x D" . treemacs-hide)))
-
-(use-package treemacs-projectile
-  :after treemacs projectile)
 
 (use-package treemacs-icons-dired
   :after treemacs dired
