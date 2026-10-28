@@ -751,6 +751,139 @@ jedes Unterprojekt in einem git-Repository zu einem eigenen Projekt.
 project.el (`dashboard-projects-backend` ist `project-el`), nicht aus
 projectile; die Liste füllt sich jetzt mit den benutzten Projekten.
 
+#### 2.3a Standard, Ausnahme, Suche – Plan (2026-10-28, noch nicht entschieden)
+
+Anlass: Das Projektmenü aus 2.3 (`jtk-project-act`, eine Liste nach jedem
+Projektwechsel) funktioniert, kostet aber im Normalfall einen Schritt, und
+Kürzel fehlen. Daraus ist eine allgemeinere Frage geworden: wie Auswahl,
+Menü und Befehlssuche zusammenpassen, ohne viele Mechanismen.
+
+**Anforderungen**
+
+1. Projektwechsel: Im Normalfall eine Datei im Projekt öffnen; als
+   Ausnahme dort eshell, Magit oder anderes.
+2. Die Ausnahmen erst auf Nachfrage, dann mit Kürzeln.
+3. Befehle je Projektart (CIDER bei Clojure, npm bei JavaScript), die
+   meist eine Datei dieser Art voraussetzen.
+4. Statt ein Menü abzusuchen: unscharfe Suche über die Befehle, die
+   Kürzel daneben, damit man sie lernt.
+5. Wenig verschiedene Mechanismen. Kein which-key; `C-h` nach einem
+   Präfix ist die gewollte Hilfe. Lese-Menüs mit Schaltern (transient)
+   nur in Werkzeugen, die sie mitbringen, wie magit.
+
+**Einordnung: vier Arten, drei Mechanismen**
+
+| Art der Auswahl | Beispiel | Mechanismus | Kürzel sichtbar über |
+|---|---|---|---|
+| Dynamische Daten | Dateien, Puffer, Projekte | vertico-Liste; RET tut das Übliche | — |
+| Ausnahme zu einem Eintrag | Projekt → eshell, Magit; Datei → umbenennen; Puffer → schließen | embark auf dem Eintrag; die Aktionen sind eine Keymap | `C-h` in embark |
+| Tastenfamilie | `M-c`, `M-v`, `C-c M-j` | Präfix-Map | `C-h` nach dem Präfix |
+| Befehl suchen, Kürzel lernen | „wie startet hier die REPL?“ | `M-X`: Befehle, die zum Puffer passen | marginalia daneben |
+
+Menüs sind damit immer Keymaps, Listen immer vertico, und die Hilfe ist
+überall dieselbe: `C-h` öffnet eine durchsuchbare Liste mit Kürzel,
+Befehl und Beschreibung.
+
+**Vorschlag**
+
+*A – Projektwechsel: Standard mit RET, Ausnahmen mit embark.*
+
+- `C-x x f` (und `C-x p p`): Projektliste; RET öffnet die Dateiauswahl im
+  Projekt, wie früher bei projectile (`project-switch-commands` auf
+  `project-find-file`).
+- Eine embark-Taste auf dem markierten Projekt (Vorschlag `M-o`, siehe
+  Entscheidungen) bietet die Ausnahmen an — **mit denselben Tasten wie
+  `C-x p`**: Die Aktions-Keymap erbt `project-prefix-map`. `C-x p e` ist
+  eshell im aktuellen Projekt, `M-o e` in der Liste eshell im
+  markierten; einmal gelernt, an beiden Stellen gültig.
+- `C-x p` wird dazu auf die eigenen Werkzeuge gestellt: `b`
+  `consult-project-buffer`, `g` `consult-git-grep`, `v` und `m` Magit.
+- Projektarten: Ein Modul legt eine Keymap für seine Projektart an und
+  meldet sie mit Markerdateien an (`project.clj`, `deps.edn` …).
+  embark nimmt sie unter `j` in die Aktionen auf, nur bei Projekten
+  dieser Art. Neben jedem Projekt in der Liste steht seine Art.
+- `jtk-project-act` und `jtk-project-actions` aus 2.3 fallen wieder weg;
+  die Daten stecken dann in Keymaps.
+
+*B – Projektart-Befehle im Puffer: dieselbe Keymap unter einem Präfix.*
+
+- Die Keymap der Projektart liegt in den Puffern dieser Art unter einem
+  für alle Sprachen gleichen Präfix, Vorschlag `C-c M-j` — dort, wo
+  CIDER heute schon seine Startfamilie hat (`J j S s B b`). `M-o j J`
+  in der Projektliste ist dann `C-c M-j J` im Puffer.
+- Weitere Arten in 2.8: npm (`package.json`), PlatformIO
+  (`platformio.ini`), Python.
+
+*C – Befehle suchen, Kürzel lernen.*
+
+- `M-X` (eingebaut, schon belegt) zeigt die Befehle, die zum Puffer
+  passen; marginalia schreibt Kürzel und Beschreibung daneben. Kein Code.
+- Wahlweise `consult-mode-command`: alle Befehle der aktiven Modi, auch
+  die ohne Kürzel, gruppiert nach Haupt- und Nebenmodus.
+- Wahlweise `embark-bindings` auf `C-h b`: alle belegten Tasten des
+  Puffers als durchsuchbare Liste statt als Hilfepuffer.
+
+**Was der Prototyp zeigte** (Batch, Emacs 31.1, Wegwerfcode):
+
+| Eingabe in der Projektliste | Ergebnis |
+|---|---|
+| Clojure-Projekt, RET | `project-find-file` im Clojure-Projekt |
+| Clojure-Projekt, `M-o e` | `*clj-eshell*` im Clojure-Projekt |
+| anderes Projekt, `M-o m` | Magit im anderen Projekt |
+| Clojure-Projekt, `M-o j` | jack-in im Clojure-Projekt |
+| Projekt ohne `project.clj`, `M-o j` | keine Aktion: `j` gibt es dort nicht |
+
+Technisch trägt das so (alles gegen den Quelltext geprüft):
+
+- Die Kandidaten der Projektliste haben die Kategorie `project-file`;
+  embark behandelt sie heute als Dateien. Über
+  `marginalia-command-categories` bekommen sie eine eigene Kategorie.
+- Ein embark-Transformer bestimmt die Projektart.
+- `embark-keymap-alist` setzt die Aktionen aus mehreren Keymaps
+  zusammen.
+- Ein `:always`-Hook in `embark-around-action-hooks` lässt die Aktion
+  im markierten Projekt laufen (`project-current-directory-override`,
+  `default-directory`). embark selbst macht es mit `embark--cd` für
+  shell und eshell genauso.
+- **Mehrere Arten zugleich** (Clojure mit `package.json`) braucht einen
+  kleinen Kniff, weil der Transformer nur einen Typ liefert. Lösung:
+  den Typ aus den Arten zusammensetzen und seine Keymaps beim ersten
+  Mal eintragen.
+
+**Gegenvorschläge**
+
+| Variante | Wie | Dafür | Dagegen |
+|---|---|---|---|
+| Liste nach jedem Wechsel (Stand 2.3) | wie jetzt, Kürzel in der Anzeige ergänzen | nichts Neues | der Normalfall kostet immer einen Schritt |
+| Zwei Befehle, ohne embark | `C-x x f` Projekt + Datei; eine zweite Taste Projekt + Aktionsliste | am einfachsten, keine embark-Taste | man muss vor der Projektwahl wissen, dass man die Ausnahme will; die Aktionsliste ist ein eigenes Datenformat neben den Keymaps |
+| embark, Projektarten nur über eine Liste | statische Aktions-Keymap; `j` öffnet eine Suchliste der Befehle dieser Art | kein Transformer-Kniff | eine Stufe mehr; im Puffer anders als in der Liste |
+| transient-Projektmenü | magit-artig | Gruppen, Überschriften | Lese-Menü ohne Suche; bei einem Menü ohne Schalter kein Gewinn (verworfen) |
+| which-key für alle Präfixe | Anzeige nach Verzögerung | ein Mechanismus für die Anzeige | nicht gewollt (verworfen) |
+| project.els eigenes Menü | `project-switch-commands` als Liste | eingebaut | einzeilig im Echo-Bereich, ohne Suche (verworfen) |
+
+**Zu entscheiden**
+
+1. Weg A mit embark, oder Gegenvorschlag „zwei Befehle“?
+2. Taste für `embark-act`: `M-o` (global und im Minibuffer frei; „other“)
+   oder `C-.` (embarks Vorschlag, aber hier expreg)? Nur im Minibuffer
+   oder auch im Puffer? Im Puffer handelt es dann auf Datei, URL oder
+   Symbol unter dem Cursor, wird aber in den paar Modi verdeckt, die
+   `M-o` selbst belegen (ibuffer, diff).
+3. Anzeige der Aktionen: nur auf `C-h`, nach 0,5 s (embarks Vorgabe)
+   oder sofort?
+4. `C-x p` auf die eigenen Werkzeuge stellen (`b`, `g`, `v`)?
+5. Präfix für Projektart-Befehle im Puffer: `C-c M-j` in allen Sprachen,
+   `j` in den Projektaktionen?
+6. Befehlssuche: genügt `M-X`, oder zusätzlich `consult-mode-command`
+   bzw. `embark-bindings` auf `C-h b`?
+
+**Reihenfolge**
+
+1. A mit der Clojure-Art (`C-c M-j`-Familie als erste Projektart-Keymap)
+   — ersetzt die Liste aus 2.3.
+2. C: nur Einstellungen, dazu eine Sichtung in einem Clojure-Puffer.
+3. B für die übrigen Sprachen im jeweiligen Review in 2.8.
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
