@@ -74,9 +74,10 @@
 
    ("C-S-Y" . consult-yank-pop)
 
-   ;; NOTE: As counsel had it: search the history of the current prompt.
+   ;; NOTE: Searching the history of the prompt is M-P everywhere: here,
+   ;; in eshell and in the CIDER REPL.
    :map minibuffer-local-map
-   ("C-r" . consult-history)))
+   ("M-P" . consult-history)))
 
 (use-package
   embark
