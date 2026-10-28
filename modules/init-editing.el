@@ -106,8 +106,8 @@
   :demand t
   :diminish highlight-symbol-mode
 
-  :commands
-  (highlight-symbol)
+  :bind
+  (("<C-m>" . highlight-symbol))
 
   :hook
   ((prog-mode . highlight-symbol-mode)
@@ -115,15 +115,15 @@
 
   :config
   (setq highlight-symbol-idle-delay 1.5)
-  (define-key input-decode-map [?\C-m] [C-m])
-  (global-set-key (kbd "<C-m>") #'highlight-symbol)
-  (global-unset-key (kbd "M-m"))
 
-  (smartrep-define-key
-      global-map "M-m"
-    '(("n" . (highlight-symbol-next))
-      ("p" . (highlight-symbol-prev))
-      ("r" . (highlight-symbol-query-replace)))))
+  (defvar-keymap jtk-highlight-symbol-map
+    :doc "Moving between and replacing the symbol; the keys repeat."
+    :prefix t
+    :repeat t
+    "n" #'highlight-symbol-next
+    "p" #'highlight-symbol-prev
+    "r" #'highlight-symbol-query-replace)
+  (keymap-global-set "M-m" 'jtk-highlight-symbol-map))
 
 (provide 'init-editing)
 

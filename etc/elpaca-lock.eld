@@ -992,20 +992,6 @@
                         smartparens :type git :protocol https :inherit
                         t :depth treeless :ref
                         "82d2cf084a19b0c2c3812e0550721f8a61996056"))
- (smartrep :source "elpaca-menu-lock-file" :recipe
-           (:package "smartrep" :repo "myuhe/smartrep.el" :fetcher
-                     github :files
-                     ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                      "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
-                      "doc/*.texinfo" "lisp/*.el" "docs/dir"
-                      "docs/*.info" "docs/*.texi" "docs/*.texinfo"
-                      (:exclude ".dir-locals.el" "test.el" "tests.el"
-                                "*-test.el" "*-tests.el" "LICENSE"
-                                "README*" "*-pkg.el"))
-                     :source "elpaca-menu-lock-file" :id smartrep
-                     :wait t :type git :protocol https :inherit t
-                     :depth treeless :ref
-                     "fdf135e3781b286174b5de4d613f12c318d2023c"))
  (spaceline :source "elpaca-menu-lock-file" :recipe
             (:package "spaceline" :fetcher github :repo
                       "TheBB/spaceline" :files

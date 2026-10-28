@@ -119,11 +119,12 @@
 ;;   google-translate
 ;;   ())
 
-;; TODO: eigenes package?
-(smartrep-define-key
-    global-map
-    "M-+ w"
-  '(("#" . toggle-frame-maximized)))
+(defvar-keymap jtk-frame-map
+  :doc "Size of the frame; the keys repeat."
+  :prefix t
+  :repeat t
+  "#" #'toggle-frame-maximized)
+(keymap-set jtk-view-map "w" 'jtk-frame-map)
 
 (use-package
   jtk-ide
