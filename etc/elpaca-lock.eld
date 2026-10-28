@@ -185,9 +185,9 @@
                      (:exclude ".dir-locals.el" "test.el" "tests.el"
                                "*-test.el" "*-tests.el" "LICENSE"
                                "README*" "*-pkg.el"))
-                    :source "MELPA" :id consult :type git :protocol
-                    https :inherit t :depth treeless :ref
-                    "a64569f377b8bc0f62e1d2ae0f3ee48ba4a7cc1c"))
+                    :source "elpaca-menu-lock-file" :id consult :type
+                    git :protocol https :inherit t :depth treeless
+                    :ref "a64569f377b8bc0f62e1d2ae0f3ee48ba4a7cc1c"))
  (csv-mode :source "elpaca-menu-lock-file" :recipe
            (:package "csv-mode" :repo
                      ("https://github.com/emacsmirror/gnu_elpa"
@@ -284,15 +284,16 @@
  (embark :source "elpaca-menu-lock-file" :recipe
          (:package "embark" :repo "oantolin/embark" :fetcher github
                    :files ("embark.el" "embark-org.el" "embark.texi")
-                   :source "MELPA" :id embark :type git :protocol
-                   https :inherit t :depth treeless :ref
+                   :source "elpaca-menu-lock-file" :id embark :type
+                   git :protocol https :inherit t :depth treeless :ref
                    "87e53827cf6659dcc4ac4e54be9af34aeca44f6e"))
  (embark-consult :source "elpaca-menu-lock-file" :recipe
                  (:package "embark-consult" :repo "oantolin/embark"
                            :fetcher github :files
-                           ("embark-consult.el") :source "MELPA" :id
-                           embark-consult :type git :protocol https
-                           :inherit t :depth treeless :ref
+                           ("embark-consult.el") :source
+                           "elpaca-menu-lock-file" :id embark-consult
+                           :type git :protocol https :inherit t :depth
+                           treeless :ref
                            "87e53827cf6659dcc4ac4e54be9af34aeca44f6e"))
  (esh-autosuggest :source "elpaca-menu-lock-file" :recipe
                   (:package "esh-autosuggest" :fetcher sourcehut :repo
@@ -625,8 +626,9 @@
                         (:exclude ".dir-locals.el" "test.el"
                                   "tests.el" "*-test.el" "*-tests.el"
                                   "LICENSE" "README*" "*-pkg.el"))
-                       :source "MELPA" :id marginalia :type git
-                       :protocol https :inherit t :depth treeless :ref
+                       :source "elpaca-menu-lock-file" :id marginalia
+                       :type git :protocol https :inherit t :depth
+                       treeless :ref
                        "381af583d2530796b9955ff2fe0cba3ad3119943"))
  (markdown-mode :source "elpaca-menu-lock-file" :recipe
                 (:package "markdown-mode" :fetcher github :repo
@@ -700,8 +702,9 @@
                        (:exclude ".dir-locals.el" "test.el" "tests.el"
                                  "*-test.el" "*-tests.el" "LICENSE"
                                  "README*" "*-pkg.el"))
-                      :source "MELPA" :id orderless :type git
-                      :protocol https :inherit t :depth treeless :ref
+                      :source "elpaca-menu-lock-file" :id orderless
+                      :type git :protocol https :inherit t :depth
+                      treeless :ref
                       "e271a8ec938929b726331236cf56d1c44571122e"))
  (paredit :source "elpaca-menu-lock-file" :recipe
           (:package "paredit" :fetcher git :url
@@ -1082,8 +1085,9 @@
  (vertico :source "elpaca-menu-lock-file" :recipe
           (:package "vertico" :repo "minad/vertico" :files
                     (:defaults "extensions/vertico-*.el") :fetcher
-                    github :source "MELPA" :id vertico :type git
-                    :protocol https :inherit t :depth treeless :ref
+                    github :source "elpaca-menu-lock-file" :id vertico
+                    :type git :protocol https :inherit t :depth
+                    treeless :ref
                     "c60d80215d19b4b36c0ba49599b6815ed35f2ac1"))
  (web-mode :source "elpaca-menu-lock-file" :recipe
            (:package "web-mode" :repo "fxbois/web-mode" :fetcher
