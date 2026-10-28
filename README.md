@@ -23,7 +23,8 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
   better command for the same task, it binds it to the same key.
 - Keys for moving through and editing code follow one scheme across
   languages (`init-structural-editing`); a language names only where
-  it differs.
+  it differs. The same holds for jumping (`M-j`, through xref) and for
+  the documentation at point (`C-h h`, through eldoc).
 - Every global prefix is a named keymap of the module that owns it.
   C-h after a prefix lists its keys; `M-x describe-keymap` shows a map.
 - Keys of a repeating prefix work alone after the first one, until
@@ -34,7 +35,7 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 |---|---|---|---|
 | `M--` | `jtk-bookmarks-map` | `init-bookmarks` | bookmarks of files, directories, MySQL connections |
 | `M-c` | `jtk-multiple-cursors-map` | `init-editing` | multiple cursors |
-| `M-j` | `jtk-jump-map` | `init-editing`, languages | jumping to lines; definitions in language modes |
+| `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`); `M-J` goes back |
 | `M-m` | `jtk-highlight-symbol-map` | `init-editing` | next, previous, replace symbol (repeats) |
 | `M-!` | `jtk-run-map` | `init-keys` | `m` keyboard macros (`jtk-macro-map`), `s` shells (`jtk-shell-map`) |
 | `M-+` | `jtk-view-map` | `init-keys` | `f` font size (`jtk-zoom-map`), `w` frame size (`jtk-frame-map`); both repeat |

@@ -250,8 +250,8 @@ fallen dort ganz weg, und der Fehler mit ihnen.
 | B1 ✅ (2.2) | `base--organisation.el:125` | `("C--" . org-narrow-to-subtree)` steht vor `:map org-mode-map`, also **global** in der Override-Map. Weil Org nach `base--interface` lädt, verdrängt es dort `narrow/narrow-dwim`: `C--` lädt in jedem Puffer Org und ruft `org-narrow-to-subtree`. |
 | B2 ✅ (2.2) | `pkg--narrow.el:4` | `(narrow-to-region)` ohne Argumente — bei aktiver Region ein Fehler „wrong number of arguments“. Vom Byte-Compiler bestätigt. |
 | B3 | `lang--typescript.el:9` | `before-save`-Hook auf `tide-formater-before-save`; die Funktion heißt `tide-format-before-save`. Und der Hook ist global, nicht pufferlokal. Sobald einmal eine TS-Datei offen war, sollte **jedes** Speichern mit einem Fehler abbrechen. |
-| B4 | `lang--javascript.el:83` | `"M-J "` (mit Leerzeichen) auf `xref-pop-maker-stack` — die Funktion heißt `xref-pop-marker-stack`, seit Emacs 29 `xref-go-back`. |
-| B5 | `lang--typescript.el:57` | `"C-C M-j"` — großes C, also `C-S-c`; gemeint war wohl `C-c`. |
+| B4 ✅ (2.2) | `lang--javascript.el:83` | `"M-J "` (mit Leerzeichen) auf `xref-pop-maker-stack` — die Funktion heißt `xref-pop-marker-stack`, seit Emacs 29 `xref-go-back`. |
+| B5 ✅ (2.2) | `lang--typescript.el:57` | `"C-C M-j"` — großes C, also `C-S-c`; gemeint war wohl `C-c`. |
 | B6 | `lang--basic.el:3` | `basic-mode` mit `:ensure nil`, ist aber ein MELPA-Paket — auf einem frischen Rechner fehlt es. Außerdem: `.inc`-Dateien als BASIC? |
 | B7 | `base--development.el:153` | `prettify-symbols-alist` per `setq` statt `setq-local` — die Liste gilt für alle Puffer, auch für Modi mit eigener Liste. |
 
@@ -556,7 +556,7 @@ Je Block ein PR. Für jedes Paket dieselben Fragen, in dieser Reihenfolge:
 | 2.2 Tastatur-Infrastruktur | smartrep, which-key, diminish, `bind-key`-Gebrauch | Legt fest, wie Präfix-Maps und Wiederholungs-Tasten gebaut werden — das benutzen alle folgenden Blöcke. | `repeat-mode`, eingebautes which-key (30), `defvar-keymap`; Lichter in der Modeline ggf. über die Modeline-Wahl in 2.11 |
 | 2.3 Projekte | projectile, treemacs-projectile | Eshell-Prompt, Fenstertitel, elscreen, httpd, CIDER-Helfer und dashboard fragen das Projekt ab. | `project.el` (eingebaut) — oder projectile bewusst behalten; beides vertretbar |
 | 2.4 Fenster und Arbeitsbereiche | elscreen, winner, ace-window, buffer-move, fullframe, `pkg--ide`, `pkg--window-mirror`, ediff/ztree-Anbindung | Hängt an 2.3 (Arbeitsbereich je Projekt). elscreen ist seit Jahren ungepflegt. | `tab-bar-mode`, `windmove-swap-states-*`, Side-Windows in `display-buffer-alist` für das IDE-Layout |
-| 2.5 Editieren | undo-tree, ace-jump-mode, expand-region, multiple-cursors, smartparens, aggressive-indent, highlight-symbol, kmacro, narrow | Grundlage für die Sprachen; die gemeinsame sexp-Keymap aus 1.8 hängt an smartparens. | vundo + `undo-redo`, avy, expreg, symbol-overlay; smartparens vs. paredit/puni |
+| 2.5 Editieren | undo-tree, ~~ace-jump-mode, expand-region~~ (in 2.2 ersetzt), multiple-cursors, smartparens, aggressive-indent, highlight-symbol, kmacro, narrow | Grundlage für die Sprachen; die gemeinsame sexp-Keymap aus 1.8 hängt an smartparens. | vundo + `undo-redo`, avy, expreg, symbol-overlay; smartparens vs. paredit/puni |
 | 2.6 Prüfen, Vervollständigen im Puffer, Snippets | company, company-quickhelp, flycheck, yasnippet, yasnippet-snippets | Vor den Sprachen, weil LSP (2.7) sich daran anschließt. | corfu + cape (auf `completion-at-point`), flymake (eingebaut, eglot nutzt es), yasnippet bleibt wohl |
 | 2.7 Sprach-Infrastruktur (LSP) | — (heute je Sprache eigene Lösung: tide, elpy, xref-js2, company-php) | Grundsatzentscheidung einmal treffen statt je Sprache. Nach 2.1 und 2.6, weil ein LSP-Client Vervollständigung und Prüfung beliefert. | **Neu aufgenommen (2026-10-25):** LSP-Client plus Language-Server je Sprache, dazu tree-sitter-Modi (`*-ts-mode`); Kandidaten im Inventar unter „Neue Pakete“ |
 | 2.8 Sprachen | nach Gewicht: Clojure (cider, clj-refactor, parseedn, flycheck-clj-kondo, Einrückungsregeln, Leiningen-Helfer), Elisp, JS/TS (js2-mode, js2-refactor, xref-js2, indium, tide, npm-mode), HTML/CSS (web-mode, web-mode-edit-element, scss-/sass-mode), Python (elpy), C++ (platformio-mode), PHP, BASIC | Setzt 2.5–2.7 voraus. Clojure zuerst, weil es am meisten benutzt wird. | Clojure: clojure-lsp über eglot **neben** CIDER, ggf. clojure-ts-mode, `deps.edn` neben Leiningen. Übrige: meist eglot + `*-ts-mode` |
@@ -669,6 +669,25 @@ liefern, änderte sich nur:
 | `M-P` | Minibuffer | — | `consult-history` |
 | `M-'` | Minibuffer | `M-' c`/`C` aus der Override-Map | `undefined`, wie elscreen es dort setzt |
 
+**Nachgezogen auf Wunsch (Vorschläge 1 und 4 aus dem Bericht zu 2.2):**
+
+- **Sprungtasten für alle Sprachen gleich.** `M-j d` (Definition),
+  `M-j r` (Verwendungen), `M-J` (zurück) und `C-h h` (Doku an der
+  Stelle) sind global und gehen über xref und eldoc. Eine Sprache
+  belegt eine Taste nur noch, wo sie Besseres hat: CIDER, elpy und
+  tide für die Definition, CIDER und tide für die Doku; CIDERs `M-j r`
+  bleibt `cider-apropos`. Gestrichen sind die Belegungen, die nur das
+  Globale wiederholten, darunter B4; B5 ist korrigiert. Mit eglot (2.7)
+  füllt dann der Language-Server dieselben Tasten.
+- **xref-js2 hing global am Hook** und hätte nach dem ersten JS-Puffer
+  `M-j d` in jedem Modus ohne eigenes Backend übernommen; jetzt nur in
+  js2-mode-Puffern.
+- **avy statt ace-jump-mode, expreg statt expand-region**, aus 2.5
+  vorgezogen, gleiche Tasten. Die beiden HTML-Befehle, die
+  expand-region-Funktionen riefen, markieren selbst; verglichen in einem
+  web-mode-Puffer: gleiche Regionen, und ein Wert in einfachen
+  Anführungszeichen wird jetzt markiert, wo expand-region nichts tat.
+
 **Nebenbei aufgefallen:** Die elscreen-Tasten unter `M-'` außer `c`
 und `C` wirkten erst, nachdem elscreen geladen war; davor kannte `M-'`
 nur die beiden Override-Tasten. Jetzt lädt `M-'` elscreen beim ersten
@@ -707,9 +726,9 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | elscreen | M | interface | Bildschirme je Projekt | ungepflegt → `tab-bar-mode` | Ja |
 | ediff | e | interface | Vergleich | ok | Ja |
 | ztree | M | interface | Verzeichnisvergleich | prüfen | Ja |
-| ace-jump-mode | M | interface | Springen | ungepflegt → avy | |
+| ace-jump-mode | M | interface | Springen | **ersetzt** (2.2) durch avy, das ace-window ohnehin mitbringt. Die frühere Einschätzung „ungepflegt“ war falsch: Es bekommt 2026 noch Commits | |
 | ace-window | M | interface | Fensterwahl | gepflegt | Ja |
-| expand-region | M | interface | Auswahl erweitern | ok; expreg als Alternative | Ja |
+| expand-region | M | interface | Auswahl erweitern | **ersetzt** (2.2) durch expreg | Ja |
 | which-key | M | interface | Tastenhilfe | **entfernt** (2026-10-25): das Rezept klonte das ganze Emacs-Repository, der erste Start hing; nicht mehr gebraucht | |
 | undo-tree | M | interface | Undo-Baum | schwergewichtig → vundo | Ja |
 | multiple-cursors | M | interface | Mehrfach-Cursor | ok | Ja |
