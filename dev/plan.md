@@ -648,7 +648,7 @@ ihr steht — `M-x highlight-symbol-next` startet also keine Folge.
 | C | Fehler B1, B2 | Org legt `C--` in `org-mode-map`; `jtk-narrow-dwim` verengt auf die Region |
 | D | `("C-v" . nil)` | gestrichen, wirkte nie |
 | E | Tastenhilfe | `C-h` nach einem Präfix ruft `embark-prefix-help-command` |
-| F | Verlaufssuche im Minibuffer | `M-P` (wie eshell und CIDER-REPL); `C-r` dort ohne eigene Belegung |
+| F | Verlaufssuche im Minibuffer | `M-P` (wie eshell und CIDER-REPL); `C-r` tut dort nichts (`ignore`), statt auf das globale `consult-line` durchzufallen |
 | G | Präfixe | benannte Präfix-Map je Modul, Tabelle in der README |
 | H | Kleinkram | `C-m`/`RET`-Trennung nach `init-keys`; macOS-Modifier ohne `when` |
 
@@ -665,7 +665,7 @@ liefern, änderte sich nur:
 |---|---|---|---|
 | `C--` | alle außer Org | `org-narrow-to-subtree` (B1) | `jtk-narrow-dwim` |
 | `C-- s`, `C-- t`, `C-+` | Logview | von der Override-Map verdeckt | logviews eigene Befehle |
-| `C-r` | Minibuffer | `consult-history` | `consult-line` (die globale Belegung) |
+| `C-r` | Minibuffer | `consult-history` | nichts (`ignore`) |
 | `M-P` | Minibuffer | — | `consult-history` |
 | `M-'` | Minibuffer | `M-' c`/`C` aus der Override-Map | `undefined`, wie elscreen es dort setzt |
 

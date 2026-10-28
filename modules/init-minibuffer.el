@@ -77,7 +77,11 @@
    ;; NOTE: Searching the history of the prompt is M-P everywhere: here,
    ;; in eshell and in the CIDER REPL.
    :map minibuffer-local-map
-   ("M-P" . consult-history)))
+   ("M-P" . consult-history)
+
+   ;; NOTE: Does nothing here; the global C-r would search the lines of
+   ;; the prompt.
+   ("C-r" . ignore)))
 
 (use-package
   embark
