@@ -81,6 +81,11 @@
 
 (use-package
   embark
+  :custom
+  ;; NOTE: C-h after a prefix lists its keys to choose from, with their
+  ;; descriptions; it stands in for which-key.
+  (prefix-help-command #'embark-prefix-help-command)
+
   :bind
   (:map minibuffer-local-map
         ("C-o" . embark-export)))

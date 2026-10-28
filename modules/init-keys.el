@@ -2,12 +2,13 @@
 
 ;;; Commentary:
 
-;; What binding keys relies on: repeating keys, the global prefixes
-;; several modules share, and the macOS modifier layout.  The bindings
-;; themselves stay with their topic.
+;; What binding keys relies on: repeating keys, the help after a prefix
+;; (with embark, init-minibuffer), the global prefixes several modules
+;; share, and the macOS modifier layout.  The bindings themselves stay
+;; with their topic.
 ;;
-;; Each module names the prefix maps it owns, so that `describe-keymap'
-;; and the help after a prefix show what a prefix is for.  A plain
+;; Each module names the prefix maps it owns, so that the help after a
+;; prefix and `describe-keymap' show what a prefix is for.  A plain
 ;; prefix map is declared with use-package's `:prefix-map', which also
 ;; autoloads its commands; one whose keys repeat is a `defvar-keymap'
 ;; with `:repeat', since `:prefix-map' cannot make keys repeat.
