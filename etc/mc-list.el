@@ -18,6 +18,8 @@
         expreg-expand
         haml-electric-backspace
         indent-for-tab-command
+        jtk-structural-editing-transpose-backward
+        jtk-structural-editing-transpose-forward
         kill-region
         kmacro-call-macro
         mc/reverse-region
@@ -27,14 +29,12 @@
         org-shiftright
         platformio-build
         sp-backward-sexp
-        sp-backward-transpose-sexp
         sp-backward-up-sexp
         sp-convolute-sexp
         sp-down-sexp
         sp-forward-barf-sexp
         sp-forward-sexp
         sp-forward-slurp-sexp
-        sp-forward-transpose-sexp
         sp-kill-sexp
         sp-raise-sexp
         sp-splice-sexp-killing-backward

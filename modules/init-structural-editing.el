@@ -22,10 +22,10 @@
     ("C-<down>" . sp-down-sexp)
     ("M-<down>" . sp-raise-sexp)
 
-    ("C-M-<up>" . sp-backward-transpose-sexp)
-    ("C-M-<down>" . sp-forward-transpose-sexp)
+    ("C-M-<up>" . jtk-structural-editing-transpose-backward)
+    ("C-M-<down>" . jtk-structural-editing-transpose-forward)
 
-    ("M-\"" . sp-wrap-doublequote)
+    ("M-\"" . jtk-structural-editing-wrap-doublequote)
     ("C-(" . sp-wrap-round)
     ("M-[" . sp-wrap-square)
     ("M-{" . sp-wrap-curly)
@@ -57,23 +57,26 @@ differently, such as transposing lines instead of s-expressions."
   :diminish smartparens-mode
 
   :config
-  ;; TODO: not here!
-  (require 'smartparens-html)
-  (require 'smartparens-javascript)
+  ;; NOTE: The rules for each language, loaded along with its mode:
+  ;; among them, ' and ` stay unpaired in Lisp.
+  (require 'smartparens-config)
 
-  (defun sp-forward-transpose-sexp ()
+  (defun jtk-structural-editing-transpose-forward ()
+    "Move the s-expression after point past the next one."
     (interactive)
     (sp-next-sexp)
     (sp-transpose-sexp)
     (sp-backward-sexp))
 
-  (defun sp-backward-transpose-sexp ()
+  (defun jtk-structural-editing-transpose-backward ()
+    "Move the s-expression before point past the previous one."
     (interactive)
     (sp-transpose-sexp)
     (sp-backward-sexp)
     (sp-backward-sexp))
 
-  (defun sp-wrap-doublequote ()
+  (defun jtk-structural-editing-wrap-doublequote ()
+    "Wrap the s-expression at point in double quotes."
     (interactive)
     (sp-prefix-save-excursion
      (sp-wrap-round)

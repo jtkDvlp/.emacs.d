@@ -37,7 +37,6 @@
    ("\\.cljs\\'" . clojurescript-mode))
 
   :config
-  ;; (require 'smartparens-clojure)
   (jtk-structural-editing-bind clojure-mode-map))
 
 (use-package
