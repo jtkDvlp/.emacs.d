@@ -1004,7 +1004,7 @@ erscheint in den Seitenfenstern.
 
 | Vorher | Nachher | Warum |
 |---|---|---|
-| undo-tree (`C-/`, `C-?`, `C-x u`) | eingebautes Undo, `undo-redo` auf `C-?`, vundo auf `C-x u` | undo-tree hat seit 2021 keinen Commit; Wiederholen kann Emacs seit 28.1. vundo: letzter Commit 2026-08. |
+| undo-tree (`C-/`, `C-?`, `M-_`, `C-x u`) | eingebautes Undo, `undo-redo` auf `C-?` und `M-_`, vundo auf `C-x u` | undo-tree hat seit 2021 keinen Commit; Wiederholen kann Emacs seit 28.1. vundo: letzter Commit 2026-08. |
 | aggressive-indent über `prog-mode-hook` | global ab dem Start | Der Hook rief den globalen Modus auf (U3): aus bis zum ersten Programmier-Buffer, danach überall. |
 | highlight-symbol | symbol-overlay auf denselben Tasten (`C-m`, `M-m n/p/r`, Hervorheben nach 1,5 s) | highlight-symbol hat seit 2016 keinen Commit; symbol-overlay: 2026-07. |
 | smartparens, Sprachregeln einzeln von Hand | `smartparens-config` lädt sie je Modus | Siehe unten. |
@@ -1042,8 +1042,9 @@ nicht; `cider-eval-dwim` wertet in vier Fällen (in `comment`, in einem
 String, ohne `comment`, `deftest`) dieselbe Form aus wie mit paredit.
 Schnappschuss-Diff: nur die erwarteten Tasten, Hooks und Optionen.
 
-**Offen für die Sichtung in der GUI:** die Farben von symbol-overlay
-und die vundo-Ansicht.
+**Gesichtet in der GUI:** `M-_` fehlte als Wiederholen und ist wieder
+da. Die Farben von symbol-overlay wirken schwächer als früher; sie
+bleiben vorerst, wie das Theme sie vorgibt. Offen: die vundo-Ansicht.
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
