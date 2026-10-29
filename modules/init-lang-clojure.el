@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 
-;; clojure-mode with structural editing keys, clj-kondo, clj-refactor
+;; clojure-mode with structural editing keys, clojure-lsp, clj-refactor
 ;; and CIDER: jack-in with Leiningen profiles, figwheel-main builds,
 ;; starting and stopping the user system, and indentation rules for
 ;; common macros.
@@ -35,6 +35,11 @@
   :mode
   (("\\.clj\\'" . clojure-mode)
    ("\\.cljs\\'" . clojurescript-mode))
+
+  ;; NOTE: clojure-lsp, next to CIDER: it works without a REPL and
+  ;; brings clj-kondo's findings.  Installed outside Emacs (brew).
+  :hook
+  (clojure-mode . eglot-ensure)
 
   :config
   (jtk-structural-editing-bind clojure-mode-map))
