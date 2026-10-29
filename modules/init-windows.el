@@ -4,7 +4,7 @@
 
 ;; Undoing window changes, a single window, moving buffers between
 ;; windows, tabs (as a rule one per project), choosing windows and the
-;; IDE-like layout.
+;; side windows of an IDE-like layout.
 
 ;;; Code:
 
@@ -133,15 +133,42 @@
   "#" #'toggle-frame-maximized)
 (keymap-set jtk-view-map "w" 'jtk-frame-map)
 
-(use-package
-  jtk-ide
-  :ensure nil
-  :config
-  (jtk-ide-configure-frame-layout jtk-ide-default-layout)
+;; NOTE: The IDE-like layout: shells and compilation below the main
+;; windows, help, documentation and errors to the right of them.  Side
+;; windows stay when the other windows are deleted and C-x o passes them
+;; by; C-x w s hides and shows them all at once.
+(defvar jtk-window-side-parameters
+  '(window-parameters (no-other-window . t)
+                      (no-delete-other-windows . t)))
 
-  (defun jtk-ide-setup ()
-    (interactive)
-    (jtk-ide-open-buffers jtk-ide-default-buffers)))
+(use-package
+  window
+  :ensure nil
+
+  :custom
+  (window-resize-pixelwise t)
+  (fit-window-to-buffer-horizontally t)
+  (display-buffer-alist
+   `(("\\*\\(?:[^*]*-eshell\\|eshell [^*]*\\|compilation\\)\\*"
+      display-buffer-in-side-window
+      (side . bottom) (slot . 0) (window-height . 0.3)
+      ,jtk-window-side-parameters)
+     ("\\*\\(?:Help\\|cider-doc\\|grep\\|Completions\\)\\*"
+      display-buffer-in-side-window
+      (side . right) (slot . 0) (window-width . 0.3)
+      ,jtk-window-side-parameters)
+     ("\\*Flycheck error messages\\*"
+      display-buffer-in-side-window
+      (side . right) (slot . 1) (window-width . 0.3)
+      ,jtk-window-side-parameters))))
+
+(defun jtk-window-open-side-windows ()
+  "Open help, the project's eshell and the file tree around the windows."
+  (interactive)
+  (save-selected-window
+    (display-buffer (get-buffer-create "*Help*"))
+    (call-interactively #'project-eshell)
+    (call-interactively #'treemacs)))
 
 (provide 'init-windows)
 

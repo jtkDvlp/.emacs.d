@@ -19,15 +19,9 @@
   (setq powerline-default-separator 'arrow)
 
   (spaceline-define-segment ide-window
-    "IDE-Window marker."
-    (let* ((window
-            (selected-window))
-
-           (ide-window?
-            (window-parameter window 'ide)))
-
-      (when ide-window?
-        "IDE")))
+    "Marks the side windows of the IDE-like layout."
+    (when (window-parameter (selected-window) 'window-side)
+      "IDE"))
 
   (spaceline-compile
     '((buffer-id
