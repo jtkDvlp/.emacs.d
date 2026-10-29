@@ -98,7 +98,12 @@
         ;; than RET does; for a project, the project commands
         ;; (init-project).  Within a prompt M-x no longer starts another
         ;; M-x; on a project, M-x x runs any command in it.
-        ("M-x" . embark-act)))
+        ("M-x" . embark-act)
+
+        ;; NOTE: All keys of the buffer as a list to search, instead of
+        ;; the help buffer; with C-u also the global ones.
+        :map help-map
+        ("b" . embark-bindings)))
 
 ;; NOTE: Teaches embark to export consult's lists: lines to an occur
 ;; buffer, grep results to a grep buffer.  Both are editable (`e').
