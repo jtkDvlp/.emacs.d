@@ -78,9 +78,13 @@ kommt der Backtrace dazu. Es endet mit einem Fehler, wenn das Laden oder
 eine Datei scheitert — Warnungen allein nicht, ihre Zahl ist das Maß. Die
 GitHub-Action (`.github/workflows/check.yml`, macOS, Emacs 31.1) führt es
 bei jedem Push aus und legt den Bericht in die Zusammenfassung des Laufs.
-Der Prüfschritt hat ein Zeitlimit von 15 Minuten (sonst 2,5 bis 3,5), und
-ein Download unter 1 KB/s für 60 s scheitert — drei Läufe hingen vorher
-stundenlang an einem stehenden Download.
+Gegen hängende Läufe: `scripts/check` gibt nach 8 Minuten auf und nennt
+im Bericht die Pakete, auf die es noch wartete, mit ihrer letzten
+Meldung und dem laufenden Prozess (sonst dauert ein Lauf 2,5 bis 3,5
+Minuten). In der Action scheitert dazu ein Download unter 1 KB/s für
+60 s, git fragt nie nach einem Passwort, und der Schritt hat ein
+Zeitlimit von 15 Minuten. Mehrere Läufe hingen vorher stundenlang beim
+Installieren der Pakete; die Ursache ist noch offen.
 Ein anderes Emacs wählt man über `EMACS=/pfad/zu/emacs scripts/check`.
 
 `--snapshot FILE` schreibt nach dem Laden — und nachdem jedes deklarierte
