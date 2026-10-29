@@ -997,7 +997,8 @@ Optionen.
 
 **Gesichtet in der GUI:** Die Größen der Seitenfenster (30 % der Höhe
 bzw. Breite; vorher 300 bzw. 500 Pixel) passen. Die Tab-Leiste war
-eingeblendet und ist wieder aus. Offen: das „IDE“-Segment der Modeline.
+eingeblendet und ist wieder aus. Das „IDE“-Segment der Modeline
+erscheint in den Seitenfenstern.
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
