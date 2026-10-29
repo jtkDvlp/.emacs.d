@@ -1085,6 +1085,41 @@ bleiben vorerst, wie das Theme sie vorgibt. Offen: die vundo-Ansicht.
 Kommentar, Org und der CIDER-REPL, corfu in eshell neben dem
 Verlaufsvorschlag von esh-autosuggest — alles in Ordnung.
 
+#### ✅ 2.7 Sprach-Infrastruktur (entschieden und umgesetzt 2026-10-29)
+
+| Thema | Entschieden | Warum |
+|---|---|---|
+| LSP-Client | **eglot** (eingebaut), Grundeinstellungen in `init-lsp` | Liefert an xref, eldoc, `completion-at-point` und flymake, also an die Tasten und Oberflächen, die alle Sprachen schon haben. Verworfen: lsp-mode (eigene Welt, viel Konfiguration). |
+| Server | nur **clojure-lsp** (vorhanden, per brew), in jedem Clojure-Buffer neben CIDER | Gearbeitet wird fast nur in Clojure/ClojureScript. |
+| Prüfen | **flymake** statt flycheck, überall in `prog-mode`; flycheck-clj-kondo entfällt | eglot meldet nur an flymake; clj-kondo kommt über clojure-lsp. |
+| tree-sitter | eingebaut über `treesit-enabled-modes`; zunächst JSON, CSS, Shell, YAML, TOML, Dockerfile | Emacs 31 leitet die Modi um und installiert Grammatiken auf Nachfrage. Verworfen: treesit-auto (überflüssig). |
+
+**eglot:**
+- Ein Server endet mit seinem letzten Buffer; das Protokoll-Log ist aus.
+- Tasten: `M-r R` umbenennen, `M-r A` Code-Aktionen, `M-r O` Importe ordnen, `M-r =` formatieren.
+- Großbuchstaben, weil clj-refactor in Clojure fast alle Kleinbuchstaben nach `M-r` belegt.
+
+**flymake:**
+- `C-c ! n`/`p` springen zum nächsten bzw. vorigen Befund, wiederholbar; `C-c ! l` listet die Befunde im Buffer, `C-c ! L` im Projekt.
+- Die Modeline zählt die Befunde über ein eigenes spaceline-Segment, weil spaceline nur flycheck kennt.
+- **Vertrauenswürdige Dateien:** Elisp prüft flymake mit dem Byte-Compiler nur in Dateien, denen Emacs vertraut (`trusted-content`). Sonst läuft nur checkdoc, still: Im Batch stand das nur im `*Flymake log*`. Jetzt sind `early-init.el`, `init.el`, `modules/` und `lisp/` eingetragen, die Pakete unter `elpaca/` nicht.
+
+**tree-sitter:** Ohne Grammatik öffnet ein tree-sitter-Modus ohne Hervorhebung. Emacs fragt deshalb bei der ersten Datei einer Art, ob er die Grammatik installieren soll; das braucht einen C-Compiler, auf dem Mac die Xcode-Command-Line-Tools. SCSS, Clojure und Markdown bleiben bei ihren Modi: Für SCSS und Clojure bringt Emacs keinen tree-sitter-Modus mit, für Markdown ist markdown-mode eingerichtet.
+
+**Geprüft im Batch:**
+- **clojure-lsp 2026.10.15** an einem kleinen `deps.edn`-Projekt:
+  - Befunde von clj-kondo (Namespace ungenutzt, Binding ungenutzt, unbekanntes Symbol) und von clojure-lsp selbst (öffentliche Var ungenutzt);
+  - `M-j d` findet die Definition;
+  - Vervollständigen bietet die Funktionen des Projekts an.
+  - `eglot-ensure` startet den Server erst nach dem nächsten Befehl, im Batch also erst nach `post-command-hook`.
+- **flymake in Elisp:** checkdoc überall, Byte-Compiler-Befunde in der eigenen Konfiguration; `C-c ! n` und die Wiederholung funktionieren.
+- **tree-sitter:** Die sechs Dateiarten öffnen im tree-sitter-Modus; SCSS, Clojure und Markdown bleiben bei ihren Modi.
+- **Schnappschuss-Diff:** nur eglot, flymake, die Umleitungen und die Hooks.
+
+**Für 2.8 entschieden:** Außer Clojure/ClojureScript, SCSS, etwas CSS, HTML und JS, JSON, Jenkinsfile, Shell und Markdown wird nichts gebraucht; der Rest kann weg. Neu gewünscht: ein ordentliches Setup für XML und XSLT. Wichtig ist die Leistung in großen Dateien.
+
+**Offen für die Sichtung in der GUI:** clojure-lsp im echten Projekt neben CIDER (Vervollständigen, `M-j d`, Befunde in der Modeline); die Nachfrage nach der Grammatik beim ersten JSON- oder CSS-File.
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -1134,7 +1169,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | aggressive-indent | M | development | Einrücken beim Tippen | bleibt (2.5), global ab dem Start | Ja |
 | company / company-quickhelp | M | development | Vervollständigung im Buffer | **ersetzt** (2.6) durch corfu und cape; company bleibt als Abhängigkeit installiert | Ja |
 | magit | M | development | Git | bleibt | Ja |
-| flycheck | M | development | Syntaxprüfung | → flymake, entschieden in 2.6, umgesetzt mit eglot in 2.7 | Ja |
+| flycheck | M | development | Syntaxprüfung | **ersetzt** (2.7) durch flymake; bleibt als Abhängigkeit von tide installiert | Ja |
 | yasnippet / yasnippet-snippets | M | development | Snippets | yasnippet bleibt (2.6); yasnippet-snippets **entfernt**, nicht benutzt | Ja |
 | highlight-symbol | M | development | Symbol hervorheben | **ersetzt** (2.5) durch symbol-overlay | Ja |
 | restclient | M | development | HTTP-Anfragen | meines Wissens archiviert → verb | Ja |
@@ -1148,7 +1183,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | cider | M | clojure | REPL | bleibt | Ja |
 | clj-refactor | M | clojure | Refactoring | prüfen gegen clojure-lsp | Ja |
 | parseedn | M | clojure | `project.clj` lesen | hängt an Leiningen-Helfern | |
-| flycheck-clj-kondo | M | clojure | Linter | hängt an 2.6 | |
+| flycheck-clj-kondo | M | clojure | Linter | **entfernt** (2.7), clj-kondo kommt über clojure-lsp | |
 | js2-mode / js2-refactor / xref-js2 | M | javascript | JS | → `js-ts-mode` + eglot | |
 | indium | M | javascript | JS-Debugger | Pflegestand prüfen | |
 | tide / npm-mode | M | typescript | TS | → `typescript-ts-mode` + eglot | |
@@ -1167,12 +1202,12 @@ Noch nicht in der Konfiguration; aufgenommen auf deinen Wunsch
 
 | Paket bzw. Programm | Art | Block | wofür | Einschätzung |
 |---|---|---|---|---|
-| eglot | Emacs-Paket, eingebaut seit 29 | 2.7 | LSP-Client | Favorit: setzt auf die Standard-Schnittstellen (`xref`, `flymake`, `eldoc`, `completion-at-point`), braucht kaum Konfiguration, kein Eintrag in der Lockdatei |
-| lsp-mode (+ lsp-ui, dap-mode) | Emacs-Paket, MELPA | 2.7 | LSP-Client, Gegenkandidat | mehr Oberfläche (Sideline, Debugger-Anbindung), aber eine eigene Welt mit eigener UI und deutlich mehr Konfiguration |
-| flycheck-eglot | Emacs-Paket, MELPA | 2.6/2.7 | eglot-Befunde in flycheck | nur falls flycheck bleibt; sonst nutzt eglot flymake direkt |
+| eglot | Emacs-Paket, eingebaut seit 29 | 2.7 | LSP-Client | **aufgenommen** (2.7) |
+| lsp-mode (+ lsp-ui, dap-mode) | Emacs-Paket, MELPA | 2.7 | LSP-Client, Gegenkandidat | **verworfen** (2.7): eigene Welt, viel Konfiguration |
+| flycheck-eglot | Emacs-Paket, MELPA | 2.6/2.7 | eglot-Befunde in flycheck | **nicht nötig** (2.7): flymake |
 | emacs-lsp-booster (+ eglot-booster) | Programm + Emacs-Paket | 2.7, Phase 3 | schnellere JSON-Verarbeitung | nur, wenn eine Messung Bedarf zeigt |
-| treesit-auto | Emacs-Paket, MELPA | 2.7 | `*-ts-mode` und Grammatiken automatisch | Alternative: Grammatiken von Hand per `treesit-language-source-alist` |
-| clojure-lsp | Language-Server | 2.8 Clojure | Navigation, Refactoring, clj-kondo-Befunde | **neben** CIDER, nicht statt; überschneidet sich mit clj-refactor und flycheck-clj-kondo |
+| treesit-auto | Emacs-Paket, MELPA | 2.7 | `*-ts-mode` und Grammatiken automatisch | **verworfen** (2.7): Emacs 31 kann das selbst (`treesit-enabled-modes`, Installation auf Nachfrage) |
+| clojure-lsp | Language-Server | 2.7 | Navigation, Refactoring, clj-kondo-Befunde | **aufgenommen** (2.7), neben CIDER; Überschneidung mit clj-refactor klärt 2.8 |
 | clojure-ts-mode | Emacs-Paket, MELPA | 2.8 Clojure | tree-sitter-Modus für Clojure | Pflegestand und CIDER-Verträglichkeit prüfen |
 | typescript-language-server | Language-Server (npm) | 2.8 JS/TS | JavaScript und TypeScript | ersetzt tide, xref-js2 und Teile von js2-refactor |
 | basedpyright bzw. pyright, dazu ruff | Language-Server | 2.8 Python | Python | ersetzt elpy |
