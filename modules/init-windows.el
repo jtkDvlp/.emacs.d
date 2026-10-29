@@ -28,8 +28,8 @@
   :ensure nil
 
   :custom
-  ;; NOTE: The bar shows up as soon as there are two tabs.
-  (tab-bar-show 1)
+  ;; NOTE: No bar; M-' f lists the tabs by name to choose from.
+  (tab-bar-show nil)
 
   :config
   (defun jtk-tab-new-for-project ()

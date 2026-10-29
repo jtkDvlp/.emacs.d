@@ -967,7 +967,8 @@ Tab kopieren; `k` schließen, `K` schließen samt den Buffern seiner
 Fenster; `n`/`p` wechseln (wiederholbar, auch `o`/`O`), `N` zuletzt
 benutzter Tab; `t` umbenennen; `f` per Auswahl. Dazu alles aus
 `C-x t`, etwa `u` (geschlossenen Tab wiederholen) und `p` (Projekt in
-neuem Tab). Die Leiste erscheint ab zwei Tabs.
+neuem Tab). Die Leiste bleibt ausgeblendet (nach der Sichtung so
+entschieden); die Namen zeigt `M-' f`.
 
 **Tab-Namen:** Ein Tab aus `c` behält den Namen seines Projekts, auch
 wenn darin Fenster anderer Projekte offen sind. Ein Tab ohne Namen
@@ -994,9 +995,9 @@ Flycheck landen rechts (Slot 0 und 1), eshell und compilation unten;
 aus und ein. Schnappschuss-Diff: nur die erwarteten Tasten, Hooks und
 Optionen.
 
-**Offen für die Sichtung in der GUI:** die Größen der Seitenfenster (30 %
-der Höhe bzw. Breite; vorher 300 bzw. 500 Pixel), die Tab-Leiste und
-das „IDE“-Segment der Modeline.
+**Gesichtet in der GUI:** Die Größen der Seitenfenster (30 % der Höhe
+bzw. Breite; vorher 300 bzw. 500 Pixel) passen. Die Tab-Leiste war
+eingeblendet und ist wieder aus. Offen: das „IDE“-Segment der Modeline.
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
