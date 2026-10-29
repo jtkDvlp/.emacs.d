@@ -53,7 +53,7 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 | `M-m` | `jtk-highlight-symbol-map` | `init-editing` | next, previous, replace symbol (repeats) |
 | `M-!` | `jtk-run-map` | `init-keys` | `m` keyboard macros (`jtk-macro-map`), `s` shells (`jtk-shell-map`) |
 | `M-+` | `jtk-view-map` | `init-keys` | `f` font size (`jtk-zoom-map`), `w` frame size (`jtk-frame-map`); both repeat |
-| `M-'` | `elscreen-map` | `init-windows` | screens |
+| `M-'` | `jtk-tab-map` | `init-windows` | tabs: Emacs' `C-x t`, plus a tab for the current project (`c`), switching (`n`, `p`, repeat), closing with its buffers (`K`) |
 | `C-M-'` | `jtk-buffer-move-map` | `init-windows` | moving the buffer to a neighbouring window |
 | `M-v` | `jtk-vc-map` | `init-vc` | git |
 | `C-M--` | `jtk-org-map` | `init-org` | capturing, agenda |

@@ -235,20 +235,6 @@
                  "elpaca-menu-lock-file" :id elpy :type git :protocol
                  https :inherit t :depth treeless :ref
                  "9cdf26dfea1cb044b3cf1dfa9755b6479bfd9a1c"))
- (elscreen :source "elpaca-menu-lock-file" :recipe
-           (:package "elscreen" :repo "knu/elscreen" :fetcher github
-                     :files
-                     ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                      "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
-                      "doc/*.texinfo" "lisp/*.el" "docs/dir"
-                      "docs/*.info" "docs/*.texi" "docs/*.texinfo"
-                      (:exclude ".dir-locals.el" "test.el" "tests.el"
-                                "*-test.el" "*-tests.el" "LICENSE"
-                                "README*" "*-pkg.el"))
-                     :source "elpaca-menu-lock-file" :id elscreen
-                     :type git :protocol https :inherit t :depth
-                     treeless :ref
-                     "cc58337faf5ba1eae7e87f75f6ff3758675688f2"))
  (embark :source "elpaca-menu-lock-file" :recipe
          (:package "embark" :repo "oantolin/embark" :fetcher github
                    :files ("embark.el" "embark-org.el" "embark.texi")

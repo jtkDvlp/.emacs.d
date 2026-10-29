@@ -225,9 +225,6 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   `paredit` aber nirgends ausdrücklich — es kommt als Abhängigkeit von
   `clj-refactor` mit (bestätigt: ohne `paredit` scheitert dessen
   Installation). Fällt `clj-refactor` weg, bricht die Funktion.
-- **`with-elscreen` wird in `elscreen`s `:init` definiert (`init-windows`),
-  aber von `ediff` benutzt (`init-diff`).** Wer `elscreen` ersetzt, muss die
-  `ediff`-Einbindung mitnehmen.
 - **eshell-Tasten gehen über `eshell-mode-map*`**, weil eshell seine
   Mode-Map früher erst beim Start des Modus angelegt hat. Ob das in der
   Zielversion noch nötig ist, ist zu prüfen, bevor es wegfällt.

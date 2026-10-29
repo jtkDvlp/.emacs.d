@@ -1,9 +1,9 @@
-;;; init-windows.el --- Windows, frames and screens -*- lexical-binding: t; -*-
+;;; init-windows.el --- Windows, frames and tabs -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
 ;; Undoing window changes, full-frame views, moving buffers between
-;; windows, screens per project (elscreen), choosing windows and the
+;; windows, tabs (as a rule one per project), choosing windows and the
 ;; IDE-like layout.
 
 ;;; Code:
@@ -39,61 +39,60 @@
    ("<right>" . windmove-swap-states-right)))
 
 (use-package
-  elscreen
+  tab-bar
+  :ensure nil
 
-  :commands
-  (elscreen-create jtk-elscreen-create-for-project)
-
-  :init
-  (defun jtk-elscreen-create-for-project ()
-    "Create a screen named after the current project."
-    (interactive)
-    (let ((project-name (jtk-project-name)))
-      (elscreen-create)
-      (when project-name
-        (elscreen-screen-nickname project-name))
-      nil))
-
-  ;; NOTE: M-' loads elscreen on first use; elscreen then puts its map
-  ;; there itself.
-  :bind-keymap
-  ("M-'" . elscreen-map)
-
-  :bind
-  (:map elscreen-map
-   ("c" . jtk-elscreen-create-for-project)
-   ("C" . elscreen-clone)
-   ("k" . elscreen-kill)
-   ("K" . elscreen-kill-screen-and-buffers)
-   ("p" . elscreen-previous)
-   ("n" . elscreen-next)
-   ("N" . elscreen-toggle)
-   ("t" . elscreen-screen-nickname)
-   ("f" . elscreen-select-and-goto))
-
-  :init
-  (defun with-elscreen (open-command close-command)
-    (advice-add
-     open-command
-     :before
-     (lambda (&rest args)
-       (call-interactively 'elscreen-create))
-     '((name . "elscreen-open-command")))
-
-    (advice-add
-     close-command
-     :after
-     (lambda (&rest args)
-       (call-interactively 'elscreen-kill))
-     '((name . "elscreen-close-command"))))
+  :custom
+  ;; NOTE: The bar shows up as soon as there are two tabs.
+  (tab-bar-show 1)
 
   :config
-  (setq
-   elscreen-prefix-key "\M-'"
-   elscreen-display-screen-number nil
-   elscreen-display-tab nil)
+  (defun jtk-tab-new-for-project ()
+    "Open a new tab, named after the current project if there is one."
+    (interactive)
+    (let ((project-name (jtk-project-name)))
+      (tab-bar-new-tab)
+      (when project-name
+        (tab-bar-rename-tab project-name))))
 
-  (elscreen-start))
+  (defun jtk-tab-close-with-buffers ()
+    "Close the current tab and kill the buffers its windows show."
+    (interactive)
+    (when (length= (tab-bar-tabs) 1)
+      (user-error "This is the only tab"))
+    (let ((buffers (seq-uniq (mapcar #'window-buffer
+                                     (window-list nil 'nomini)))))
+      (tab-bar-close-tab)
+      (mapc #'kill-buffer buffers)))
+
+  ;; NOTE: The tab commands of Emacs (C-x t), and letters of our own on
+  ;; top.  `:prefix' cannot be combined with `:parent', hence `fset'.
+  (defvar-keymap jtk-tab-map
+    :doc "Tabs: a set of windows each, as a rule one per project."
+    :parent tab-prefix-map
+    "c" #'jtk-tab-new-for-project
+    "C" #'tab-duplicate
+    "k" #'tab-close
+    "K" #'jtk-tab-close-with-buffers
+    "p" #'tab-previous
+    "n" #'tab-next
+    "N" #'tab-recent
+    "t" #'tab-rename
+    "f" #'tab-switch)
+  (fset 'jtk-tab-map jtk-tab-map)
+  (keymap-global-set "M-'" 'jtk-tab-map)
+
+  ;; NOTE: Replaces the repeat map of Emacs for these two, which only
+  ;; knows o and O.
+  (defvar-keymap jtk-tab-switch-repeat-map
+    :doc "Switching tabs; the keys repeat."
+    :repeat t
+    "n" #'tab-next
+    "p" #'tab-previous
+    "o" #'tab-next
+    "O" #'tab-previous)
+
+  (tab-bar-mode))
 
 (use-package
   ace-window

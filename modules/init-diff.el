@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 
-;; ediff, each session on a screen of its own, and ztree for
+;; ediff, each session in a tab of its own, and ztree for
 ;; directories.
 
 ;;; Code:
@@ -11,12 +11,20 @@
   ediff
   :ensure nil
 
+  :init
+  (defun jtk-diff-close-tab ()
+    "Close the tab of the ediff session that just ended."
+    (tab-bar-close-tab))
+
   :config
   (setq ediff-window-setup-function #'ediff-setup-windows-plain
         ediff-split-window-function 'split-window-horizontally)
-  (with-elscreen #'ediff-buffers #'ediff-quit)
-  (with-elscreen #'ediff-files #'ediff-quit)
-  (with-elscreen #'ediff-directories #'ediff-quit)
+
+  ;; NOTE: Each session gets a tab of its own, closed when the session
+  ;; ends, after ediff's own cleanup.  The quit hook does not run when
+  ;; the question whether to quit is answered with n.
+  (add-hook 'ediff-before-setup-hook #'tab-bar-new-tab)
+  (add-hook 'ediff-quit-hook #'jtk-diff-close-tab 90)
 
   :commands
   (ediff-buffers
