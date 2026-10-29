@@ -25,15 +25,16 @@
 
 (use-package
   ztree
-  :demand t
-
   :commands
   (ztree-diff)
 
   :init
   (defalias 'ediff-trees 'ztree-diff)
 
-  (setq ztree-diff-filter-list '("^\\.$" "^\\.\\.$" "^\\.git$" "^\\.DS_Store$" "^node_modules$")
+  ;; NOTE: Both are plain variables, not options, so `:custom' would not
+  ;; reach them; set before loading, they become the defaults.
+  (setq ztree-diff-filter-list
+        '("^\\.$" "^\\.\\.$" "^\\.git$" "^\\.DS_Store$" "^node_modules$")
         ztree-draw-unicode-lines t))
 
 (provide 'init-diff)
