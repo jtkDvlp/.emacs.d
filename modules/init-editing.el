@@ -143,27 +143,34 @@
   (global-aggressive-indent-mode))
 
 (use-package
-  highlight-symbol
+  symbol-overlay
   :demand t
-  :diminish highlight-symbol-mode
+  :diminish symbol-overlay-mode
+
+  :init
+  ;; NOTE: Otherwise single letters on a marked symbol run commands (n
+  ;; jumps, r renames) instead of inserting; the keys are under M-m.  A
+  ;; plain variable, hence `setq' before loading.
+  (setq symbol-overlay-inhibit-map t)
+
+  :custom
+  (symbol-overlay-idle-time 1.5)
 
   :bind
-  (("<C-m>" . highlight-symbol))
+  (("<C-m>" . symbol-overlay-put))
 
   :hook
-  ((prog-mode . highlight-symbol-mode)
-   (cider-repl-mode . highlight-symbol-mode))
+  ((prog-mode . symbol-overlay-mode)
+   (cider-repl-mode . symbol-overlay-mode))
 
   :config
-  (setq highlight-symbol-idle-delay 1.5)
-
   (defvar-keymap jtk-highlight-symbol-map
     :doc "Moving between and replacing the symbol; the keys repeat."
     :prefix t
     :repeat t
-    "n" #'highlight-symbol-next
-    "p" #'highlight-symbol-prev
-    "r" #'highlight-symbol-query-replace)
+    "n" #'symbol-overlay-jump-next
+    "p" #'symbol-overlay-jump-prev
+    "r" #'symbol-overlay-query-replace)
   (keymap-global-set "M-m" 'jtk-highlight-symbol-map))
 
 (provide 'init-editing)

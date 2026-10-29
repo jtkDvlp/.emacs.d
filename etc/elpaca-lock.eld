@@ -405,22 +405,6 @@
                                   :protocol https :inherit t :depth
                                   treeless :ref
                                   "d88db4248882da2d4316e76ed673b4ac1fa99ce3"))
- (highlight-symbol :source "elpaca-menu-lock-file" :recipe
-                   (:package "highlight-symbol" :fetcher github :repo
-                             "nschum/highlight-symbol.el" :files
-                             ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                              "*.texinfo" "doc/dir" "doc/*.info"
-                              "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
-                              "docs/dir" "docs/*.info" "docs/*.texi"
-                              "docs/*.texinfo"
-                              (:exclude ".dir-locals.el" "test.el"
-                                        "tests.el" "*-test.el"
-                                        "*-tests.el" "LICENSE"
-                                        "README*" "*-pkg.el"))
-                             :source "elpaca-menu-lock-file" :id
-                             highlight-symbol :type git :protocol
-                             https :inherit t :depth treeless :ref
-                             "7a789c779648c55b16e43278e51be5898c121b3a"))
  (ht :source "elpaca-menu-lock-file" :recipe
      (:package "ht" :fetcher github :repo "Wilfred/ht.el" :files
                ("*.el" "*.el.in" "dir" "*.info" "*.texi" "*.texinfo"
@@ -944,6 +928,22 @@
                     :source "elpaca-menu-lock-file" :id spinner :type
                     git :protocol https :inherit t :depth treeless
                     :ref "d4647ae87fb0cd24bc9081a3d287c860ff061c21"))
+ (symbol-overlay :source "elpaca-menu-lock-file" :recipe
+                 (:package "symbol-overlay" :fetcher github :repo
+                           "wolray/symbol-overlay" :files
+                           ("*.el" "*.el.in" "dir" "*.info" "*.texi"
+                            "*.texinfo" "doc/dir" "doc/*.info"
+                            "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
+                            "docs/dir" "docs/*.info" "docs/*.texi"
+                            "docs/*.texinfo"
+                            (:exclude ".dir-locals.el" "test.el"
+                                      "tests.el" "*-test.el"
+                                      "*-tests.el" "LICENSE" "README*"
+                                      "*-pkg.el"))
+                           :source "elpaca-menu-lock-file" :id
+                           symbol-overlay :type git :protocol https
+                           :inherit t :depth treeless :ref
+                           "85d100b0cca35b70cee1b260e09af8e1fb2fcc08"))
  (tide :source "elpaca-menu-lock-file" :recipe
        (:package "tide" :fetcher github :repo "ananthakumaran/tide"
                  :files (:defaults "tsserver") :source
@@ -990,8 +990,8 @@
         (:package "vundo" :repo
                   ("https://github.com/casouri/vundo" . "vundo") :tar
                   nil :host gnu :files ("*" (:exclude ".git" "test"))
-                  :source "GNU ELPA" :id vundo :type git :protocol
-                  https :inherit t :depth treeless :ref
+                  :source "elpaca-menu-lock-file" :id vundo :type git
+                  :protocol https :inherit t :depth treeless :ref
                   "04caf7ec54e4a7861d3591a1e090adc1fb76b5d1"))
  (web-mode :source "elpaca-menu-lock-file" :recipe
            (:package "web-mode" :repo "fxbois/web-mode" :fetcher
