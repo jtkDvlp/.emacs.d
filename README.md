@@ -39,7 +39,7 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 - A list exported with `C-o` into a buffer of its own (projects, for
   instance) takes the same action keys directly on the entry under the
   cursor: `e` on a project opens eshell there; `M-a` turns that off.
-- Each kind of project (Clojure, npm, PlatformIO) brings its commands,
+- Each kind of project (Clojure, npm) brings its commands,
   under `C-c M-j` in its buffers and under `j` in the project commands.
 - `M-X` lists the commands that fit the current buffer, with their
   keys; `C-h b` lists all keys of the buffer to search (with `C-u` the
@@ -59,9 +59,6 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 | `C-M--` | `jtk-org-map` | `init-org` | capturing, agenda |
 | `C-x x` | `ctl-x-x-map` (Emacs) | `init-project`, `init-treemacs` | switching projects (`f`), file tree (`d`) |
 | `C-x x p` | `jtk-project-map` | `init-project`, languages | project commands: Emacs' `C-x p` with consult for buffers (`b`) and grep (`g`), Magit (`v`, `m`), commands of the project's kinds (`j`) |
-| `C-c M-j` in a project kind's buffers | `jtk-clojure-project-map`, npm-mode's, platformio-mode's | languages | starting or connecting a REPL, npm, PlatformIO |
+| `C-c M-j` in a project kind's buffers | `jtk-clojure-project-map`, npm-mode's | languages | starting or connecting a REPL, npm |
 | `C-a` in HTML | `jtk-html-attribute-map` | `init-lang-html` | editing attributes (repeats) |
 
-## todo
-- support language php
-- support language typescript

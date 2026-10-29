@@ -25,9 +25,9 @@ Conventional Commits trotzdem, damit die Historie lesbar bleibt.
 - Plattform: **nur macOS.** Fallunterscheidungen für Linux, X oder Windows
   (`windows-nt` bei `sql`, `x` bei der PATH-Übernahme) tragen nichts und
   fallen beim jeweiligen Umbau weg.
-- Schwerpunkt: Clojure/ClojureScript mit CIDER; daneben Elisp, JS/TS,
-  HTML/CSS, C++ (PlatformIO), Org (GTD). Python wird nicht mehr unterstützt
-  (seit 2.6).
+- Schwerpunkt: Clojure/ClojureScript mit CIDER; daneben SCSS, etwas CSS,
+  HTML und JS, XML/XSLT, JSON, Jenkinsfile, Shell, Markdown, Elisp, Org
+  (GTD). Weitere Sprachen sind bewusst entfernt (2.6, 2.8).
 
 ## Aufbau (Ist-Stand)
 
@@ -44,7 +44,7 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 | `modules/init-packages.el` | elpaca-Installer (gepinnt über die Lockdatei), `elpaca-use-package`, no-littering, diminish. | ja |
 | `modules/init-core.el` | Grundverhalten ohne eigenes Thema: `local.el`, PATH, Sicherungen, Kodierung, Auto-Revert, Scrollen, Rückfragen. | ja |
 | `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `org`, `startup`, `structural-editing`, `completion`, `checking`, `lsp`, `tree-sitter`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`. Jede Datei sagt im Kopf, was hineingehört. | ja |
-| `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. `init-lang-php` wird nicht geladen. | ja |
+| `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. | ja |
 | `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`lsp-lens`, `narrow`, `project`, `zoom`), Symbole mit Präfix `jtk-`. | ja |
 | `etc/elpaca-lock.eld` | Commit jedes Pakets (83, mit Abhängigkeiten und elpaca selbst). | ja |
 | `etc/yasnippet/snippets/` | Handgeschriebene yasnippet-Vorlagen. | ja |
@@ -171,8 +171,8 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   weder Byte-Compiler noch Schnappschuss bemerken den Fehler.
 - **Der Schnappschuss sieht nur, was geladen wird — und nur den
   Endzustand.** Ein Block, der an einem nie geladenen Paket hängt, fehlt
-  vorher wie nachher (so `tide`, das auf das nicht installierte
-  `typescript-mode` wartet). Und weil er alle Pakete auf einmal lädt,
+  vorher wie nachher (so einst `tide`, das auf das nie installierte
+  `typescript-mode` wartete). Und weil er alle Pakete auf einmal lädt,
   sieht er nicht, in welcher Reihenfolge eine echte Sitzung sie lädt:
   Dass CIDER die `C-c M-j`-Familie überschrieb, sobald eine `.clj`-Datei
   offen war, zeigte erst eine Spur der `define-key`-Aufrufe. Für solche
@@ -214,9 +214,9 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   ohne den Hook liefen sie still im aktuellen statt im markierten
   Projekt — kein Fehler, nur das falsche Ziel.
 - **Projektarten teilen sich die Tasten unter `j`.** Bei gleicher Taste
-  gewinnt die zuerst angemeldete Art (heute Clojure vor npm vor
-  PlatformIO, durch die Reihenfolge in `init.el` und weil npm und
-  PlatformIO sich erst anmelden, wenn elpaca ihre Blöcke auswertet).
+  gewinnt die zuerst angemeldete Art (heute Clojure vor npm, durch die
+  Reihenfolge in `init.el` und weil npm sich erst anmeldet, wenn elpaca
+  seinen Block auswertet).
   Wer eine Art hinzufügt, prüft die Tasten gegen die übrigen.
 - **`:bind*` mit `:map` wirkt wie `:bind`.** Die Belegung landet in der
   genannten Mode-Map, nicht in der Override-Map. Das Sternchen dort trägt

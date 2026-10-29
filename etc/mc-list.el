@@ -27,7 +27,6 @@
         org-metaright
         org-self-insert-command
         org-shiftright
-        platformio-build
         sp-backward-sexp
         sp-backward-up-sexp
         sp-convolute-sexp
@@ -51,5 +50,4 @@
         mac-mwheel-scroll
         mouse-drag-vertical-line
         mouse-set-region
-        platformio-build
         ))
