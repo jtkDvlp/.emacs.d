@@ -11,6 +11,24 @@
 
 (require 'jtk-project)
 
+;; NOTE: The same keys under C-c M-j in Clojure buffers and under j in
+;; the project commands (C-x x p, and M-o on a project in the project
+;; list), there for every project with one of the marker files.
+(defvar-keymap jtk-clojure-project-map
+  :doc "Starting a REPL (upper case) or connecting to one (lower case)."
+  :prefix t
+  "J" #'cider-jack-in-dwim
+  "j" #'cider-connect-clj
+  "S" #'cider-jack-in-cljs
+  "s" #'cider-connect-cljs
+  "B" #'cider-jack-in-clj&cljs
+  "b" #'cider-connect-clj&cljs)
+
+(add-to-list 'jtk-project-kinds
+             '("Clojure" ("project.clj" "deps.edn" "shadow-cljs.edn" "bb.edn")
+               jtk-clojure-project-map)
+             t)
+
 (use-package
   clojure-mode
 
@@ -360,19 +378,10 @@
 
   :bind
   (:map clojure-mode-map
-        ("C-c M-j" . nil)
-
-        ("C-c M-j J" . cider-jack-in-dwim)
-        ("C-c M-j j" . cider-connect-clj)
+        ("C-c M-j" . jtk-clojure-project-map)
 
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
         ("C-c C-M-S-J" . cider-repl-switch-to-repl-buffer-and-ns)
-
-        ("C-c M-j S" . cider-jack-in-cljs)
-        ("C-c M-j s" . cider-connect-cljs)
-
-        ("C-c M-j B" . cider-jack-in-clj&cljs)
-        ("C-c M-j b" . cider-connect-clj&cljs)
 
         :map cider-mode-map
         ("C-M-g" . cider-interrupt)

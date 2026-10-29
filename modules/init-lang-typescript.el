@@ -6,6 +6,8 @@
 
 ;;; Code:
 
+(require 'jtk-project)
+
 (use-package
   tide
 
@@ -45,7 +47,17 @@
   :commands
   (npm-mode-npm-init
    npm-mode-npm-install
-   npm-mode-npm-run))
+   npm-mode-npm-run)
+
+  :init
+  ;; NOTE: npm-mode's own keys (install i, run r, ...), under C-c M-j in
+  ;; JavaScript buffers and under j in the project commands.
+  (add-to-list 'jtk-project-kinds
+               '("npm" ("package.json") npm-mode-command-keymap npm-mode)
+               t)
+  (with-eval-after-load 'js2-mode
+    (require 'npm-mode)
+    (keymap-set js2-mode-map "C-c M-j" npm-mode-command-keymap)))
 
 (provide 'init-lang-typescript)
 
