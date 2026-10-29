@@ -6,7 +6,8 @@
 ;; modules set up for every language: jumping (xref, M-j), documentation
 ;; (eldoc, C-h h), completion (corfu) and checking (flymake).  Which
 ;; language starts which server is up to the language modules; the
-;; servers themselves are installed outside Emacs.
+;; servers themselves are installed outside Emacs.  Code lenses, as
+;; clojure-lsp's count of references, show at the end of their line.
 
 ;;; Code:
 
@@ -32,6 +33,12 @@
         ("M-r A" . eglot-code-actions)
         ("M-r O" . eglot-code-action-organize-imports)
         ("M-r =" . eglot-format)))
+
+(use-package
+  jtk-lsp-lens
+  :ensure nil
+  :hook
+  (eglot-managed-mode . jtk-lsp-lens-enable-maybe))
 
 (provide 'init-lsp)
 
