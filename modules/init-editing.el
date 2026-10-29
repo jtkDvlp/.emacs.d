@@ -128,8 +128,7 @@
   :diminish
   aggressive-indent-mode
 
-  :hook
-  (prog-mode . aggressive-indent-global-mode)
+  :demand t
 
   :config
   ;; NOTE: Indenting after an undo is a new change, so the next undo
@@ -137,7 +136,11 @@
   (add-to-list 'aggressive-indent-protected-commands 'undo-redo)
   (add-to-list 'aggressive-indent-protected-commands 'undo-only)
   (add-to-list 'aggressive-indent-excluded-modes 'sass-mode)
-  (add-to-list 'aggressive-indent-excluded-modes 'cider-repl-mode))
+  (add-to-list 'aggressive-indent-excluded-modes 'cider-repl-mode)
+
+  ;; NOTE: In every buffer from the start, apart from the excluded modes,
+  ;; text modes and read-only buffers.
+  (global-aggressive-indent-mode))
 
 (use-package
   highlight-symbol
