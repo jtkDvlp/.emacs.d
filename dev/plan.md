@@ -1081,8 +1081,9 @@ bleiben vorerst, wie das Theme sie vorgibt. Offen: die vundo-Ansicht.
 - Schnappschuss-Diff: weg sind die Tasten von elpy und python sowie die von ido und hideshow (elpy zog beide mit); dazu kommen die Tasten und Optionen von corfu und cape.
 - corfu selbst schaltet sich im Batch nicht ein (`noninteractive`); das Popup zeigt erst die GUI.
 
-**Offen für die Sichtung in der GUI:** das Popup und die Doku daneben;
-corfu in eshell neben dem Verlaufsvorschlag von esh-autosuggest.
+**Gesichtet in der GUI:** Popup und Doku, Vorschläge aus Code,
+Kommentar, Org und der CIDER-REPL, corfu in eshell neben dem
+Verlaufsvorschlag von esh-autosuggest — alles in Ordnung.
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
