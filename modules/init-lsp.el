@@ -22,16 +22,14 @@
   ;; large answers; `eglot-events-buffer' shows it once switched back on.
   (eglot-events-buffer-config '(:size 0 :format full))
   ;; NOTE: No hint that code actions are at hand: clojure-lsp offers some
-  ;; nearly everywhere, so the hint marked every line.  M-r A lists them.
+  ;; nearly everywhere, so the hint marked every line.  M-r a lists them.
   (eglot-code-action-indications nil)
 
   :bind
-  ;; NOTE: Capitals, since clj-refactor holds most lower-case letters
-  ;; after M-r in Clojure buffers.
   (:map eglot-mode-map
-        ("M-r R" . eglot-rename)
-        ("M-r A" . eglot-code-actions)
-        ("M-r O" . eglot-code-action-organize-imports)
+        ("M-r r" . eglot-rename)
+        ("M-r a" . eglot-code-actions)
+        ("M-r o" . eglot-code-action-organize-imports)
         ("M-r =" . eglot-format)))
 
 (use-package

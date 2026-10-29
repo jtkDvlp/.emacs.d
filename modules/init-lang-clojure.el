@@ -2,10 +2,9 @@
 
 ;;; Commentary:
 
-;; clojure-mode with structural editing keys, clojure-lsp, clj-refactor
-;; and CIDER: jack-in with Leiningen profiles, figwheel-main builds,
-;; starting and stopping the user system, and indentation rules for
-;; common macros.
+;; clojure-mode with structural editing keys, clojure-lsp and CIDER:
+;; jack-in with Leiningen profiles, figwheel-main builds, starting and
+;; stopping the user system, and indentation rules for common macros.
 
 ;;; Code:
 
@@ -43,18 +42,6 @@
 
   :config
   (jtk-structural-editing-bind clojure-mode-map))
-
-(use-package
-  clj-refactor
-  :after clojure-mode
-
-  :config
-  (setq cljr-warn-on-eval nil)
-  (cljr-add-keybindings-with-prefix "M-r")
-  (clj-refactor-mode 1)
-
-  :bind-keymap*
-  ("M-r" . clj-refactor-map))
 
 (use-package
   parseedn)
@@ -301,6 +288,11 @@
    ;; cider-print-fn 'pprint
    cider-print-options '(("length" 15))
 
+   ;; NOTE: CIDER's answers for M-j d and M-j r come after clojure-lsp's,
+   ;; which knows the whole project and needs no REPL; in the REPL buffer,
+   ;; where clojure-lsp does not run, CIDER answers.
+   cider-xref-fn-depth 90
+
    cider-use-overlays t
    cider-overlays-use-font-lock t
 
@@ -405,9 +397,7 @@
         ("C-h h" . cider-doc)
         ("C-h H" . cider-javadoc)
 
-        ("M-j d" . cider-find-var)
-        ("M-j D" . cider-grimoire)
-        ("M-j r" . cider-apropos)
+        ("M-j a" . cider-apropos)
         ("M-j f" . cider-find-resource)
         ("M-j n" . cider-find-ns)
 
@@ -445,9 +435,7 @@
         ("C-h h" . cider-doc)
         ("C-h H" . cider-javadoc)
 
-        ("M-j d" . cider-find-var)
-        ("M-j D" . cider-grimoire)
-        ("M-j r" . cider-apropos)
+        ("M-j a" . cider-apropos)
         ("M-j f" . cider-find-resource)
         ("M-j n" . cider-find-ns)
 

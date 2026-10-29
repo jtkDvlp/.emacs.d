@@ -77,14 +77,6 @@
                   :id cider :type git :protocol https :inherit t
                   :depth treeless :ref
                   "d35d5567ac1daaa50398d8d5a40f0620ee367038"))
- (clj-refactor :source "elpaca-menu-lock-file" :recipe
-               (:package "clj-refactor" :fetcher github :repo
-                         "clojure-emacs/clj-refactor.el" :files
-                         (:defaults "CHANGELOG.md") :source
-                         "elpaca-menu-lock-file" :id clj-refactor
-                         :type git :protocol https :inherit t :depth
-                         treeless :ref
-                         "2805bd5f505fdb199a8c5a25fca398ec9c161e5b"))
  (clojure-mode :source "elpaca-menu-lock-file" :recipe
                (:package "clojure-mode" :repo
                          "clojure-emacs/clojure-mode" :fetcher github
@@ -498,19 +490,6 @@
                       :type git :protocol https :inherit t :depth
                       treeless :ref
                       "e271a8ec938929b726331236cf56d1c44571122e"))
- (paredit :source "elpaca-menu-lock-file" :recipe
-          (:package "paredit" :fetcher git :url
-                    "https://paredit.org/paredit.git" :files
-                    ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                     "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
-                     "doc/*.texinfo" "lisp/*.el" "docs/dir"
-                     "docs/*.info" "docs/*.texi" "docs/*.texinfo"
-                     (:exclude ".dir-locals.el" "test.el" "tests.el"
-                               "*-test.el" "*-tests.el" "LICENSE"
-                               "README*" "*-pkg.el"))
-                    :source "elpaca-menu-lock-file" :id paredit :type
-                    git :protocol https :inherit t :depth treeless
-                    :ref "af075775af91f2dbc63b915d762b4aec092946c4"))
  (parseclj :source "elpaca-menu-lock-file" :recipe
            (:package "parseclj" :repo "clojure-emacs/parseclj"
                      :fetcher github :files
