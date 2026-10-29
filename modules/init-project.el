@@ -4,7 +4,7 @@
 
 ;; project.el: switching projects and finding files, directories and
 ;; buffers within one; the project commands on C-x x p, and on a project
-;; in the project list with M-o (embark).  magit, consult, xref and eglot
+;; in the project list with M-x (embark).  magit, consult, xref and eglot
 ;; ask project.el what the project is.  Languages add the commands for
 ;; their kind of project to `jtk-project-kinds'.
 
@@ -23,7 +23,7 @@
   ;; NOTE: Files git ignores are left out anyway; these directories stay
   ;; out where git does not ignore them.
   (project-vc-ignores '("node_modules/" "dist/" "elpa/" "cache/" ".cache/"))
-  ;; NOTE: RET in the project list finds a file; anything else is M-o
+  ;; NOTE: RET in the project list finds a file; anything else is M-x
   ;; on the project (see below).
   (project-switch-commands #'project-find-file)
 

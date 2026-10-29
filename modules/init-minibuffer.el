@@ -7,7 +7,7 @@
 ;; marginalia annotates them, consult adds commands with preview
 ;; (lines, buffers, grep, kill ring, history), and embark exports a
 ;; candidate list into a buffer (C-o) or acts on the marked candidate
-;; (M-o).  All of them work on `completing-read',
+;; (M-x).  All of them work on `completing-read',
 ;; so every command that asks for a choice uses them without setup of
 ;; its own.  Which keys open files and buffers is in init-project.
 
@@ -84,8 +84,9 @@
   ;; NOTE: C-h after a prefix lists its keys to choose from, with their
   ;; descriptions; it stands in for which-key.
   (prefix-help-command #'embark-prefix-help-command)
-  ;; NOTE: The actions show only on C-h after M-o, no list pops up by
-  ;; itself.
+  ;; NOTE: The actions show only on C-h after M-x, no list pops up by
+  ;; itself.  In that list, as in every C-h list, @ and a key run that
+  ;; key's command directly.
   (embark-indicators '(embark-minimal-indicator
                        embark-highlight-indicator
                        embark-isearch-highlight-indicator))
@@ -93,9 +94,11 @@
   :bind
   (:map minibuffer-local-map
         ("C-o" . embark-export)
-        ;; NOTE: Other things to do with the marked entry than RET does:
-        ;; for a project, the project commands (init-project).
-        ("M-o" . embark-act)))
+        ;; NOTE: x for execute: other things to do with the marked entry
+        ;; than RET does; for a project, the project commands
+        ;; (init-project).  Within a prompt M-x no longer starts another
+        ;; M-x; on a project, M-x x runs any command in it.
+        ("M-x" . embark-act)))
 
 ;; NOTE: Teaches embark to export consult's lists: lines to an occur
 ;; buffer, grep results to a grep buffer.  Both are editable (`e').

@@ -12,7 +12,7 @@
 (require 'jtk-project)
 
 ;; NOTE: The same keys under C-c M-j in Clojure buffers and under j in
-;; the project commands (C-x x p, and M-o on a project in the project
+;; the project commands (C-x x p, and M-x on a project in the project
 ;; list), there for every project with one of the marker files.
 (defvar-keymap jtk-clojure-project-map
   :doc "Starting a REPL (upper case) or connecting to one (lower case)."
