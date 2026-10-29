@@ -32,6 +32,7 @@
 (require 'init-structural-editing)
 (require 'init-completion)
 (require 'init-checking)
+(require 'init-lsp)
 (require 'init-snippets)
 (require 'init-restclient)
 (require 'init-sql)
