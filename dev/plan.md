@@ -1046,6 +1046,44 @@ Schnappschuss-Diff: nur die erwarteten Tasten, Hooks und Optionen.
 da. Die Farben von symbol-overlay wirken schwächer als früher; sie
 bleiben vorerst, wie das Theme sie vorgibt. Offen: die vundo-Ansicht.
 
+#### ✅ 2.6 Prüfen, Vervollständigen im Buffer, Snippets (entschieden und umgesetzt 2026-10-29)
+
+| Vorher | Nachher | Warum |
+|---|---|---|
+| company in `prog-mode` und der CIDER-REPL, company-quickhelp | corfu überall (`global-corfu-mode`), Doku über `corfu-popupinfo`, Verlauf über `corfu-history` | corfu setzt auf `completion-at-point` und `completion-styles` auf, im Buffer gilt also dieselbe orderless-Suche wie im Minibuffer. Letzter Commit 2026-10. |
+| — | cape: Dateinamen und Wörter der offenen Text- und Code-Buffer, wo der Modus nichts anbietet | Gewünscht: Begriffe des Buffers und zuletzt getippte. cape: 2026-09. |
+| elpy (Python) | entfernt, mit highlight-indentation und pyvenv | Python wird nicht mehr benutzt. `.py` öffnet Emacs' eigenes `python-mode`. |
+| yasnippet-snippets | entfernt | Nicht benutzt; die eigenen Vorlagen bleiben. |
+| flycheck, flycheck-clj-kondo | bleiben bis 2.7 | Entschieden: flymake, aber zusammen mit eglot, damit keine Zwischenpakete entstehen. |
+| yasnippet | bleibt | Gepflegt; eglot nutzt es für Vorlagen des Language-Servers. |
+
+**Verhalten von corfu:**
+- Das Popup erscheint von selbst nach 0,2 s, sobald drei Zeichen getippt sind (wie bei company).
+- `TAB` vervollständigt, `RET` übernimmt, `C-g` bricht ab; die Doku erscheint nach 0,2 s.
+- Schon einmal gewählte Einträge stehen oben und bleiben über savehist erhalten.
+- Emacs 30 bietet in Text-Modi Wörter aus dem Rechtschreibwörterbuch an; das ist aus (`text-mode-ispell-word-completion`).
+
+**Woher die Vorschläge kommen:**
+- Zuerst fragt corfu die Vervollständigung des Modus: Elisp, CIDER mit verbundener REPL, eshell.
+- Nur wo diese nichts liefert, antworten Dateinamen und dann Wörter aller offenen Text- und Code-Buffer, der aktuelle zuerst. Das gilt in Text, Org, Kommentaren und in Clojure ohne REPL.
+- Im Code mischen sich die Wörter also nicht unter die Symbole des Modus. Ginge mit `cape-capf-super`, ist aber nicht eingebaut.
+
+**company bleibt installiert,** als Abhängigkeit von esh-autosuggest, indium und tide, wird aber nirgends eingeschaltet. esh-autosuggest nutzt es in eshell nur für den Vorschlag aus dem Verlauf.
+
+**Geprüft im Batch:**
+- Vorschlagsquelle je Modus:
+  - Text und Org: Wörter, auch aus einem anderen Text-Buffer;
+  - Elisp: Symbole im Code, Wörter im Kommentar;
+  - Clojure ohne REPL: Wörter;
+  - Text mit Pfad: Dateinamen.
+- corfu, popupinfo und history sind an, `corfu-history` steht in `savehist-additional-variables`.
+- Die eigenen Vorlagen kommen an: 7 in Clojure, 7 in web-mode.
+- Schnappschuss-Diff: weg sind die Tasten von elpy und python sowie die von ido und hideshow (elpy zog beide mit); dazu kommen die Tasten und Optionen von corfu und cape.
+- corfu selbst schaltet sich im Batch nicht ein (`noninteractive`); das Popup zeigt erst die GUI.
+
+**Offen für die Sichtung in der GUI:** das Popup und die Doku daneben;
+corfu in eshell neben dem Verlaufsvorschlag von esh-autosuggest.
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -1093,10 +1131,10 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | dashboard (+ page-break-lines) | M | startup | Startbildschirm | gepflegt | |
 | smartparens | M | development | Klammern, sexp-Editieren | bleibt (2.5), gepflegt; Sprachregeln über `smartparens-config` | Ja |
 | aggressive-indent | M | development | Einrücken beim Tippen | bleibt (2.5), global ab dem Start | Ja |
-| company / company-quickhelp | M | development | Vervollständigung im Buffer | → corfu? | Ja |
+| company / company-quickhelp | M | development | Vervollständigung im Buffer | **ersetzt** (2.6) durch corfu und cape; company bleibt als Abhängigkeit installiert | Ja |
 | magit | M | development | Git | bleibt | Ja |
-| flycheck | M | development | Syntaxprüfung | → flymake? | |
-| yasnippet / yasnippet-snippets | M | development | Snippets | ok | Ja |
+| flycheck | M | development | Syntaxprüfung | → flymake, entschieden in 2.6, umgesetzt mit eglot in 2.7 | Ja |
+| yasnippet / yasnippet-snippets | M | development | Snippets | yasnippet bleibt (2.6); yasnippet-snippets **entfernt**, nicht benutzt | Ja |
 | highlight-symbol | M | development | Symbol hervorheben | **ersetzt** (2.5) durch symbol-overlay | Ja |
 | restclient | M | development | HTTP-Anfragen | meines Wissens archiviert → verb | Ja |
 | sql | e | development | MySQL | ok | Ja |
@@ -1116,7 +1154,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | web-mode | M | html | HTML/XML/XSL | gepflegt | |
 | web-mode-edit-element | M | html | strukturelles HTML-Editieren | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | |
 | scss-mode / sass-mode / css-mode | M/M/e | css | Stylesheets | scss-mode überflüssig | Ja |
-| elpy | M | python | Python | meines Wissens kaum gepflegt → eglot | |
+| elpy | M | python | Python | **entfernt** (2.6), Python wird nicht mehr benutzt | |
 | c++-mode / platformio-mode | e/M | c | Arduino/PlatformIO | prüfen | |
 | basic-mode | M | basic | ASP/BASIC | Fehler B6 | |
 | php-mode / geben / company-php | M | php (inaktiv) | PHP | auskommentiert — löschen? | |
