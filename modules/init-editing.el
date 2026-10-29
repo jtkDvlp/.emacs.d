@@ -43,6 +43,7 @@
 (use-package
   eldoc
   :ensure nil
+  :diminish eldoc-mode
   :bind
   (:map help-map
         ("h" . eldoc-doc-buffer)))
