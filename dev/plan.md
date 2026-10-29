@@ -706,7 +706,7 @@ es ab 2.7 zwei Projektbegriffe.
 | `C-x F` | `projectile-find-file` | `project-find-file` |
 | `C-x d` / `C-x D` | `projectile-dired` / `projectile-find-dir` | `project-dired` / `project-find-dir` |
 | `C-x K` | `projectile-kill-buffers` | `project-kill-buffers` |
-| `C-x x f` | `projectile-switch-project` (gleich die Dateiauswahl) | `project-switch-project`: RET öffnet die Dateiauswahl, `M-o` bietet die Projektbefehle an (2.3a) |
+| `C-x x f` | `projectile-switch-project` (gleich die Dateiauswahl) | `project-switch-project`: RET öffnet die Dateiauswahl, `M-x` bietet die Projektbefehle an (2.3a) |
 | `C-x C-S-F` | `projectile-recentf` | `consult-project-buffer` (wie `C-x B`; die Liste enthält die zuletzt benutzten Dateien des Projekts) |
 | `M-! s s` | `projectile-run-eshell` | `project-eshell` |
 | `M-' c` | `projectile-elscreen-create` | `jtk-elscreen-create-for-project` (umbenannt) |
@@ -741,7 +741,7 @@ jedes Unterprojekt in einem git-Repository zu einem eigenen Projekt.
 project.el (`dashboard-projects-backend` ist `project-el`), nicht aus
 projectile; die Liste füllt sich jetzt mit den benutzten Projekten.
 
-#### 2.3a Standard, Ausnahme, Suche (entschieden 2026-10-29; A und B umgesetzt, C offen)
+#### ✅ 2.3a Standard, Ausnahme, Suche (entschieden und umgesetzt 2026-10-29)
 
 Anlass: Das Projektmenü aus 2.3 (`jtk-project-act`, eine Liste nach jedem
 Projektwechsel) funktioniert, kostet aber im Normalfall einen Schritt, und
@@ -781,11 +781,11 @@ Befehl und Beschreibung.
 - `C-x x f` (und `C-x p p`): Projektliste; RET öffnet die Dateiauswahl im
   Projekt, wie früher bei projectile (`project-switch-commands` auf
   `project-find-file`).
-- Eine embark-Taste auf dem markierten Projekt (`M-o`) bietet die
-  Ausnahmen an — **mit denselben Tasten wie die Projektbefehle auf
-  `C-x x p`**: `C-x x p e` ist eshell im aktuellen Projekt, `M-o e` in
-  der Liste eshell im markierten; einmal gelernt, an beiden Stellen
-  gültig.
+- Eine embark-Taste auf dem markierten Projekt (`M-x`, x wie execute;
+  zuerst `M-o`) bietet die Ausnahmen an — **mit denselben Tasten wie
+  die Projektbefehle auf `C-x x p`**: `C-x x p e` ist eshell im
+  aktuellen Projekt, `M-x e` in der Liste eshell im markierten; einmal
+  gelernt, an beiden Stellen gültig.
 - `C-x x p` ist `jtk-project-map`: Emacs' `project-prefix-map` (`C-x p`)
   als Elternmap, darüber die eigenen Werkzeuge: `b`
   `consult-project-buffer`, `g` `consult-git-grep`, `v` und `m` Magit.
@@ -801,7 +801,7 @@ Befehl und Beschreibung.
 
 - Die Keymap der Projektart liegt in den Buffern dieser Art unter einem
   für alle Sprachen gleichen Präfix, Vorschlag `C-c M-j` — dort, wo
-  CIDER heute schon seine Startfamilie hat (`J j S s B b`). `M-o j J`
+  CIDER heute schon seine Startfamilie hat (`J j S s B b`). `M-x j J`
   in der Projektliste ist dann `C-c M-j J` im Buffer.
 - Weitere Arten in 2.8: npm (`package.json`), PlatformIO
   (`platformio.ini`), Python.
@@ -815,7 +815,8 @@ Befehl und Beschreibung.
 - Wahlweise `embark-bindings` auf `C-h b`: alle belegten Tasten des
   Buffers als durchsuchbare Liste statt als Hilfe-Buffer.
 
-**Was der Prototyp zeigte** (Batch, Emacs 31.1, Wegwerfcode):
+**Was der Prototyp zeigte** (Batch, Emacs 31.1, Wegwerfcode; die
+embark-Taste war damals noch `M-o`):
 
 | Eingabe in der Projektliste | Ergebnis |
 |---|---|
@@ -858,11 +859,11 @@ Technisch trägt das so (alles gegen den Quelltext geprüft):
 | Nr. | Frage | Entscheidung |
 |---|---|---|
 | 1 | Weg A oder „zwei Befehle“ | Weg A mit embark |
-| 2 | Taste für `embark-act` | `M-o`, vorerst nur in Listen (Minibuffer); im Buffer offen |
+| 2 | Taste für `embark-act` | zuerst `M-o`, dann `M-x` im Minibuffer (x wie execute; `M-x` wird sonst nur global gebraucht); im Buffer offen |
 | 3 | Anzeige der Aktionen | nur auf `C-h` |
 | 4 | `C-x p` umstellen | nein: eigene Map auf `C-x x p`, wie die übrigen Projekttasten unter `C-x x`; dort auch die Projektart-Befehle (`j`) |
 | 5 | Präfix im Buffer | `C-c M-j` in allen Sprachen mit Projektart-Befehlen |
-| 6 | Befehlssuche | offen |
+| 6 | Befehlssuche | `M-X` wie eingebaut, dazu `embark-bindings` auf `C-h b`; kein `consult-mode-command` |
 | 7 | Wohin | in PR #4 |
 
 **Umgesetzt, mit einer Abweichung vom Plan:** `j` ist kein eigener
@@ -890,24 +891,26 @@ durchsuchbare Liste.
 
 **Geprüft** (Batch, Emacs 31.1, Tastenfolgen über
 `execute-kbd-macro`; die Zielbefehle protokollierten nur, wo sie
-liefen):
+liefen; alle Zeilen mit `M-x`):
 
 | Eingabe | lief in |
 |---|---|
 | `C-x x f` Clojure-Projekt RET | `project-find-file` im Clojure-Projekt |
-| `C-x x f` Clojure-Projekt `M-o e` | `*clj-eshell*` |
-| `C-x x f` Clojure-Projekt `M-o v` / `M-o g` (aus einem anderen Projekt heraus) | Magit / `consult-git-grep` im Clojure-Projekt |
-| `C-x x f` Clojure-Projekt `M-o j J` | `cider-jack-in-dwim` im Clojure-Projekt |
-| `C-x x f` npm-Projekt `M-o j i` | `npm-mode-npm-install` im npm-Projekt |
-| `C-x x f` ClojureScript + npm `M-o j s` / `M-o j i` | `cider-connect-cljs` / `npm-mode-npm-install` |
-| `C-x x f` PlatformIO-Projekt `M-o j b` | `platformio-build` |
-| `C-x x f` Projekt ohne Art `M-o j` | Meldung „No commands for this kind of project“ |
-| `C-x x f` Clojure-Projekt `M-o j C-h` | die durchsuchbare Liste (`embark-bindings-in-keymap`) |
+| `C-x x f` Clojure-Projekt `M-x e` | `*clj-eshell*` |
+| `C-x x f` Clojure-Projekt `M-x v` / `M-x g` (aus einem anderen Projekt heraus) | Magit / `consult-git-grep` im Clojure-Projekt |
+| `C-x x f` Clojure-Projekt `M-x j J` | `cider-jack-in-dwim` im Clojure-Projekt |
+| `C-x x f` npm-Projekt `M-x j i` | `npm-mode-npm-install` im npm-Projekt |
+| `C-x x f` ClojureScript + npm `M-x j s` / `M-x j i` | `cider-connect-cljs` / `npm-mode-npm-install` |
+| `C-x x f` PlatformIO-Projekt `M-x j b` | `platformio-build` |
+| `C-x x f` Projekt ohne Art `M-x j` | Meldung „No commands for this kind of project“ |
+| `C-x x f` Clojure-Projekt `M-x j C-h` | die durchsuchbare Liste (`embark-bindings-in-keymap`) |
+| `C-x x f` Clojure-Projekt `M-x C-h @ e` | eshell: `@` und Taste wirken auch in der Liste |
 | in einer `.clj`-Datei `C-x x p j J`, `C-c M-j J`, `C-x x p g` | jack-in bzw. grep im Clojure-Projekt |
+| in einer `.clj`-Datei `C-h b @ C-c M-j J`, `C-x x p j C-h @ J` | jack-in im Clojure-Projekt |
 
 Neben jedem Projekt in der Liste stehen seine Arten („Clojure, npm“).
 
-**Offen: Befehlssuche (C).**
+**Befehlssuche (C), entschieden für `M-X` und `C-h b`:**
 
 | Weg | Was er zeigt | Dafür | Dagegen |
 |---|---|---|---|
@@ -915,11 +918,25 @@ Neben jedem Projekt in der Liste stehen seine Arten („Clojure, npm“).
 | `consult-mode-command` | alle Befehle aus den Dateien der aktiven Modi, auch ohne Kürzel, gruppiert nach Haupt- und Nebenmodus | vollständig je Paket (alle `cider-…`); eingrenzbar | braucht eine Taste; die Zuordnung über Dateien ist eine Heuristik; Befehle globaler Nebenmodi nur nach Eingrenzen |
 | `embark-bindings` auf `C-h b` | alles, was im Buffer eine Taste hat | genau das Werkzeug zum Kürzel-Lernen; ersetzt den langen Hilfe-Buffer | Befehle ohne Taste fehlen |
 
+**Kürzel direkt in Listen:** In jeder Liste, die `C-h` öffnet
+(Aktionen nach `M-x`, Tasten nach einem Präfix, `C-h b`), führt `@` und
+dann die Taste den Befehl direkt aus. Ohne `@` filtern Buchstaben die
+Liste; beides auf denselben Tasten geht nicht.
+
+**Gefunden beim Umbau, älter als 2.3:** CIDER legt `cider-jack-in-clj`
+in `clojure-mode-map` zweimal auf `C-c M-j`: aus seinen Autoloads, wenn
+clojure-mode lädt, und noch einmal, wenn cider.el lädt. Die Familie
+`J j S s B b` stand in CIDERs `:bind` und verlor gegen das zweite Mal.
+Auf master war `C-c M-j` deshalb in jedem Clojure-Buffer CIDERs
+normales jack-in, die Familie war nie erreichbar — geprüft im Batch mit
+einer Spur aller `define-key` auf diese Taste. Jetzt wird sie nach
+beiden Malen gesetzt. Der Schnappschuss konnte das nicht zeigen: Er
+lädt alle Pakete auf einmal und sieht nur den Endzustand.
+
 **Reihenfolge**
 
 1. ✅ A und B für Clojure, npm und PlatformIO.
-2. C nach Entscheidung: nur Einstellungen, dazu eine Sichtung in einem
-   Clojure-Buffer.
+2. ✅ C: `embark-bindings` auf `C-h b`.
 3. B für Python und TypeScript im jeweiligen Review in 2.8.
 
 ### Phase 3 – Startzeit (nur bei Bedarf)

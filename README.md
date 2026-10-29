@@ -30,14 +30,17 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 - Keys of a repeating prefix work alone after the first one, until
   another key is typed (`repeat-mode`): `M-+ f + + -`. Emacs' own
   repeat maps work too, e.g. `C-x o o`.
-- In a list, RET does the usual thing with the marked entry and `M-o`
-  (embark) offers the others; C-h after `M-o` lists them. On a project
-  in the project list (`C-x x f`), `M-o` offers the project commands of
-  `C-x x p` for that project.
+- In a list, RET does the usual thing with the marked entry and `M-x`
+  (embark; x for execute) offers the others; C-h after `M-x` lists them.
+  On a project in the project list (`C-x x f`), `M-x` offers the project
+  commands of `C-x x p` for that project.
+- Every list that C-h opens is searchable and shows the keys; `@`
+  followed by a key runs that key's command directly.
 - Each kind of project (Clojure, npm, PlatformIO) brings its commands,
   under `C-c M-j` in its buffers and under `j` in the project commands.
 - `M-X` lists the commands that fit the current buffer, with their
-  keys.
+  keys; `C-h b` lists all keys of the buffer to search (with `C-u` the
+  global ones too).
 
 | Prefix | Keymap | Module | For |
 |---|---|---|---|

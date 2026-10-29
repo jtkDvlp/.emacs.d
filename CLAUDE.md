@@ -162,10 +162,18 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   wenn das Paket schon geladen ist.** Sonst bindet es lexikalisch, und das
   Paket sieht den Wert nie. Vorher `require`n (so in `sql-mysql-for`) —
   weder Byte-Compiler noch Schnappschuss bemerken den Fehler.
-- **Der Schnappschuss sieht nur, was geladen wird.** Ein Block, der an
-  einem nie geladenen Paket hängt, fehlt vorher wie nachher (so `tide`,
-  das auf das nicht installierte `typescript-mode` wartet). Für solche
+- **Der Schnappschuss sieht nur, was geladen wird — und nur den
+  Endzustand.** Ein Block, der an einem nie geladenen Paket hängt, fehlt
+  vorher wie nachher (so `tide`, das auf das nicht installierte
+  `typescript-mode` wartet). Und weil er alle Pakete auf einmal lädt,
+  sieht er nicht, in welcher Reihenfolge eine echte Sitzung sie lädt:
+  Dass CIDER die `C-c M-j`-Familie überschrieb, sobald eine `.clj`-Datei
+  offen war, zeigte erst eine Spur der `define-key`-Aufrufe. Für solche
   Stellen gezielt nachladen und vergleichen.
+- **Pakete, die beim Laden selbst Tasten setzen, schlagen `:bind`.**
+  CIDER legt `C-c M-j` in `clojure-mode-map` zweimal fest (Autoloads und
+  cider.el); die eigene Belegung muss danach kommen, siehe
+  `jtk-clojure-bind-project-keys`.
 - **Globale Tasten mit `:bind`, nicht mit `:bind*`.** `:bind*` schreibt in
   `override-global-map` und schlägt damit jede Mode — so verdeckte Org
   einst mit `C--` das globale Verengen (Plan, B1) und die Override-Map
