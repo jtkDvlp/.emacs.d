@@ -1099,6 +1099,14 @@ Verlaufsvorschlag von esh-autosuggest — alles in Ordnung.
 - Tasten: `M-r R` umbenennen, `M-r A` Code-Aktionen, `M-r O` Importe ordnen, `M-r =` formatieren.
 - Großbuchstaben, weil clj-refactor in Clojure fast alle Kleinbuchstaben nach `M-r` belegt.
 
+**Nach der ersten Sichtung:**
+- **Kein Hinweis auf Code-Aktionen** (`eglot-code-action-indications` leer). Das `↯` am Rand stand in fast jeder Zeile, weil clojure-lsp überall Aktionen anbietet; `M-r A` zeigt sie auf Nachfrage.
+- **Referenzzahlen** zeigt `jtk-lsp-lens-mode` (`lisp/jtk-lsp-lens.el`) am Ende der Zeile jeder Definition, etwa `2 references`.
+  - eglot fragt Code Lenses nicht ab. Das Paket `eglot-codelens` wurde verworfen: 3 Commits, alle im Dezember 2024; es fragt nach jeder Änderung synchron und holt jede Lens einzeln.
+  - Der eigene Zusatz wartet nie: Er fragt 1 s nach der letzten Änderung und beim Speichern, verwirft verspätete Antworten und löst nur die sichtbaren Lenses auf.
+  - **Gemessen** an 10 000 Zeilen mit 2 001 Definitionen: clojure-lsp antwortet nach 2,4 bis 13 s, Emacs arbeitet derweil weiter; die Overlays kosten 10 ms, eine Auflösung 2 ms.
+  - Wird das in der Praxis langsam, kommt stattdessen die Zahl nur für das Symbol am Cursor in der Doku-Zeile.
+
 **flymake:**
 - `C-c ! n`/`p` springen zum nächsten bzw. vorigen Befund, wiederholbar; `C-c ! l` listet die Befunde im Buffer, `C-c ! L` im Projekt.
 - Die Modeline zählt die Befunde über ein eigenes spaceline-Segment, weil spaceline nur flycheck kennt.
