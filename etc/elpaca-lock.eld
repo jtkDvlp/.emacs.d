@@ -230,6 +230,18 @@
                            :type git :protocol https :inherit t :depth
                            treeless :ref
                            "87e53827cf6659dcc4ac4e54be9af34aeca44f6e"))
+ (envrc :source "elpaca-menu-lock-file" :recipe
+        (:package "envrc" :fetcher github :repo "purcell/envrc" :files
+                  ("*.el" "*.el.in" "dir" "*.info" "*.texi"
+                   "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
+                   "doc/*.texinfo" "lisp/*.el" "docs/dir"
+                   "docs/*.info" "docs/*.texi" "docs/*.texinfo"
+                   (:exclude ".dir-locals.el" "test.el" "tests.el"
+                             "*-test.el" "*-tests.el" "LICENSE"
+                             "README*" "*-pkg.el"))
+                  :source "elpaca-menu-lock-file" :id envrc :type git
+                  :protocol https :inherit t :depth treeless :ref
+                  "af7e0a699060c8128fdd8318d28a7401b82bb3fd"))
  (esh-autosuggest :source "elpaca-menu-lock-file" :recipe
                   (:package "esh-autosuggest" :fetcher sourcehut :repo
                             "dieggsy/esh-autosuggest" :old-names
@@ -352,6 +364,21 @@
                   "elpaca-menu-lock-file" :id hydra :type git
                   :protocol https :inherit t :depth treeless :ref
                   "59a2a45a35027948476d1d7751b0f0215b1e61aa"))
+ (inheritenv :source "elpaca-menu-lock-file" :recipe
+             (:package "inheritenv" :fetcher github :repo
+                       "purcell/inheritenv" :files
+                       ("*.el" "*.el.in" "dir" "*.info" "*.texi"
+                        "*.texinfo" "doc/dir" "doc/*.info"
+                        "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
+                        "docs/dir" "docs/*.info" "docs/*.texi"
+                        "docs/*.texinfo"
+                        (:exclude ".dir-locals.el" "test.el"
+                                  "tests.el" "*-test.el" "*-tests.el"
+                                  "LICENSE" "README*" "*-pkg.el"))
+                       :source "elpaca-menu-lock-file" :id inheritenv
+                       :type git :protocol https :inherit t :depth
+                       treeless :ref
+                       "b9e67cc20c069539698a9ac54d0e6cc11e616c6f"))
  (llama :source "elpaca-menu-lock-file" :recipe
         (:package "llama" :fetcher github :repo "tarsius/llama" :files
                   ("llama.el" ".dir-locals.el") :source
