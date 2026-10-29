@@ -56,21 +56,6 @@
                 :source "elpaca-menu-lock-file" :id avy :type git
                 :protocol https :inherit t :depth treeless :ref
                 "933d1f36cca0f71e4acb5fac707e9ae26c536264"))
- (buffer-move :source "elpaca-menu-lock-file" :recipe
-              (:package "buffer-move" :fetcher github :repo
-                        "lukhas/buffer-move" :files
-                        ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                         "*.texinfo" "doc/dir" "doc/*.info"
-                         "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
-                         "docs/dir" "docs/*.info" "docs/*.texi"
-                         "docs/*.texinfo"
-                         (:exclude ".dir-locals.el" "test.el"
-                                   "tests.el" "*-test.el" "*-tests.el"
-                                   "LICENSE" "README*" "*-pkg.el"))
-                        :source "elpaca-menu-lock-file" :id
-                        buffer-move :type git :protocol https :inherit
-                        t :depth treeless :ref
-                        "e7800b3ab1bd76ee475ef35507ec51ecd5a3f065"))
  (cfrs :source "elpaca-menu-lock-file" :recipe
        (:package "cfrs" :repo "Alexander-Miller/cfrs" :fetcher github
                  :files

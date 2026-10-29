@@ -30,17 +30,18 @@
   :config
   (setq fullframe/advice-generic-quit-commands nil))
 
+;; NOTE: The point moves along with the buffer.
 (use-package
-  buffer-move
-  :config (setq buffer-move-stay-after-swap t)
+  windmove
+  :ensure nil
   :bind
   (:prefix-map jtk-buffer-move-map
    :prefix "C-M-'"
    :prefix-docstring "Moving the buffer to the neighbouring window."
-   ("<up>" . buf-move-up)
-   ("<down>" . buf-move-down)
-   ("<left>" . buf-move-left)
-   ("<right>" . buf-move-right)))
+   ("<up>" . windmove-swap-states-up)
+   ("<down>" . windmove-swap-states-down)
+   ("<left>" . windmove-swap-states-left)
+   ("<right>" . windmove-swap-states-right)))
 
 (use-package
   elscreen
