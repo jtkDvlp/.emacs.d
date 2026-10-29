@@ -77,10 +77,8 @@ differently, such as transposing lines instead of s-expressions."
 
   (defun jtk-structural-editing-wrap-doublequote ()
     "Wrap the s-expression at point in double quotes."
-    (interactive)
-    (sp-prefix-save-excursion
-     (sp-wrap-round)
-     (sp-rewrap-sexp "\"")))
+    (interactive "*")
+    (sp-wrap-with-pair "\""))
 
   :hook
   ((prog-mode . smartparens-mode)
