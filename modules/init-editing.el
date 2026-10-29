@@ -75,7 +75,9 @@
    ("C-+" . jtk-narrow-widen)))
 
 ;; NOTE: Emacs' own undo: C-/ undoes, C-? redoes (`undo-redo'), and
-;; vundo shows the tree of changes to walk through.
+;; vundo shows the tree of changes to walk through.  M-_ redoes as well.
+(keymap-global-set "M-_" #'undo-redo)
+
 (use-package
   vundo
   :bind
