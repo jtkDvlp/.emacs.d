@@ -44,7 +44,6 @@
 (require 'init-lang-typescript)
 (require 'init-lang-javascript)
 ;; (require 'init-lang-php)
-(require 'init-lang-python)
 (require 'init-lang-html)
 (require 'init-lang-css)
 (require 'init-lang-clojure)
