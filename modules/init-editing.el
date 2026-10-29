@@ -74,13 +74,14 @@
   (("C--" . jtk-narrow-dwim)
    ("C-+" . jtk-narrow-widen)))
 
+;; NOTE: Emacs' own undo: C-/ undoes, C-? redoes (`undo-redo'), and
+;; vundo shows the tree of changes to walk through.  M-_ redoes as well.
+(keymap-global-set "M-_" #'undo-redo)
+
 (use-package
-  undo-tree
-  :demand t
-  :diminish undo-tree-mode
-  :config
-  (setq undo-tree-auto-save-history nil)
-  (global-undo-tree-mode))
+  vundo
+  :bind
+  (("C-x u" . vundo)))
 
 (use-package
   multiple-cursors
@@ -117,11 +118,12 @@
   :bind
   (("C-;" . comment-dwim)))
 
-(use-package
-  simple
-  :ensure nil
-  :hook
-  ((before-save . delete-trailing-whitespace)))
+;; NOTE: Only in code: in Markdown, two spaces at the end of a line are
+;; a line break.
+(defun jtk-editing-delete-trailing-whitespace-on-save ()
+  "Delete trailing whitespace whenever the current buffer is saved."
+  (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
+(add-hook 'prog-mode-hook #'jtk-editing-delete-trailing-whitespace-on-save)
 
 (use-package
   aggressive-indent
@@ -129,35 +131,49 @@
   :diminish
   aggressive-indent-mode
 
-  :hook
-  (prog-mode . aggressive-indent-global-mode)
+  :demand t
 
   :config
+  ;; NOTE: Indenting after an undo is a new change, so the next undo
+  ;; would only take back the indentation.
+  (add-to-list 'aggressive-indent-protected-commands 'undo-redo)
+  (add-to-list 'aggressive-indent-protected-commands 'undo-only)
   (add-to-list 'aggressive-indent-excluded-modes 'sass-mode)
-  (add-to-list 'aggressive-indent-excluded-modes 'cider-repl-mode))
+  (add-to-list 'aggressive-indent-excluded-modes 'cider-repl-mode)
+
+  ;; NOTE: In every buffer from the start, apart from the excluded modes,
+  ;; text modes and read-only buffers.
+  (global-aggressive-indent-mode))
 
 (use-package
-  highlight-symbol
+  symbol-overlay
   :demand t
-  :diminish highlight-symbol-mode
+  :diminish symbol-overlay-mode
+
+  :init
+  ;; NOTE: Otherwise single letters on a marked symbol run commands (n
+  ;; jumps, r renames) instead of inserting; the keys are under M-m.  A
+  ;; plain variable, hence `setq' before loading.
+  (setq symbol-overlay-inhibit-map t)
+
+  :custom
+  (symbol-overlay-idle-time 1.5)
 
   :bind
-  (("<C-m>" . highlight-symbol))
+  (("<C-m>" . symbol-overlay-put))
 
   :hook
-  ((prog-mode . highlight-symbol-mode)
-   (cider-repl-mode . highlight-symbol-mode))
+  ((prog-mode . symbol-overlay-mode)
+   (cider-repl-mode . symbol-overlay-mode))
 
   :config
-  (setq highlight-symbol-idle-delay 1.5)
-
   (defvar-keymap jtk-highlight-symbol-map
     :doc "Moving between and replacing the symbol; the keys repeat."
     :prefix t
     :repeat t
-    "n" #'highlight-symbol-next
-    "p" #'highlight-symbol-prev
-    "r" #'highlight-symbol-query-replace)
+    "n" #'symbol-overlay-jump-next
+    "p" #'symbol-overlay-jump-prev
+    "r" #'symbol-overlay-query-replace)
   (keymap-global-set "M-m" 'jtk-highlight-symbol-map))
 
 (provide 'init-editing)

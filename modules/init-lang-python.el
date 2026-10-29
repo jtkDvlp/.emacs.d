@@ -17,7 +17,6 @@
   
   :config
   (jtk-structural-editing-bind python-mode-map)
-  (require 'smartparens-python)
   (add-hook 'elpy-mode-hook 'flycheck-mode)
   (setq
    elpy-modules (delq 'elpy-module-flymake elpy-modules)

@@ -37,7 +37,6 @@
    ("\\.cljs\\'" . clojurescript-mode))
 
   :config
-  ;; (require 'smartparens-clojure)
   (jtk-structural-editing-bind clojure-mode-map))
 
 (use-package
@@ -192,11 +191,11 @@
         (ignore-errors
           (while (not (string-match-p "^(comment.*" (or sexp "")))
             (setq cursor (point))
-            (paredit-backward-up)
+            (backward-up-list 1 t t)
             (setq sexp (cider-sexp-at-point))))
         (goto-char cursor)
         (unless (cider-sexp-at-point)
-          (paredit-backward-up))
+          (backward-up-list 1 t t))
         (cider-eval-sexp-at-point)
         (when (string-match-p "^(\\([^\/]*\/\\)?deftest" (cider-sexp-at-point))
           (cider-test-run-test)))))

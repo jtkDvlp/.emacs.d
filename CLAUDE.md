@@ -32,7 +32,8 @@ Conventional Commits trotzdem, damit die Historie lesbar bleibt.
 
 Phase 1 des Plans ist umgesetzt: die Struktur steht. Phase 2 prüft die
 Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
-(Tastatur-Infrastruktur), 2.3 (Projekte) und 2.4 (Fenster und Tabs).
+(Tastatur-Infrastruktur), 2.3 (Projekte), 2.4 (Fenster und Tabs) und 2.5
+(Editieren).
 
 | Pfad | Inhalt | versioniert |
 |---|---|---|
@@ -224,10 +225,6 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 - **`:requires` überspringt die ganze Deklaration**, wenn das Feature beim
   Auswerten noch nicht geladen ist — still, ohne Meldung. `:after` ist fast
   immer das Gemeinte.
-- **`cider-eval-dwim` ruft `paredit-backward-up`**, installiert wird
-  `paredit` aber nirgends ausdrücklich — es kommt als Abhängigkeit von
-  `clj-refactor` mit (bestätigt: ohne `paredit` scheitert dessen
-  Installation). Fällt `clj-refactor` weg, bricht die Funktion.
 - **eshell-Tasten gehen über `eshell-mode-map*`**, weil eshell seine
   Mode-Map früher erst beim Start des Modus angelegt hat. Ob das in der
   Zielversion noch nötig ist, ist zu prüfen, bevor es wegfällt.
@@ -245,6 +242,7 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 | nach 2.2 mit avy und expreg, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 92 Einträgen reproduziert | 0 | 25 |
 | nach 2.3, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 91 Einträgen reproduziert | 0 | 23 |
 | nach 2.4, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 88 Einträgen reproduziert | 0 | 20 |
+| nach 2.5, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 88 Einträgen reproduziert | 0 | 20 |
 
 Der Unterschied von 3 Warnungen bis 2.1: Die `ns-*`- und `mac-*`-Variablen
 gibt es nur unter macOS; in der Cloud meldete der Byte-Compiler sie als

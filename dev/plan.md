@@ -1000,6 +1000,52 @@ bzw. Breite; vorher 300 bzw. 500 Pixel) passen. Die Tab-Leiste war
 eingeblendet und ist wieder aus. Das „IDE“-Segment der Modeline
 erscheint in den Seitenfenstern.
 
+#### ✅ 2.5 Editieren (entschieden und umgesetzt 2026-10-29)
+
+| Vorher | Nachher | Warum |
+|---|---|---|
+| undo-tree (`C-/`, `C-?`, `M-_`, `C-x u`) | eingebautes Undo, `undo-redo` auf `C-?` und `M-_`, vundo auf `C-x u` | undo-tree hat seit 2021 keinen Commit; Wiederholen kann Emacs seit 28.1. vundo: letzter Commit 2026-08. |
+| aggressive-indent über `prog-mode-hook` | global ab dem Start | Der Hook rief den globalen Modus auf (U3): aus bis zum ersten Programmier-Buffer, danach überall. |
+| highlight-symbol | symbol-overlay auf denselben Tasten (`C-m`, `M-m n/p/r`, Hervorheben nach 1,5 s) | highlight-symbol hat seit 2016 keinen Commit; symbol-overlay: 2026-07. |
+| smartparens, Sprachregeln einzeln von Hand | `smartparens-config` lädt sie je Modus | Siehe unten. |
+| `delete-trailing-whitespace` vor jedem Speichern | nur in `prog-mode` | In Markdown sind zwei Leerzeichen am Zeilenende ein Umbruch. |
+| `cider-eval-dwim` mit `paredit-backward-up` | `backward-up-list` (eingebaut) | paredit kam nur als Abhängigkeit von clj-refactor mit. |
+| multiple-cursors, kmacro, narrow, delete-selection | bleiben | multiple-cursors gepflegt (2026-10), der Rest eingebaut bzw. eigen. |
+
+**Gefunden beim Umbau, älter als 2.5:**
+- In Lisp wurde `'` zu `''` und `` ` `` zu ``` `` ``` gepaart, weil die
+  Sprachregeln von smartparens fehlten. `smartparens-config` lädt sie
+  jetzt; in JS und Python bleiben beide gepaart.
+- `M-"` (Einfassen in doppelte Anführungszeichen) brach mit einem Fehler
+  ab und hinterließ `(foo`: `sp-rewrap-sexp` nimmt ein Paar, keinen
+  String. Jetzt über `sp-wrap-with-pair`.
+- Nach `undo-redo` hätte aggressive-indent eingerückt und damit eine
+  neue Änderung erzeugt; seine Schutzliste kannte nur undo-trees Befehle.
+
+**Umbenannt:** Die eigenen Befehle standen im Namensraum von
+smartparens: `sp-forward-transpose-sexp`, `sp-backward-transpose-sexp`,
+`sp-wrap-doublequote` heißen jetzt `jtk-structural-editing-…`, auch in
+`etc/mc-list.el`.
+
+**Nebenwirkung von `smartparens-config`:** In Clojure gehören Präfixe
+wie `#`, `'` und `@` jetzt zum Ausdruck, Sprünge und Slurp nehmen sie
+mit (`sp-sexp-prefix`).
+
+**Geprüft im Batch:** `C-/ C-/` und `C-?` in einem Elisp-Buffer, `C-x u`
+öffnet vundo; aggressive-indent ist gleich nach dem Start in Elisp und
+CSS an, in Python, Markdown, conf und fundamental aus; `M-m n` springt
+zum nächsten Vorkommen, `C-m` markiert, ein danach getipptes `n` wird
+eingefügt; Paarung von `' ` ( "` in Elisp, Clojure, JS und Python;
+Vertauschen mit `C-M-<up>`/`<down>` und `M-"`; Leerzeichen am
+Zeilenende fallen beim Speichern in `.el` weg, in `.md` und `.txt`
+nicht; `cider-eval-dwim` wertet in vier Fällen (in `comment`, in einem
+String, ohne `comment`, `deftest`) dieselbe Form aus wie mit paredit.
+Schnappschuss-Diff: nur die erwarteten Tasten, Hooks und Optionen.
+
+**Gesichtet in der GUI:** `M-_` fehlte als Wiederholen und ist wieder
+da. Die Farben von symbol-overlay wirken schwächer als früher; sie
+bleiben vorerst, wie das Theme sie vorgibt. Offen: die vundo-Ansicht.
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -1037,21 +1083,21 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | ace-window | M | interface | Fensterwahl | gepflegt | Ja |
 | expand-region | M | interface | Auswahl erweitern | **ersetzt** (2.2) durch expreg | Ja |
 | which-key | M | interface | Tastenhilfe | **entfernt** (2026-10-25): das Rezept klonte das ganze Emacs-Repository, der erste Start hing; nicht mehr gebraucht | |
-| undo-tree | M | interface | Undo-Baum | schwergewichtig → vundo | Ja |
-| multiple-cursors | M | interface | Mehrfach-Cursor | ok | Ja |
+| undo-tree | M | interface | Undo-Baum | **ersetzt** (2.5) durch `undo-redo` und vundo | Ja |
+| multiple-cursors | M | interface | Mehrfach-Cursor | bleibt (2.5), gepflegt | Ja |
 | counsel-projectile / projectile | M | filemanagement | Projekte | counsel-projectile **entfernt** (2.1); projectile **ersetzt** (2.3) durch project.el, bleibt aber als Abhängigkeit von platformio-mode installiert | Ja |
 | git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | prüfen | |
 | treemacs (+ -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt; treemacs-projectile **entfernt** (2.3), treemacs fragt project.el | Ja |
 | simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | Ja |
 | org | e | organisation | GTD | bleibt | |
 | dashboard (+ page-break-lines) | M | startup | Startbildschirm | gepflegt | |
-| smartparens | M | development | Klammern, sexp-Editieren | → 2.5 | Ja |
-| aggressive-indent | M | development | Einrücken beim Tippen | ok; Hook-Fehler U3 | Ja |
+| smartparens | M | development | Klammern, sexp-Editieren | bleibt (2.5), gepflegt; Sprachregeln über `smartparens-config` | Ja |
+| aggressive-indent | M | development | Einrücken beim Tippen | bleibt (2.5), global ab dem Start | Ja |
 | company / company-quickhelp | M | development | Vervollständigung im Buffer | → corfu? | Ja |
 | magit | M | development | Git | bleibt | Ja |
 | flycheck | M | development | Syntaxprüfung | → flymake? | |
 | yasnippet / yasnippet-snippets | M | development | Snippets | ok | Ja |
-| highlight-symbol | M | development | Symbol hervorheben | ungepflegt → symbol-overlay | Ja |
+| highlight-symbol | M | development | Symbol hervorheben | **ersetzt** (2.5) durch symbol-overlay | Ja |
 | restclient | M | development | HTTP-Anfragen | meines Wissens archiviert → verb | Ja |
 | sql | e | development | MySQL | ok | Ja |
 | simple-httpd | M | development | lokaler HTTP-Server | prüfen | |
