@@ -352,70 +352,6 @@
                   "elpaca-menu-lock-file" :id hydra :type git
                   :protocol https :inherit t :depth treeless :ref
                   "59a2a45a35027948476d1d7751b0f0215b1e61aa"))
- (indium :source "elpaca-menu-lock-file" :recipe
-         (:package "indium" :fetcher github :repo
-                   "NicolasPetton/Indium" :old-names (jade) :files
-                   ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                    "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
-                    "doc/*.texinfo" "lisp/*.el" "docs/dir"
-                    "docs/*.info" "docs/*.texi" "docs/*.texinfo"
-                    (:exclude ".dir-locals.el" "test.el" "tests.el"
-                              "*-test.el" "*-tests.el" "LICENSE"
-                              "README*" "*-pkg.el"))
-                   :source "elpaca-menu-lock-file" :id indium :type
-                   git :protocol https :inherit t :depth treeless :ref
-                   "8499e156bf7286846c3a2bf8c9e0c4d4f24b224c"))
- (js2-mode :source "elpaca-menu-lock-file" :recipe
-           (:package "js2-mode" :repo "mooz/js2-mode" :fetcher github
-                     :files
-                     ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                      "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
-                      "doc/*.texinfo" "lisp/*.el" "docs/dir"
-                      "docs/*.info" "docs/*.texi" "docs/*.texinfo"
-                      (:exclude ".dir-locals.el" "test.el" "tests.el"
-                                "*-test.el" "*-tests.el" "LICENSE"
-                                "README*" "*-pkg.el"))
-                     :source "elpaca-menu-lock-file" :id js2-mode
-                     :type git :protocol https :inherit t :depth
-                     treeless :ref
-                     "41d0e7f5ef51109c682016baa6fc6846e03e8517"))
- (js2-refactor :source "elpaca-menu-lock-file" :recipe
-               (:package "js2-refactor" :repo
-                         "js-emacs/js2-refactor.el" :fetcher github
-                         :files
-                         ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                          "*.texinfo" "doc/dir" "doc/*.info"
-                          "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
-                          "docs/dir" "docs/*.info" "docs/*.texi"
-                          "docs/*.texinfo"
-                          (:exclude ".dir-locals.el" "test.el"
-                                    "tests.el" "*-test.el"
-                                    "*-tests.el" "LICENSE" "README*"
-                                    "*-pkg.el"))
-                         :source "elpaca-menu-lock-file" :id
-                         js2-refactor :type git :protocol https
-                         :inherit t :depth treeless :ref
-                         "e1177c728ae52a5e67157fb18ee1409d8e95386a"))
- (json-process-client :source "elpaca-menu-lock-file" :recipe
-                      (:package "json-process-client" :fetcher github
-                                :repo
-                                "DamienCassou/json-process-client"
-                                :files
-                                ("*.el" "*.el.in" "dir" "*.info"
-                                 "*.texi" "*.texinfo" "doc/dir"
-                                 "doc/*.info" "doc/*.texi"
-                                 "doc/*.texinfo" "lisp/*.el"
-                                 "docs/dir" "docs/*.info"
-                                 "docs/*.texi" "docs/*.texinfo"
-                                 (:exclude ".dir-locals.el" "test.el"
-                                           "tests.el" "*-test.el"
-                                           "*-tests.el" "LICENSE"
-                                           "README*" "*-pkg.el"))
-                                :source "elpaca-menu-lock-file" :id
-                                json-process-client :type git
-                                :protocol https :inherit t :depth
-                                treeless :ref
-                                "6485953fe6eff62938fd08720811c6fdd09d7d22"))
  (llama :source "elpaca-menu-lock-file" :recipe
         (:package "llama" :fetcher github :repo "tarsius/llama" :files
                   ("llama.el" ".dir-locals.el") :source
@@ -894,20 +830,6 @@
                         with-editor :type git :protocol https :inherit
                         t :depth treeless :ref
                         "4d887efc750b7a69554dbd2d0c79ca447f8f08f3"))
- (xref-js2 :source "elpaca-menu-lock-file" :recipe
-           (:package "xref-js2" :fetcher github :repo
-                     "js-emacs/xref-js2" :files
-                     ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                      "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
-                      "doc/*.texinfo" "lisp/*.el" "docs/dir"
-                      "docs/*.info" "docs/*.texi" "docs/*.texinfo"
-                      (:exclude ".dir-locals.el" "test.el" "tests.el"
-                                "*-test.el" "*-tests.el" "LICENSE"
-                                "README*" "*-pkg.el"))
-                     :source "elpaca-menu-lock-file" :id xref-js2
-                     :type git :protocol https :inherit t :depth
-                     treeless :ref
-                     "e215af9eedac69b40942fff9d5514704f9f4d43e"))
  (yasnippet :source "elpaca-menu-lock-file" :recipe
             (:package "yasnippet" :fetcher github :repo
                       "joaotavora/yasnippet" :files
