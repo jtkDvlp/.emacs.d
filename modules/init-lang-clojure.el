@@ -73,6 +73,19 @@
    cider-jack-in-with-profile
    cider-jack-in-dwim)
 
+  :init
+  ;; WATCHOUT: CIDER puts `cider-jack-in-clj' on C-c M-j in
+  ;; `clojure-mode-map' twice: from its autoloads when clojure-mode
+  ;; loads, and again when cider.el itself loads.  Bound once in :bind,
+  ;; the key lost against the second, and C-c M-j only ever jacked in.
+  ;; So it is set again after each of the two.
+  (defun jtk-clojure-bind-project-keys ()
+    (keymap-set clojure-mode-map "C-c M-j" 'jtk-clojure-project-map))
+  (with-eval-after-load 'clojure-mode
+    (jtk-clojure-bind-project-keys))
+  (with-eval-after-load 'cider
+    (jtk-clojure-bind-project-keys))
+
   :config
   (require 'parseedn)
 
@@ -379,8 +392,6 @@
 
   :bind
   (:map clojure-mode-map
-        ("C-c M-j" . jtk-clojure-project-map)
-
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
         ("C-c C-M-S-J" . cider-repl-switch-to-repl-buffer-and-ns)
 
