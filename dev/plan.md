@@ -948,6 +948,56 @@ lädt alle Pakete auf einmal und sieht nur den Endzustand.
 2. ✅ C: `embark-bindings` auf `C-h b`.
 3. B für Python und TypeScript im jeweiligen Review in 2.8.
 
+#### ✅ 2.4 Fenster und Arbeitsbereiche (entschieden und umgesetzt 2026-10-29)
+
+| Vorher | Nachher | Warum |
+|---|---|---|
+| elscreen (`M-'`) | `tab-bar-mode`; `M-'` ist `jtk-tab-map` mit Emacs' `C-x t` als Elternmap | elscreen hat seit 2018 keinen Commit. |
+| winner, `C-M-#` über `winner-undo` | `tab-bar-history-mode` auf denselben Tasten (`C-c ←`/`→`); `C-M-#` (`jtk-window-toggle-single`) merkt sich die verdeckten Fenster selbst | winner führt einen Verlauf je Frame und brächte nach einem Tab-Wechsel die Fenster des anderen Tabs zurück. |
+| buffer-move (`C-M-'` + Pfeil) | `windmove-swap-states-*` auf denselben Tasten | Eingebaut, gleiches Verhalten: Der Cursor wandert mit dem Buffer. `buffer-move-stay-after-swap` war gesetzt, die installierte Fassung liest es aber nicht. |
+| fullframe für magit | eigene `magit-display-buffer-function` (`jtk-vc-display-buffer`), `q` über `magit-restore-window-configuration` | Ein Paket weniger; das `:requires fullframe` an magit fällt weg. |
+| `jtk-ide` (172 Zeilen) | eingebaute Seitenfenster in `display-buffer-alist`; `jtk-window-open-side-windows` statt `jtk-ide-setup` | Dieselbe Aufteilung; neu: `C-x w s` blendet alle Seitenfenster aus und ein. |
+| `jtk-window-mirror` | entfernt | Nicht mehr benutzt. |
+| ediff über Advice auf drei Befehle | Tab je Sitzung über `ediff-before-setup-hook` und `ediff-quit-hook` | Siehe unten. |
+| ztree mit `:demand t` | lädt bei `ztree-diff` | `:demand` widersprach `:commands` (U3). |
+| ace-window | bleibt | Gepflegt, kein Ersatz nötig. |
+
+**Tasten unter `M-'`:** `c` neuer Tab, nach dem Projekt benannt; `C`
+Tab kopieren; `k` schließen, `K` schließen samt den Buffern seiner
+Fenster; `n`/`p` wechseln (wiederholbar, auch `o`/`O`), `N` zuletzt
+benutzter Tab; `t` umbenennen; `f` per Auswahl. Dazu alles aus
+`C-x t`, etwa `u` (geschlossenen Tab wiederholen) und `p` (Projekt in
+neuem Tab). Die Leiste erscheint ab zwei Tabs.
+
+**Tab-Namen:** Ein Tab aus `c` behält den Namen seines Projekts, auch
+wenn darin Fenster anderer Projekte offen sind. Ein Tab ohne Namen
+(`C`, `C-x t 2`, ediff) zeigt den Buffer des ausgewählten Fensters und
+wechselt mit ihm.
+
+**Gefunden beim Umbau, älter als 2.4:**
+- Die Advice auf `ediff-quit` schloss den Screen auch, wenn man „Quit
+  this Ediff session?“ mit `n` beantwortete. `ediff-quit-hook` läuft nur
+  beim wirklichen Ende. Neu: Auch `magit-ediff` und `vc-ediff` bekommen
+  einen Tab.
+- `C-M-#` über einen Verlauf hätte mit `tab-bar-history` jedes zweite
+  Mal zu weit zurückgesprungen: Der Verlauf überspringt denselben Befehl
+  mehrmals hintereinander.
+
+**Geprüft im Batch:** Tasten und Wiederholung unter `M-'`; `K` tötet
+die Buffer, verweigert den letzten Tab; ediff öffnet einen Tab, `n`
+lässt ihn stehen, `y` schließt ihn. `C-M-#` viermal hintereinander
+wechselt zwischen einem und drei Fenstern, auch über einen Tab-Wechsel
+hinweg. magit-status und beide Logs füllen den Frame, `q` bringt zwei
+Fenster zurück, ein Diff aus dem Status erscheint daneben. Help und
+Flycheck landen rechts (Slot 0 und 1), eshell und compilation unten;
+`C-x 1` lässt sie stehen, `C-x o` überspringt sie, `C-x w s` blendet sie
+aus und ein. Schnappschuss-Diff: nur die erwarteten Tasten, Hooks und
+Optionen.
+
+**Offen für die Sichtung in der GUI:** die Größen der Seitenfenster (30 %
+der Höhe bzw. Breite; vorher 300 bzw. 500 Pixel), die Tab-Leiste und
+das „IDE“-Segment der Modeline.
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -975,12 +1025,12 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | rainbow-delimiters | M | apperance | Klammern einfärben | ok | Ja |
 | kmacro | e | interface | Makros | ok | |
 | ivy / counsel / swiper | M | interface | Vervollständigung, Suche | **ersetzt** (2.1) durch vertico, orderless, marginalia, consult, embark, embark-consult | Ja |
-| winner | e | interface | Fensterlayout zurück | ok, ggf. `tab-bar-history` | Ja |
-| fullframe | M | interface | magit im Vollbild | ggf. `display-buffer-alist` | Ja |
-| buffer-move | M | interface | Buffer tauschen | → `windmove-swap-states-*` | Ja |
-| elscreen | M | interface | Bildschirme je Projekt | ungepflegt → `tab-bar-mode` | Ja |
+| winner | e | interface | Fensterlayout zurück | **ersetzt** (2.4) durch `tab-bar-history-mode` (Verlauf je Tab) | Ja |
+| fullframe | M | interface | magit im Vollbild | **ersetzt** (2.4) durch eine eigene `magit-display-buffer-function` | Ja |
+| buffer-move | M | interface | Buffer tauschen | **ersetzt** (2.4) durch `windmove-swap-states-*` | Ja |
+| elscreen | M | interface | Bildschirme je Projekt | **ersetzt** (2.4) durch `tab-bar-mode`; letzter Commit 2018 | Ja |
 | ediff | e | interface | Vergleich | ok | Ja |
-| ztree | M | interface | Verzeichnisvergleich | prüfen | Ja |
+| ztree | M | interface | Verzeichnisvergleich | bleibt (2.4), gepflegt; lädt erst bei Bedarf | Ja |
 | ace-jump-mode | M | interface | Springen | **ersetzt** (2.2) durch avy, das ace-window ohnehin mitbringt. Die frühere Einschätzung „ungepflegt“ war falsch: Es bekommt 2026 noch Commits | |
 | ace-window | M | interface | Fensterwahl | gepflegt | Ja |
 | expand-region | M | interface | Auswahl erweitern | **ersetzt** (2.2) durch expreg | Ja |
