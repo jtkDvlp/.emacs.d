@@ -560,7 +560,7 @@ Je Block ein PR. Für jedes Paket dieselben Fragen, in dieser Reihenfolge:
 | 2.6 Prüfen, Vervollständigen im Buffer, Snippets | company, company-quickhelp, flycheck, yasnippet, yasnippet-snippets | Vor den Sprachen, weil LSP (2.7) sich daran anschließt. | corfu + cape (auf `completion-at-point`), flymake (eingebaut, eglot nutzt es), yasnippet bleibt wohl |
 | 2.7 Sprach-Infrastruktur (LSP) | — (heute je Sprache eigene Lösung: tide, elpy, xref-js2, company-php) | Grundsatzentscheidung einmal treffen statt je Sprache. Nach 2.1 und 2.6, weil ein LSP-Client Vervollständigung und Prüfung beliefert. | **Neu aufgenommen (2026-10-25):** LSP-Client plus Language-Server je Sprache, dazu tree-sitter-Modi (`*-ts-mode`); Kandidaten im Inventar unter „Neue Pakete“ |
 | 2.8 Sprachen | nach Gewicht: Clojure (cider, clj-refactor, parseedn, flycheck-clj-kondo, Einrückungsregeln, Leiningen-Helfer), Elisp, JS/TS (js2-mode, js2-refactor, xref-js2, indium, tide, npm-mode), HTML/CSS (web-mode, web-mode-edit-element, scss-/sass-mode), Python (elpy), C++ (platformio-mode), PHP, BASIC | Setzt 2.5–2.7 voraus. Clojure zuerst, weil es am meisten benutzt wird. | Clojure: clojure-lsp über eglot **neben** CIDER, ggf. clojure-ts-mode, `deps.edn` neben Leiningen. Übrige: meist eglot + `*-ts-mode` |
-| 2.9 Werkzeuge | magit (Gerrit), git-auto-commit-mode, ediff, ztree, eshell, eshell-up, esh-autosuggest, restclient, sql, simple-httpd, logview, csv-mode, markdown-mode, simple-bookmarks | Weitgehend unabhängig; nach den Grundlagen, weil Vervollständigung und Projekte hineinspielen. | magit bleibt; restclient ist meines Wissens archiviert → `verb` prüfen; eshell ggf. ergänzt um `eat` |
+| 2.9 Werkzeuge | magit (Gerrit), git-auto-commit-mode, ediff, ztree, eshell, eshell-up, esh-autosuggest, restclient, sql, simple-httpd, logview, csv-mode, markdown-mode, simple-bookmarks | Weitgehend unabhängig; nach den Grundlagen, weil Vervollständigung und Projekte hineinspielen. | magit bleibt; restclient ist meines Wissens archiviert → `verb` prüfen; **eshell und eat** gemeinsam prüfen (gewünscht 2026-10-29): eshell bleibt die Shell in Emacs, eat als Terminal für Programme, die eins brauchen, und als Anzeige in eshell (`eat-eshell-mode`) |
 | 2.10 Organisation | org (GTD), dashboard | Unabhängig, aber persönlich — braucht dein Urteil mehr als Technik. | — |
 | 2.11 Aussehen | doom-themes, spaceline, linum, rainbow-mode, rainbow-delimiters, Hervorhebung von `TODO`/`WATCHOUT`, Fenstertitel | Zuletzt: die Modeline zeigt Segmente aus 2.3, 2.4 und 2.6 (Projekt, IDE-Fenster, Prüfergebnisse) — erst wenn die feststehen, lohnt ihr Umbau. | doom-modeline oder eingebaute Modeline, `display-line-numbers-mode`, hl-todo |
 
@@ -1124,6 +1124,14 @@ Verlaufsvorschlag von esh-autosuggest — alles in Ordnung.
 - **tree-sitter:** Die sechs Dateiarten öffnen im tree-sitter-Modus; SCSS, Clojure und Markdown bleiben bei ihren Modi.
 - **Schnappschuss-Diff:** nur eglot, flymake, die Umleitungen und die Hooks.
 
+**re-frame:** clojure-lsp kennt re-frame ohne Zusatz. `M-j d` auf
+`::subs/name` in einem `subscribe` oder `dispatch` springt zum `reg-sub`
+bzw. `reg-event-*`, `M-j r` findet alle Verwendungen, und an jeder
+Registrierung steht die Zahl ihrer Verwendungen als Code Lens. Geprüft im
+Batch an einem kleinen Projekt ohne re-frame im Classpath; das klappt
+erst, wenn clojure-lsp das Projekt eingelesen hat — vorher springt
+`M-j d` auf das Keyword selbst.
+
 **Für 2.8 entschieden:** Außer Clojure/ClojureScript, SCSS, etwas CSS, HTML und JS, JSON, Jenkinsfile, Shell und Markdown wird nichts gebraucht; der Rest kann weg. Neu gewünscht: ein ordentliches Setup für XML und XSLT. Wichtig ist die Leistung in großen Dateien.
 
 **Offen für die Sichtung in der GUI:** clojure-lsp im echten Projekt neben CIDER (Vervollständigen, `M-j d`, Befunde in der Modeline); die Nachfrage nach der Grammatik beim ersten JSON- oder CSS-File.
@@ -1220,6 +1228,7 @@ Noch nicht in der Konfiguration; aufgenommen auf deinen Wunsch
 | typescript-language-server | Language-Server (npm) | 2.8 JS/TS | JavaScript und TypeScript | ersetzt tide, xref-js2 und Teile von js2-refactor |
 | basedpyright bzw. pyright, dazu ruff | Language-Server | 2.8 Python | Python | ersetzt elpy |
 | vscode-langservers-extracted | Language-Server (npm) | 2.8 HTML/CSS | HTML, CSS/SCSS, JSON | scss ist als benutzt markiert |
+| eat | Emacs-Paket, NonGNU ELPA | 2.9 Werkzeuge | Terminal-Emulator in Emacs; kann in eshell Programme mit Vollbild-Ausgabe zeigen (`eat-eshell-mode`) | aufgenommen auf Wunsch (2026-10-29); Pflegestand im Review nachsehen |
 | clangd | Language-Server | 2.8 C++ | C++, auch PlatformIO über `compile_commands.json` | |
 | marksman | Language-Server | 2.8 Markdown | Links und Überschriften in Markdown | optional |
 
