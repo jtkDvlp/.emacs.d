@@ -20,6 +20,9 @@
   ;; NOTE: The log of every message to and from the server costs time on
   ;; large answers; `eglot-events-buffer' shows it once switched back on.
   (eglot-events-buffer-config '(:size 0 :format full))
+  ;; NOTE: No hint that code actions are at hand: clojure-lsp offers some
+  ;; nearly everywhere, so the hint marked every line.  M-r A lists them.
+  (eglot-code-action-indications nil)
 
   :bind
   ;; NOTE: Capitals, since clj-refactor holds most lower-case letters
