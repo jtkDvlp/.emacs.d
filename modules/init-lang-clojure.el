@@ -152,7 +152,8 @@
   (defun cider-jack-in-dwim ()
     (interactive)
     (let* ((profiles
-            (lein-project-clj-jack-in-profiles))
+            (when (file-exists-p (lein-project-clj-filepath))
+              (lein-project-clj-jack-in-profiles)))
 
            (profile
             (unless (seq-empty-p profiles)
