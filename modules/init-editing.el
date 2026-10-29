@@ -74,13 +74,12 @@
   (("C--" . jtk-narrow-dwim)
    ("C-+" . jtk-narrow-widen)))
 
+;; NOTE: Emacs' own undo: C-/ undoes, C-? redoes (`undo-redo'), and
+;; vundo shows the tree of changes to walk through.
 (use-package
-  undo-tree
-  :demand t
-  :diminish undo-tree-mode
-  :config
-  (setq undo-tree-auto-save-history nil)
-  (global-undo-tree-mode))
+  vundo
+  :bind
+  (("C-x u" . vundo)))
 
 (use-package
   multiple-cursors
@@ -133,6 +132,10 @@
   (prog-mode . aggressive-indent-global-mode)
 
   :config
+  ;; NOTE: Indenting after an undo is a new change, so the next undo
+  ;; would only take back the indentation.
+  (add-to-list 'aggressive-indent-protected-commands 'undo-redo)
+  (add-to-list 'aggressive-indent-protected-commands 'undo-only)
   (add-to-list 'aggressive-indent-excluded-modes 'sass-mode)
   (add-to-list 'aggressive-indent-excluded-modes 'cider-repl-mode))
 

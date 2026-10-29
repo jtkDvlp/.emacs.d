@@ -979,15 +979,6 @@
                            :type git :protocol https :inherit t :depth
                            treeless :ref
                            "2ab5a3c89fa01bbbd99de9b8986908b2bc5a7b49"))
- (undo-tree :source "elpaca-menu-lock-file" :recipe
-            (:package "undo-tree" :repo
-                      ("https://gitlab.com/tsc25/undo-tree"
-                       . "undo-tree")
-                      :tar nil :host gnu :files
-                      ("*" (:exclude ".git")) :source
-                      "elpaca-menu-lock-file" :id undo-tree :type git
-                      :protocol https :inherit t :depth treeless :ref
-                      "2bf5e230f1d11df7bbd9d8c722749e34482bc458"))
  (vertico :source "elpaca-menu-lock-file" :recipe
           (:package "vertico" :repo "minad/vertico" :files
                     (:defaults "extensions/vertico-*.el") :fetcher
@@ -995,6 +986,13 @@
                     :type git :protocol https :inherit t :depth
                     treeless :ref
                     "c60d80215d19b4b36c0ba49599b6815ed35f2ac1"))
+ (vundo :source "elpaca-menu-lock-file" :recipe
+        (:package "vundo" :repo
+                  ("https://github.com/casouri/vundo" . "vundo") :tar
+                  nil :host gnu :files ("*" (:exclude ".git" "test"))
+                  :source "GNU ELPA" :id vundo :type git :protocol
+                  https :inherit t :depth treeless :ref
+                  "04caf7ec54e4a7861d3591a1e090adc1fb76b5d1"))
  (web-mode :source "elpaca-menu-lock-file" :recipe
            (:package "web-mode" :repo "fxbois/web-mode" :fetcher
                      github :files
