@@ -91,6 +91,26 @@
                        embark-highlight-indicator
                        embark-isearch-highlight-indicator))
 
+  :init
+  ;; NOTE: In a list exported with C-o that has no buffer of its own
+  ;; kind (dired, occur, grep), the action keys work directly on the
+  ;; entry under the cursor, as after M-x in the minibuffer: e on a
+  ;; project opens eshell there.  C-h on an entry lists them, M-a turns
+  ;; it off.
+  ;; WATCHOUT: embark runs the mode hook before it inserts the entries,
+  ;; and the minor mode only binds the keys on entries that exist; hence
+  ;; the timer, which runs once the command has filled the buffer.
+  (defun jtk-embark-collect-act-directly ()
+    (let ((buffer (current-buffer)))
+      (run-at-time 0 nil
+                   (lambda ()
+                     (when (buffer-live-p buffer)
+                       (with-current-buffer buffer
+                         (embark-collect-direct-action-minor-mode 1)))))))
+
+  :hook
+  (embark-collect-mode . jtk-embark-collect-act-directly)
+
   :bind
   (:map minibuffer-local-map
         ("C-o" . embark-export)
