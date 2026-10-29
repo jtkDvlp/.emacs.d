@@ -116,11 +116,12 @@
   :bind
   (("C-;" . comment-dwim)))
 
-(use-package
-  simple
-  :ensure nil
-  :hook
-  ((before-save . delete-trailing-whitespace)))
+;; NOTE: Only in code: in Markdown, two spaces at the end of a line are
+;; a line break.
+(defun jtk-editing-delete-trailing-whitespace-on-save ()
+  "Delete trailing whitespace whenever the current buffer is saved."
+  (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
+(add-hook 'prog-mode-hook #'jtk-editing-delete-trailing-whitespace-on-save)
 
 (use-package
   aggressive-indent
