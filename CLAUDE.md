@@ -31,8 +31,8 @@ Conventional Commits trotzdem, damit die Historie lesbar bleibt.
 ## Aufbau (Ist-Stand)
 
 Phase 1 des Plans ist umgesetzt: die Struktur steht. Phase 2 prüft die
-Pakete Block für Block; erledigt sind 2.1 (Vervollständigung) und 2.2
-(Tastatur-Infrastruktur).
+Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
+(Tastatur-Infrastruktur) und 2.3 (Projekte).
 
 | Pfad | Inhalt | versioniert |
 |---|---|---|
@@ -42,8 +42,8 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung) und 2.2
 | `modules/init-core.el` | Grundverhalten ohne eigenes Thema: `local.el`, PATH, Sicherungen, Kodierung, Auto-Revert, Scrollen, Rückfragen. | ja |
 | `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `org`, `startup`, `structural-editing`, `completion`, `checking`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`. Jede Datei sagt im Kopf, was hineingehört. | ja |
 | `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. `init-lang-php` wird nicht geladen. | ja |
-| `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`ide`, `narrow`, `zoom`, `window-mirror`), Symbole mit Präfix `jtk-`. | ja |
-| `etc/elpaca-lock.eld` | Commit jedes Pakets (92, mit Abhängigkeiten und elpaca selbst). | ja |
+| `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`ide`, `narrow`, `project`, `zoom`, `window-mirror`), Symbole mit Präfix `jtk-`. | ja |
+| `etc/elpaca-lock.eld` | Commit jedes Pakets (91, mit Abhängigkeiten und elpaca selbst). | ja |
 | `etc/yasnippet/snippets/` | Handgeschriebene yasnippet-Vorlagen. | ja |
 | `etc/eshell/aliases` | Handgeschriebene eshell-Aliase. | ja |
 | `etc/mc-list.el` | Von multiple-cursors **erzeugt**, aber inhaltlich gepflegt — deshalb versioniert. | ja |
@@ -78,9 +78,13 @@ kommt der Backtrace dazu. Es endet mit einem Fehler, wenn das Laden oder
 eine Datei scheitert — Warnungen allein nicht, ihre Zahl ist das Maß. Die
 GitHub-Action (`.github/workflows/check.yml`, macOS, Emacs 31.1) führt es
 bei jedem Push aus und legt den Bericht in die Zusammenfassung des Laufs.
-Der Prüfschritt hat ein Zeitlimit von 15 Minuten (sonst 2,5 bis 3,5), und
-ein Download unter 1 KB/s für 60 s scheitert — drei Läufe hingen vorher
-stundenlang an einem stehenden Download.
+Gegen hängende Läufe: `scripts/check` gibt nach 8 Minuten auf und nennt
+im Bericht die Pakete, auf die es noch wartete, mit ihrer letzten
+Meldung und dem laufenden Prozess (sonst dauert ein Lauf 2,5 bis 3,5
+Minuten). In der Action scheitert dazu ein Download unter 1 KB/s für
+60 s, git fragt nie nach einem Passwort, und der Schritt hat ein
+Zeitlimit von 15 Minuten. Mehrere Läufe hingen vorher stundenlang beim
+Installieren der Pakete; die Ursache ist noch offen.
 Ein anderes Emacs wählt man über `EMACS=/pfad/zu/emacs scripts/check`.
 
 `--snapshot FILE` schreibt nach dem Laden — und nachdem jedes deklarierte
@@ -162,10 +166,18 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   wenn das Paket schon geladen ist.** Sonst bindet es lexikalisch, und das
   Paket sieht den Wert nie. Vorher `require`n (so in `sql-mysql-for`) —
   weder Byte-Compiler noch Schnappschuss bemerken den Fehler.
-- **Der Schnappschuss sieht nur, was geladen wird.** Ein Block, der an
-  einem nie geladenen Paket hängt, fehlt vorher wie nachher (so `tide`,
-  das auf das nicht installierte `typescript-mode` wartet). Für solche
+- **Der Schnappschuss sieht nur, was geladen wird — und nur den
+  Endzustand.** Ein Block, der an einem nie geladenen Paket hängt, fehlt
+  vorher wie nachher (so `tide`, das auf das nicht installierte
+  `typescript-mode` wartet). Und weil er alle Pakete auf einmal lädt,
+  sieht er nicht, in welcher Reihenfolge eine echte Sitzung sie lädt:
+  Dass CIDER die `C-c M-j`-Familie überschrieb, sobald eine `.clj`-Datei
+  offen war, zeigte erst eine Spur der `define-key`-Aufrufe. Für solche
   Stellen gezielt nachladen und vergleichen.
+- **Pakete, die beim Laden selbst Tasten setzen, schlagen `:bind`.**
+  CIDER legt `C-c M-j` in `clojure-mode-map` zweimal fest (Autoloads und
+  cider.el); die eigene Belegung muss danach kommen, siehe
+  `jtk-clojure-bind-project-keys`.
 - **Globale Tasten mit `:bind`, nicht mit `:bind*`.** `:bind*` schreibt in
   `override-global-map` und schlägt damit jede Mode — so verdeckte Org
   einst mit `C--` das globale Verengen (Plan, B1) und die Override-Map
@@ -185,6 +197,24 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   Präfix.** `("M-' c" . …)` mit `:bind` scheitert mit „starts with
   non-prefix key“, solange `M-'` noch `abbrev-prefix-mark` ist; in der
   Override-Map fiel das nie auf. Erst den Präfix als Map binden.
+- **Projektwurzel über `jtk-project-root`, nicht `project-root`.**
+  `project-root` kürzt das Home-Verzeichnis zu `~`; wer die Wurzel mit
+  `buffer-file-name` oder einem eshell-Pfad vergleicht, findet dann
+  nichts. `jtk-project-root` liefert sie absolut.
+- **Einträge in `project-vc-ignores` mit Schrägstrich am Ende.** Aus
+  `"node_modules"` macht project.el das git-Muster `**/node_modules`, das
+  den Inhalt des Ordners nicht trifft; erst `"node_modules/"` wird zu
+  `**/node_modules/**`.
+- **embark-Aktionen auf einem Projekt treffen das markierte Projekt nur
+  über `jtk-project-act-in-target`** (in `embark-around-action-hooks`).
+  Die Projektbefehle fragen `project-current` des aktuellen Buffers;
+  ohne den Hook liefen sie still im aktuellen statt im markierten
+  Projekt — kein Fehler, nur das falsche Ziel.
+- **Projektarten teilen sich die Tasten unter `j`.** Bei gleicher Taste
+  gewinnt die zuerst angemeldete Art (heute Clojure vor npm vor
+  PlatformIO, durch die Reihenfolge in `init.el` und weil npm und
+  PlatformIO sich erst anmelden, wenn elpaca ihre Blöcke auswertet).
+  Wer eine Art hinzufügt, prüft die Tasten gegen die übrigen.
 - **`:bind*` mit `:map` wirkt wie `:bind`.** Die Belegung landet in der
   genannten Mode-Map, nicht in der Override-Map. Das Sternchen dort trägt
   nichts und täuscht Absicht vor.
@@ -213,6 +243,7 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 | nach 2.1, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 94 Einträgen | 0 | 31 |
 | nach 2.2, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 93 Einträgen reproduziert | 0 | 25 |
 | nach 2.2 mit avy und expreg, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 92 Einträgen reproduziert | 0 | 25 |
+| nach 2.3, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 91 Einträgen reproduziert | 0 | 23 |
 
 Der Unterschied von 3 Warnungen bis 2.1: Die `ns-*`- und `mac-*`-Variablen
 gibt es nur unter macOS; in der Cloud meldete der Byte-Compiler sie als

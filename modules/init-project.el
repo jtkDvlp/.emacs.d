@@ -2,29 +2,32 @@
 
 ;;; Commentary:
 
-;; projectile: switching projects and finding files,
-;; directories and buffers within one.
+;; project.el: switching projects and finding files, directories and
+;; buffers within one; the project commands on C-x x p, and on a project
+;; in the project list with M-x (embark).  magit, consult, xref and eglot
+;; ask project.el what the project is.  Languages add the commands for
+;; their kind of project to `jtk-project-kinds'.
 
 ;;; Code:
 
+(require 'jtk-project)
+
 (use-package
-  projectile
-  :diminish projectile-mode
+  project
+  :ensure nil
+
+  :custom
+  ;; NOTE: As with projectile, a .projectile file marks a project root,
+  ;; also within a git repository.
+  (project-vc-extra-root-markers '(".projectile"))
+  ;; NOTE: Files git ignores are left out anyway; these directories stay
+  ;; out where git does not ignore them.
+  (project-vc-ignores '("node_modules/" "dist/" "elpa/" "cache/" ".cache/"))
+  ;; NOTE: RET in the project list finds a file; anything else is M-x
+  ;; on the project (see below).
+  (project-switch-commands #'project-find-file)
 
   :config
-  (setq
-   projectile-completion-system 'default
-   projectile-file-exists-remote-cache-expire 300
-   projectile-file-exists-local-cache-expire nil
-   projectile-enable-idle-timer t
-   projectile-mode-line-prefix " ")
-  (projectile-mode)
-  (add-to-list 'projectile-globally-ignored-directories "node_modules")
-  (add-to-list 'projectile-globally-ignored-directories "dist")
-  (add-to-list 'projectile-globally-ignored-directories "elpa")
-  (add-to-list 'projectile-globally-ignored-directories "cache")
-  (add-to-list 'projectile-globally-ignored-directories ".cache")
-
   (defun save-all-buffers ()
     (interactive)
     (save-some-buffers t))
@@ -34,17 +37,18 @@
    ("C-x B" . consult-project-buffer)
 
    ("C-x f" . find-file)
-   ("C-x F" . projectile-find-file)
+   ("C-x F" . project-find-file)
 
    ("C-x C-f" . consult-recent-file)
-   ("C-x C-S-F" . projectile-recentf)
+   ;; NOTE: The project's buffers list its recent files as well.
+   ("C-x C-S-F" . consult-project-buffer)
 
-   ("C-x d" . projectile-dired)
-   ("C-x D" . projectile-find-dir)
+   ("C-x d" . project-dired)
+   ("C-x D" . project-find-dir)
 
    ("C-x C-d" . nil)
 
-   ("C-x x f" . projectile-switch-project)
+   ("C-x x f" . project-switch-project)
    ("C-x x F" . consult-project-buffer)
 
    ("C-q" . switch-to-prev-buffer)
@@ -53,7 +57,41 @@
    ("C-x C-S-S" . save-all-buffers)
 
    ("C-x k" . kill-buffer)
-   ("C-x K" . projectile-kill-buffers)))
+   ("C-x K" . project-kill-buffers)))
+
+;; NOTE: Emacs' project commands (C-x p), with consult and Magit where
+;; they have something better, and the commands of the project's kinds
+;; under j.  `:prefix' cannot be combined with `:parent', hence `fset'.
+(defvar-keymap jtk-project-map
+  :doc "Commands for the current project."
+  :parent project-prefix-map
+  "b" #'consult-project-buffer
+  "g" #'consult-git-grep
+  "m" #'magit-project-status
+  "v" #'magit-project-status
+  "j" #'jtk-project-run-kind-command)
+(fset 'jtk-project-map jtk-project-map)
+(keymap-set ctl-x-x-map "p" 'jtk-project-map)
+
+(defvar marginalia-command-categories)
+(defvar marginalia-annotators)
+(defvar embark-keymap-alist)
+(defvar embark-around-action-hooks)
+
+;; NOTE: The candidates of the project list are directories of category
+;; `project-file', which embark treats as files.  Their own category
+;; gives them `jtk-project-map' as actions, run in the marked project,
+;; and marginalia shows their kinds next to them.
+(with-eval-after-load 'marginalia
+  (add-to-list 'marginalia-command-categories
+               '(project-switch-project . jtk-project))
+  (add-to-list 'marginalia-annotators
+               '(jtk-project jtk-project-annotate builtin none)))
+
+(with-eval-after-load 'embark
+  (add-to-list 'embark-keymap-alist '(jtk-project jtk-project-map))
+  (add-to-list 'embark-around-action-hooks
+               '(:always jtk-project-act-in-target)))
 
 (provide 'init-project)
 

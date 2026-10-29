@@ -7,6 +7,8 @@
 
 ;;; Code:
 
+(require 'jtk-project)
+
 (use-package
   web-mode
   :mode
@@ -21,10 +23,9 @@
     (interactive)
     (if (buffer-file-name)
         (browse-url
-         (if (and (fboundp 'projectile-project-root)
-                  (fboundp 'httpd-running-p))
+         (if (fboundp 'httpd-running-p)
              (let ((project-root-dir
-                    (projectile-project-root))
+                    (jtk-project-root))
 
                    (buffer-file-path
                     (buffer-file-name)))

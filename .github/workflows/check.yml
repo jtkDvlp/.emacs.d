@@ -20,9 +20,12 @@ jobs:
         # NOTE: The step takes 2.5 to 3.5 minutes.  Three runs hung for
         # hours while packages were downloaded: git never gives up on a
         # stalled transfer.  One below 1 KB/s for 60 s now fails the
-        # package instead, and the time limit catches whatever is left.
+        # package instead, git fails rather than wait for a password,
+        # scripts/check gives up after 8 minutes and names the packages
+        # it still waited for, and the time limit catches the rest.
         timeout-minutes: 15
         env:
           GIT_HTTP_LOW_SPEED_LIMIT: 1000
           GIT_HTTP_LOW_SPEED_TIME: 60
+          GIT_TERMINAL_PROMPT: 0
         run: scripts/check --report "$GITHUB_STEP_SUMMARY" --verify-lock

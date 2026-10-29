@@ -160,12 +160,12 @@
   (jtk-ide-open-buffers defaults))
 
 (defvar jtk-ide-default-layout
-  `(("\\*\\(?:eshell\s[^\\*]*\\|compilation\\)\\*")
+  `(("\\*\\(?:[^*]*-eshell\\|eshell\s[^\\*]*\\|compilation\\)\\*")
     ("\\*\\(?:help\\|cider-doc\\|grep\\|Completions\\)\\*"
      "\\*Flycheck error messages\\*")))
 
 (defvar jtk-ide-default-buffers
-  `("*Help*" projectile-run-eshell treemacs))
+  `("*Help*" project-eshell treemacs))
 
 (provide 'jtk-ide)
 

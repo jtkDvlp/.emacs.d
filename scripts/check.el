@@ -56,10 +56,57 @@ already ran, so anything registered there (elpaca's queue, dashboard)
 would otherwise never happen."
   (run-hooks 'after-init-hook 'emacs-startup-hook 'window-setup-hook))
 
+(defconst check-package-timeout (* 8 60)
+  "Seconds after which the check stops waiting for packages.
+NOTE: A whole run takes 2.5 to 3.5 minutes in CI; some runs hung for
+hours while packages were installed, without a word on which.")
+
+(defvar elpaca--event-log)
+(declare-function elpaca-event<-id "elpaca")
+(declare-function elpaca-event<-payload "elpaca")
+(declare-function elpaca<-process "elpaca")
+
+(defun check--last-note (id)
+  "Return the latest message elpaca logged for package ID, or nil."
+  (when (boundp 'elpaca--event-log)
+    (when-let* ((event (seq-find (lambda (event)
+                                   (eq (elpaca-event<-id event) id))
+                                 elpaca--event-log)))
+      (plist-get (elpaca-event<-payload event) :info))))
+
+(defun check--stuck-package-lines ()
+  "Return one report line per unfinished package, with what it last did."
+  (cl-loop for (id . order) in (elpaca--queued)
+           for status = (elpaca<-status order)
+           for process = (elpaca<-process order)
+           unless (memq status '(finished failed))
+           collect (format "- `%s` (%s): %s%s" id status
+                           (or (check--last-note id) "no message")
+                           (if (process-live-p process)
+                               (format "; running `%s`"
+                                       (string-join (process-command process)
+                                                    " "))
+                             ""))))
+
+(defun check--give-up ()
+  "Report the packages that did not finish in time and exit with 1."
+  (check--write-report
+   (concat "## Configuration check\n\n"
+           (format "**Gave up** waiting for packages after %d s.\n\n"
+                   check-package-timeout)
+           (string-join (check--stuck-package-lines) "\n")
+           "\n"))
+  (kill-emacs 1))
+
 (defun check--wait-for-packages ()
   "Block until elpaca has installed and configured everything queued."
   (when (fboundp 'elpaca-wait)
-    (elpaca-wait)))
+    ;; NOTE: `elpaca-wait' waits with `sit-for', so the timer gets its
+    ;; turn while a package hangs.
+    (let ((timer (run-at-time check-package-timeout nil #'check--give-up)))
+      (unwind-protect
+          (elpaca-wait)
+        (cancel-timer timer)))))
 
 (defun check--load-init-files ()
   "Load the init files, finish startup and wait for packages."

@@ -7,6 +7,8 @@
 
 ;;; Code:
 
+(require 'jtk-project)
+
 (use-package
   simple-httpd
 
@@ -26,17 +28,18 @@
 
   (defalias 'httpd/stop 'httpd-stop)
 
-  (defun projectile-httpd/start ()
+  (defun jtk-httpd-start-project ()
+    "Serve the current project on port 8080."
     (interactive)
-    (httpd/start (projectile-project-root) 8080))
+    (httpd/start (jtk-project-root) 8080))
 
-  (defalias 'projectile-httpd/stop 'httpd/stop)
+  (defalias 'jtk-httpd-stop-project 'httpd/stop)
 
   :commands
   (httpd/start
    httpd/stop
-   projectile-httpd/start
-   projectile-httpd/stop))
+   jtk-httpd-start-project
+   jtk-httpd-stop-project))
 
 (provide 'init-httpd)
 

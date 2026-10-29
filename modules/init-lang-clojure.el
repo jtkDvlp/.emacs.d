@@ -9,6 +9,26 @@
 
 ;;; Code:
 
+(require 'jtk-project)
+
+;; NOTE: The same keys under C-c M-j in Clojure buffers and under j in
+;; the project commands (C-x x p, and M-x on a project in the project
+;; list), there for every project with one of the marker files.
+(defvar-keymap jtk-clojure-project-map
+  :doc "Starting a REPL (upper case) or connecting to one (lower case)."
+  :prefix t
+  "J" #'cider-jack-in-dwim
+  "j" #'cider-connect-clj
+  "S" #'cider-jack-in-cljs
+  "s" #'cider-connect-cljs
+  "B" #'cider-jack-in-clj&cljs
+  "b" #'cider-connect-clj&cljs)
+
+(add-to-list 'jtk-project-kinds
+             '("Clojure" ("project.clj" "deps.edn" "shadow-cljs.edn" "bb.edn")
+               jtk-clojure-project-map)
+             t)
+
 (use-package
   clojure-mode
 
@@ -53,6 +73,19 @@
    cider-jack-in-with-profile
    cider-jack-in-dwim)
 
+  :init
+  ;; WATCHOUT: CIDER puts `cider-jack-in-clj' on C-c M-j in
+  ;; `clojure-mode-map' twice: from its autoloads when clojure-mode
+  ;; loads, and again when cider.el itself loads.  Bound once in :bind,
+  ;; the key lost against the second, and C-c M-j only ever jacked in.
+  ;; So it is set again after each of the two.
+  (defun jtk-clojure-bind-project-keys ()
+    (keymap-set clojure-mode-map "C-c M-j" 'jtk-clojure-project-map))
+  (with-eval-after-load 'clojure-mode
+    (jtk-clojure-bind-project-keys))
+  (with-eval-after-load 'cider
+    (jtk-clojure-bind-project-keys))
+
   :config
   (require 'parseedn)
 
@@ -69,7 +102,7 @@
 
   (defun lein-project-clj-filepath ()
     (thread-first
-      (projectile-project-root)
+      (jtk-project-root)
       (concat "project.clj")))
 
   (defun lein-project-clj-content (filepath)
@@ -132,7 +165,8 @@
   (defun cider-jack-in-dwim ()
     (interactive)
     (let* ((profiles
-            (lein-project-clj-jack-in-profiles))
+            (when (file-exists-p (lein-project-clj-filepath))
+              (lein-project-clj-jack-in-profiles)))
 
            (profile
             (unless (seq-empty-p profiles)
@@ -185,7 +219,7 @@
 
   (defun cider-figwheel-main-profiles ()
     (thread-last
-      (projectile-project-root)
+      (jtk-project-root)
       (directory-files)
       (seq-filter (lambda (filename) (s-ends-with? ".cljs.edn" filename)))
       (seq-map (lambda (build-filename) (substring build-filename 0 (- 0 (length ".cljs.edn")))))))
@@ -358,19 +392,8 @@
 
   :bind
   (:map clojure-mode-map
-        ("C-c M-j" . nil)
-
-        ("C-c M-j J" . cider-jack-in-dwim)
-        ("C-c M-j j" . cider-connect-clj)
-
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
         ("C-c C-M-S-J" . cider-repl-switch-to-repl-buffer-and-ns)
-
-        ("C-c M-j S" . cider-jack-in-cljs)
-        ("C-c M-j s" . cider-connect-cljs)
-
-        ("C-c M-j B" . cider-jack-in-clj&cljs)
-        ("C-c M-j b" . cider-connect-clj&cljs)
 
         :map cider-mode-map
         ("C-M-g" . cider-interrupt)

@@ -101,7 +101,7 @@ Thema, nicht nach Schicht oder Gefühl. Heute:
 | Datei | Zeilen | enthält u. a. |
 |---|---:|---|
 | `base--interface.el` | 296 | Vervollständigung (ivy, counsel, swiper), Fenster (winner, fullframe, buffer-move, elscreen, ace-window), Vergleich (ediff, ztree), Springen (ace-jump), Editieren (expand-region, undo-tree, multiple-cursors), Tastenhilfe (which-key), Zoom, Makros |
-| `base--development.el` | 344 | Klammern, Einrückung, Vervollständigung im Puffer, Git, Syntaxprüfung, Snippets, Symbol-Hervorhebung, REST-Client, SQL, HTTP-Server, Markdown, Log-Betrachter, IDE-Layout |
+| `base--development.el` | 344 | Klammern, Einrückung, Vervollständigung im Buffer, Git, Syntaxprüfung, Snippets, Symbol-Hervorhebung, REST-Client, SQL, HTTP-Server, Markdown, Log-Betrachter, IDE-Layout |
 | `base--filemanagement.el` | 204 | Projekte, Dateibaum, Lesezeichen (mit MySQL-Verbindungen), Auto-Commit, Zeichenkodierung, Auto-Revert, eine `zsh`-Funktion |
 
 Wer etwa die Vervollständigung umbaut, sucht heute in vier Dateien
@@ -195,7 +195,7 @@ nicht aufgefallen.
 **U3 – Widersprüche in einzelnen Blöcken.** `ztree` hat `:demand t` und
 `:commands` (das eine lädt sofort, das andere verzögert); `elscreen` hat
 zwei `:init`-Abschnitte; `aggressive-indent` schaltet den **globalen** Modus
-aus dem Hook **jedes** Programmierpuffers ein; `pkg--*` haben ein
+aus dem Hook **jedes** Programmier-Buffers ein; `pkg--*` haben ein
 `:load-path`, obwohl `configuration/` schon im `load-path` steht.
 
 **U4 – Bootstrap an use-package vorbei.** `diminish`, `smartrep`,
@@ -247,13 +247,13 @@ fallen dort ganz weg, und der Fehler mit ihnen.
 
 | Nr. | Ort | Was passiert (vermutlich) |
 |---|---|---|
-| B1 ✅ (2.2) | `base--organisation.el:125` | `("C--" . org-narrow-to-subtree)` steht vor `:map org-mode-map`, also **global** in der Override-Map. Weil Org nach `base--interface` lädt, verdrängt es dort `narrow/narrow-dwim`: `C--` lädt in jedem Puffer Org und ruft `org-narrow-to-subtree`. |
+| B1 ✅ (2.2) | `base--organisation.el:125` | `("C--" . org-narrow-to-subtree)` steht vor `:map org-mode-map`, also **global** in der Override-Map. Weil Org nach `base--interface` lädt, verdrängt es dort `narrow/narrow-dwim`: `C--` lädt in jedem Buffer Org und ruft `org-narrow-to-subtree`. |
 | B2 ✅ (2.2) | `pkg--narrow.el:4` | `(narrow-to-region)` ohne Argumente — bei aktiver Region ein Fehler „wrong number of arguments“. Vom Byte-Compiler bestätigt. |
-| B3 | `lang--typescript.el:9` | `before-save`-Hook auf `tide-formater-before-save`; die Funktion heißt `tide-format-before-save`. Und der Hook ist global, nicht pufferlokal. Sobald einmal eine TS-Datei offen war, sollte **jedes** Speichern mit einem Fehler abbrechen. |
+| B3 | `lang--typescript.el:9` | `before-save`-Hook auf `tide-formater-before-save`; die Funktion heißt `tide-format-before-save`. Und der Hook ist global, nicht buffer-lokal. Sobald einmal eine TS-Datei offen war, sollte **jedes** Speichern mit einem Fehler abbrechen. |
 | B4 ✅ (2.2) | `lang--javascript.el:83` | `"M-J "` (mit Leerzeichen) auf `xref-pop-maker-stack` — die Funktion heißt `xref-pop-marker-stack`, seit Emacs 29 `xref-go-back`. |
 | B5 ✅ (2.2) | `lang--typescript.el:57` | `"C-C M-j"` — großes C, also `C-S-c`; gemeint war wohl `C-c`. |
 | B6 | `lang--basic.el:3` | `basic-mode` mit `:ensure nil`, ist aber ein MELPA-Paket — auf einem frischen Rechner fehlt es. Außerdem: `.inc`-Dateien als BASIC? |
-| B7 | `base--development.el:153` | `prettify-symbols-alist` per `setq` statt `setq-local` — die Liste gilt für alle Puffer, auch für Modi mit eigener Liste. |
+| B7 | `base--development.el:153` | `prettify-symbols-alist` per `setq` statt `setq-local` — die Liste gilt für alle Buffer, auch für Modi mit eigener Liste. |
 
 ---
 
@@ -531,7 +531,7 @@ Widersprüche in einzelnen Blöcken (U3).
 - `success-face` ist ohne `eval-sexp-fu` unbenutzt.
 
 **Sichtung nach Phase 1:** Parallel-Instanz starten. Startet ohne Fehler
-und ohne Warnungen im `*Messages*`-Puffer; Theme und Modeline wie bisher;
+und ohne Warnungen im `*Messages*`-Buffer; Theme und Modeline wie bisher;
 Stichproben der Tasten (`C-s`, `C-x f`, `M-#`, `M-v g`, `C-M-- t`,
 `C-<rechts>` in Clojure und Elisp); ein Projekt öffnen, eine
 Clojure-REPL starten, eine Org-Erfassung anlegen. Startzeit gegen die
@@ -552,12 +552,12 @@ Je Block ein PR. Für jedes Paket dieselben Fragen, in dieser Reihenfolge:
 
 | Block | Inhalt (heute) | Warum an dieser Stelle | Kandidaten |
 |---|---|---|---|
-| 2.1 Vervollständigung | ivy, counsel, swiper, counsel-projectile (counsel-Teil) | Am stärksten verflochten: Projectile, magit, eshell-Verlauf, Suche, Puffer- und Dateiwahl hängen daran. Jeder spätere Block müsste sonst zweimal angefasst werden. | vertico, orderless, marginalia, consult, embark — alle auf `completing-read` |
+| 2.1 Vervollständigung | ivy, counsel, swiper, counsel-projectile (counsel-Teil) | Am stärksten verflochten: Projectile, magit, eshell-Verlauf, Suche, Buffer- und Dateiwahl hängen daran. Jeder spätere Block müsste sonst zweimal angefasst werden. | vertico, orderless, marginalia, consult, embark — alle auf `completing-read` |
 | 2.2 Tastatur-Infrastruktur | smartrep, which-key, diminish, `bind-key`-Gebrauch | Legt fest, wie Präfix-Maps und Wiederholungs-Tasten gebaut werden — das benutzen alle folgenden Blöcke. | `repeat-mode`, eingebautes which-key (30), `defvar-keymap`; Lichter in der Modeline ggf. über die Modeline-Wahl in 2.11 |
 | 2.3 Projekte | projectile, treemacs-projectile | Eshell-Prompt, Fenstertitel, elscreen, httpd, CIDER-Helfer und dashboard fragen das Projekt ab. | `project.el` (eingebaut) — oder projectile bewusst behalten; beides vertretbar |
 | 2.4 Fenster und Arbeitsbereiche | elscreen, winner, ace-window, buffer-move, fullframe, `pkg--ide`, `pkg--window-mirror`, ediff/ztree-Anbindung | Hängt an 2.3 (Arbeitsbereich je Projekt). elscreen ist seit Jahren ungepflegt. | `tab-bar-mode`, `windmove-swap-states-*`, Side-Windows in `display-buffer-alist` für das IDE-Layout |
 | 2.5 Editieren | undo-tree, ~~ace-jump-mode, expand-region~~ (in 2.2 ersetzt), multiple-cursors, smartparens, aggressive-indent, highlight-symbol, kmacro, narrow | Grundlage für die Sprachen; die gemeinsame sexp-Keymap aus 1.8 hängt an smartparens. | vundo + `undo-redo`, avy, expreg, symbol-overlay; smartparens vs. paredit/puni |
-| 2.6 Prüfen, Vervollständigen im Puffer, Snippets | company, company-quickhelp, flycheck, yasnippet, yasnippet-snippets | Vor den Sprachen, weil LSP (2.7) sich daran anschließt. | corfu + cape (auf `completion-at-point`), flymake (eingebaut, eglot nutzt es), yasnippet bleibt wohl |
+| 2.6 Prüfen, Vervollständigen im Buffer, Snippets | company, company-quickhelp, flycheck, yasnippet, yasnippet-snippets | Vor den Sprachen, weil LSP (2.7) sich daran anschließt. | corfu + cape (auf `completion-at-point`), flymake (eingebaut, eglot nutzt es), yasnippet bleibt wohl |
 | 2.7 Sprach-Infrastruktur (LSP) | — (heute je Sprache eigene Lösung: tide, elpy, xref-js2, company-php) | Grundsatzentscheidung einmal treffen statt je Sprache. Nach 2.1 und 2.6, weil ein LSP-Client Vervollständigung und Prüfung beliefert. | **Neu aufgenommen (2026-10-25):** LSP-Client plus Language-Server je Sprache, dazu tree-sitter-Modi (`*-ts-mode`); Kandidaten im Inventar unter „Neue Pakete“ |
 | 2.8 Sprachen | nach Gewicht: Clojure (cider, clj-refactor, parseedn, flycheck-clj-kondo, Einrückungsregeln, Leiningen-Helfer), Elisp, JS/TS (js2-mode, js2-refactor, xref-js2, indium, tide, npm-mode), HTML/CSS (web-mode, web-mode-edit-element, scss-/sass-mode), Python (elpy), C++ (platformio-mode), PHP, BASIC | Setzt 2.5–2.7 voraus. Clojure zuerst, weil es am meisten benutzt wird. | Clojure: clojure-lsp über eglot **neben** CIDER, ggf. clojure-ts-mode, `deps.edn` neben Leiningen. Übrige: meist eglot + `*-ts-mode` |
 | 2.9 Werkzeuge | magit (Gerrit), git-auto-commit-mode, ediff, ztree, eshell, eshell-up, esh-autosuggest, restclient, sql, simple-httpd, logview, csv-mode, markdown-mode, simple-bookmarks | Weitgehend unabhängig; nach den Grundlagen, weil Vervollständigung und Projekte hineinspielen. | magit bleibt; restclient ist meines Wissens archiviert → `verb` prüfen; eshell ggf. ergänzt um `eat` |
@@ -570,9 +570,9 @@ Je Block ein PR. Für jedes Paket dieselben Fragen, in dieser Reihenfolge:
 **vertico** (Liste im Minibuffer), **orderless** (Leerzeichen trennt
 Suchbegriffe in beliebiger Reihenfolge, wie bei ivy), **marginalia**
 (Zusatzinfos neben den Einträgen, etwa Tastenbelegung bei `M-x`),
-**consult** (Befehle mit Vorschau: Puffer, Zeilen, grep, Verlauf) und
+**consult** (Befehle mit Vorschau: Buffer, Zeilen, grep, Verlauf) und
 **embark** mit **embark-consult** (Aktionen auf einem Eintrag, Export in
-einen Puffer). Alle setzen auf `completing-read` auf: Jeder Befehl, der
+einen Buffer). Alle setzen auf `completing-read` auf: Jeder Befehl, der
 eine Auswahl fragt — auch magit, projectile und die CIDER-Helfer —,
 bekommt dieselbe Oberfläche ohne eigenen Klebstoff. Verworfen:
 ivy behalten (eigene Welt, siehe Abschnitt 1); nur eingebautes
@@ -584,20 +584,20 @@ ivy behalten (eigene Welt, siehe Abschnitt 1); nur eingebautes
 |---|---|---|---|
 | (alle Auswahlen) | `ivy-mode` | `vertico-mode` + orderless + marginalia | gleiche Bedienung; 15 Zeilen, Umlauf am Ende wie bisher |
 | `M-x`, `C-h f`, `C-h v` … | von `counsel-mode` umgelenkt | die eingebauten Befehle in vertico | Tastenbelegung und Doku-Zeile stehen per marginalia daneben |
-| `C-o` in einer Auswahl | `ivy-occur` | `embark-export` | dasselbe: Liste in einen Puffer |
+| `C-o` in einer Auswahl | `ivy-occur` | `embark-export` | dasselbe: Liste in einen Buffer |
 | `C-s`, `C-r` | `swiper` | `consult-line` | mit Vorschau beim Blättern |
 | `C-r` in der Suche | `swiper-query-replace` | — | **entfällt:** stattdessen `C-o` (Export nach occur), dort `e` zum Bearbeiten |
 | `C-S-s` | `counsel-git-grep` (Region als Vorgabe) | `consult-git-grep` (Region als Vorgabe) | mit Vorschau |
-| `C-S-r` | `counsel-git-grep-query-replace` | `consult-git-grep`, `C-o`, dann bearbeiten (Paket **wgrep**) | Ersetzen über mehrere Dateien in einem bearbeitbaren grep-Puffer statt per Abfrage |
+| `C-S-r` | `counsel-git-grep-query-replace` | `consult-git-grep`, `C-o`, dann bearbeiten (Paket **wgrep**) | Ersetzen über mehrere Dateien in einem bearbeitbaren grep-Buffer statt per Abfrage |
 | `C-S-y` | `counsel-yank-pop` | `consult-yank-pop` | mit Vorschau |
 | `C-x b` | `counsel-switch-buffer` | `consult-buffer` | zeigt auch zuletzt geöffnete Dateien (wie `ivy-use-virtual-buffers`) |
-| `C-x B` | `counsel-projectile-switch-to-buffer` | `consult-project-buffer` | Puffer und zuletzt benutzte Dateien des Projekts |
+| `C-x B` | `counsel-projectile-switch-to-buffer` | `consult-project-buffer` | Buffer und zuletzt benutzte Dateien des Projekts |
 | `C-x f` | `counsel-find-file` | `find-file` | — |
 | `C-x F` | `counsel-projectile-find-file` | `projectile-find-file` | — |
 | `C-x C-f` | `counsel-recentf` | `consult-recent-file` | mit Vorschau |
 | `C-x D` | `counsel-projectile-find-dir` | `projectile-find-dir` | — |
 | `C-x x f` | `counsel-projectile-switch-project` | `projectile-switch-project` | — |
-| `C-x x F` | `counsel-projectile` (Puffer und Dateien in einer Liste) | `consult-project-buffer` | wie `C-x B` |
+| `C-x x F` | `counsel-projectile` (Buffer und Dateien in einer Liste) | `consult-project-buffer` | wie `C-x B` |
 | `M-P` in eshell | `counsel-esh-history` | `consult-history` | — |
 
 **Nebenbei:** `delete-selection-mode` stand in counsels `:config` und
@@ -607,13 +607,13 @@ ivy-Einstellungen (beide nehmen dann einfach `completing-read`);
 Nachfolger ersetzt werden.
 
 **Entschieden:** vertico und Verwandte ja; Ersetzen über Export und
-Bearbeiten im Puffer; embark ohne eigene Taste, nur `C-o`.
+Bearbeiten im Buffer; embark ohne eigene Taste, nur `C-o`.
 
 **Abweichung beim Umsetzen:** wgrep war freigegeben, wird aber nicht
-gebraucht. Emacs 31 macht grep-Puffer selbst bearbeitbar
-(`grep-edit-mode`: `e`, dann `C-c C-c`); geprüft an einem Puffer in der
+gebraucht. Emacs 31 macht grep-Buffer selbst bearbeitbar
+(`grep-edit-mode`: `e`, dann `C-c C-c`); geprüft an einem Buffer in der
 Form, die embark-consult beim Export erzeugt. Die Änderungen landen in
-den Puffern der Dateien und werden wie gewohnt gespeichert.
+den Buffern der Dateien und werden wie gewohnt gespeichert.
 
 **Ergänzt, weil der Schnappschuss es zeigte:** counsel belegte im
 Minibuffer `C-r` mit der Suche im Verlauf; das macht jetzt
@@ -655,13 +655,13 @@ ihr steht — `M-x highlight-symbol-next` startet also keine Folge.
 `diminish` bleibt bis 2.11.
 
 **Was der Vergleich der wirksamen Tasten zeigte:** Verglichen wurde je
-Puffertyp (Grundmodus, Elisp, Org, Clojure, HTML mit
+Buffer-Typ (Grundmodus, Elisp, Org, Clojure, HTML mit
 `web-mode-edit-element`, Logview, Minibuffer, vertico), was
 `key-binding` für jede belegte Taste liefert, vorher gegen nachher. Außer
 den Präfixen, die jetzt einen Namen statt einer namenlosen Keymap
 liefern, änderte sich nur:
 
-| Taste | Puffer | vorher | nachher |
+| Taste | Buffer | vorher | nachher |
 |---|---|---|---|
 | `C--` | alle außer Org | `org-narrow-to-subtree` (B1) | `jtk-narrow-dwim` |
 | `C-- s`, `C-- t`, `C-+` | Logview | von der Override-Map verdeckt | logviews eigene Befehle |
@@ -679,19 +679,274 @@ liefern, änderte sich nur:
   bleibt `cider-apropos`. Gestrichen sind die Belegungen, die nur das
   Globale wiederholten, darunter B4; B5 ist korrigiert. Mit eglot (2.7)
   füllt dann der Language-Server dieselben Tasten.
-- **xref-js2 hing global am Hook** und hätte nach dem ersten JS-Puffer
+- **xref-js2 hing global am Hook** und hätte nach dem ersten JS-Buffer
   `M-j d` in jedem Modus ohne eigenes Backend übernommen; jetzt nur in
-  js2-mode-Puffern.
+  js2-mode-Buffern.
 - **avy statt ace-jump-mode, expreg statt expand-region**, aus 2.5
   vorgezogen, gleiche Tasten. Die beiden HTML-Befehle, die
   expand-region-Funktionen riefen, markieren selbst; verglichen in einem
-  web-mode-Puffer: gleiche Regionen, und ein Wert in einfachen
+  web-mode-Buffer: gleiche Regionen, und ein Wert in einfachen
   Anführungszeichen wird jetzt markiert, wo expand-region nichts tat.
 
 **Nebenbei aufgefallen:** Die elscreen-Tasten unter `M-'` außer `c`
 und `C` wirkten erst, nachdem elscreen geladen war; davor kannte `M-'`
 nur die beiden Override-Tasten. Jetzt lädt `M-'` elscreen beim ersten
 Druck (`:bind-keymap`), und alle Tasten wirken sofort.
+
+#### ✅ 2.3 Projekte (entschieden und umgesetzt 2026-10-28)
+
+**Ersatz:** projectile durch das eingebaute **project.el**. consult,
+xref, magit und ab 2.7 eglot fragen ohnehin project.el; projectile-mode
+hängte sich bisher selbst dort ein (`project-find-functions`), sodass
+alle über projectile liefen. Verworfen: projectile behalten — dann gäbe
+es ab 2.7 zwei Projektbegriffe.
+
+| Taste | vorher | nachher |
+|---|---|---|
+| `C-x F` | `projectile-find-file` | `project-find-file` |
+| `C-x d` / `C-x D` | `projectile-dired` / `projectile-find-dir` | `project-dired` / `project-find-dir` |
+| `C-x K` | `projectile-kill-buffers` | `project-kill-buffers` |
+| `C-x x f` | `projectile-switch-project` (gleich die Dateiauswahl) | `project-switch-project`: RET öffnet die Dateiauswahl, `M-x` bietet die Projektbefehle an (2.3a) |
+| `C-x C-S-F` | `projectile-recentf` | `consult-project-buffer` (wie `C-x B`; die Liste enthält die zuletzt benutzten Dateien des Projekts) |
+| `M-! s s` | `projectile-run-eshell` | `project-eshell` |
+| `M-' c` | `projectile-elscreen-create` | `jtk-elscreen-create-for-project` (umbenannt) |
+| `M-x` | `projectile-httpd/start`, `…/stop` | `jtk-httpd-start-project`, `jtk-httpd-stop-project` (umbenannt) |
+
+Was nach dem Projektwechsel geschieht und wo die Projektbefehle liegen,
+regelt 2.3a. Ein Zwischenstand dieses PRs bot nach jedem Wechsel eine
+Liste an; 2.3a hat ihn abgelöst.
+
+**Umgesetzt:** Wurzel und Name des Projekts kommen aus `lisp/jtk-project.el`
+(`jtk-project-root`, `jtk-project-name`) — für Fenstertitel,
+eshell-Prompt, elscreen, httpd, CIDER-Helfer und HTML-Vorschau. Die
+ignorierten Ordner stehen in `project-vc-ignores`; `.projectile` bleibt
+eine Projektwurzel. Das IDE-Layout kennt den eshell-Buffernamen von
+project.el. consults projectile-Adapter und treemacs-projectile fallen
+weg.
+
+**Geprüft** in einem Test-Repository: Wurzel absolut, Name, Fenstertitel
+und eshell-Prompt wie zuvor; `node_modules/` und `dist/` fehlen in der
+Dateiliste, ein Unterordner mit `.projectile` ist ein eigenes Projekt;
+`project-eshell` heißt `*repo-eshell*` und landet im IDE-Fenster.
+`project-current` kostet 0,015 ms je Aufruf (Emacs 31.1, 1000 Aufrufe),
+der Fenstertitel braucht also keinen Zwischenspeicher.
+
+**Unterschied, der bleibt:** Ein Ordner **ohne git** mit `project.clj`,
+`deps.edn` oder `package.json` war für projectile ein Projekt, für
+project.el ist er keins. Abhilfe bei Bedarf: diese Dateien in
+`project-vc-extra-root-markers` aufnehmen — dann wird allerdings auch
+jedes Unterprojekt in einem git-Repository zu einem eigenen Projekt.
+
+**Nebenbei:** Das Dashboard holte seine Projektliste schon immer aus
+project.el (`dashboard-projects-backend` ist `project-el`), nicht aus
+projectile; die Liste füllt sich jetzt mit den benutzten Projekten.
+
+#### ✅ 2.3a Standard, Ausnahme, Suche (entschieden und umgesetzt 2026-10-29)
+
+Anlass: Das Projektmenü aus 2.3 (`jtk-project-act`, eine Liste nach jedem
+Projektwechsel) funktioniert, kostet aber im Normalfall einen Schritt, und
+Kürzel fehlen. Daraus ist eine allgemeinere Frage geworden: wie Auswahl,
+Menü und Befehlssuche zusammenpassen, ohne viele Mechanismen.
+
+**Anforderungen**
+
+1. Projektwechsel: Im Normalfall eine Datei im Projekt öffnen; als
+   Ausnahme dort eshell, Magit oder anderes.
+2. Die Ausnahmen erst auf Nachfrage, dann mit Kürzeln.
+3. Befehle je Projektart (CIDER bei Clojure, npm bei JavaScript), die
+   meist eine Datei dieser Art voraussetzen.
+4. Statt ein Menü abzusuchen: unscharfe Suche über die Befehle, die
+   Kürzel daneben, damit man sie lernt.
+5. Wenig verschiedene Mechanismen. Kein which-key; `C-h` nach einem
+   Präfix ist die gewollte Hilfe. Lese-Menüs mit Schaltern (transient)
+   nur in Werkzeugen, die sie mitbringen, wie magit.
+
+**Einordnung: vier Arten, drei Mechanismen**
+
+| Art der Auswahl | Beispiel | Mechanismus | Kürzel sichtbar über |
+|---|---|---|---|
+| Dynamische Daten | Dateien, Buffer, Projekte | vertico-Liste; RET tut das Übliche | — |
+| Ausnahme zu einem Eintrag | Projekt → eshell, Magit; Datei → umbenennen; Buffer → schließen | embark auf dem Eintrag; die Aktionen sind eine Keymap | `C-h` in embark |
+| Tastenfamilie | `M-c`, `M-v`, `C-c M-j` | Präfix-Map | `C-h` nach dem Präfix |
+| Befehl suchen, Kürzel lernen | „wie startet hier die REPL?“ | `M-X`: Befehle, die zum Buffer passen | marginalia daneben |
+
+Menüs sind damit immer Keymaps, Listen immer vertico, und die Hilfe ist
+überall dieselbe: `C-h` öffnet eine durchsuchbare Liste mit Kürzel,
+Befehl und Beschreibung.
+
+**Vorschlag**
+
+*A – Projektwechsel: Standard mit RET, Ausnahmen mit embark.*
+
+- `C-x x f` (und `C-x p p`): Projektliste; RET öffnet die Dateiauswahl im
+  Projekt, wie früher bei projectile (`project-switch-commands` auf
+  `project-find-file`).
+- Eine embark-Taste auf dem markierten Projekt (`M-x`, x wie execute;
+  zuerst `M-o`) bietet die Ausnahmen an — **mit denselben Tasten wie
+  die Projektbefehle auf `C-x x p`**: `C-x x p e` ist eshell im
+  aktuellen Projekt, `M-x e` in der Liste eshell im markierten; einmal
+  gelernt, an beiden Stellen gültig.
+- `C-x x p` ist `jtk-project-map`: Emacs' `project-prefix-map` (`C-x p`)
+  als Elternmap, darüber die eigenen Werkzeuge: `b`
+  `consult-project-buffer`, `g` `consult-git-grep`, `v` und `m` Magit.
+  `C-x p` selbst bleibt Emacs' Vorgabe.
+- Projektarten: Ein Modul legt eine Keymap für seine Projektart an und
+  meldet sie mit Markerdateien an (`project.clj`, `deps.edn` …).
+  embark nimmt sie unter `j` in die Aktionen auf, nur bei Projekten
+  dieser Art. Neben jedem Projekt in der Liste steht seine Art.
+- `jtk-project-act` und `jtk-project-actions` aus 2.3 fallen wieder weg;
+  die Daten stecken dann in Keymaps.
+
+*B – Projektart-Befehle im Buffer: dieselbe Keymap unter einem Präfix.*
+
+- Die Keymap der Projektart liegt in den Buffern dieser Art unter einem
+  für alle Sprachen gleichen Präfix, Vorschlag `C-c M-j` — dort, wo
+  CIDER heute schon seine Startfamilie hat (`J j S s B b`). `M-x j J`
+  in der Projektliste ist dann `C-c M-j J` im Buffer.
+- Weitere Arten in 2.8: npm (`package.json`), PlatformIO
+  (`platformio.ini`), Python.
+
+*C – Befehle suchen, Kürzel lernen.*
+
+- `M-X` (eingebaut, schon belegt) zeigt die Befehle, die zum Buffer
+  passen; marginalia schreibt Kürzel und Beschreibung daneben. Kein Code.
+- Wahlweise `consult-mode-command`: alle Befehle der aktiven Modi, auch
+  die ohne Kürzel, gruppiert nach Haupt- und Nebenmodus.
+- Wahlweise `embark-bindings` auf `C-h b`: alle belegten Tasten des
+  Buffers als durchsuchbare Liste statt als Hilfe-Buffer.
+
+**Was der Prototyp zeigte** (Batch, Emacs 31.1, Wegwerfcode; die
+embark-Taste war damals noch `M-o`):
+
+| Eingabe in der Projektliste | Ergebnis |
+|---|---|
+| Clojure-Projekt, RET | `project-find-file` im Clojure-Projekt |
+| Clojure-Projekt, `M-o e` | `*clj-eshell*` im Clojure-Projekt |
+| anderes Projekt, `M-o m` | Magit im anderen Projekt |
+| Clojure-Projekt, `M-o j` | jack-in im Clojure-Projekt |
+| Projekt ohne `project.clj`, `M-o j` | keine Aktion: `j` gibt es dort nicht |
+
+Technisch trägt das so (alles gegen den Quelltext geprüft):
+
+- Die Kandidaten der Projektliste haben die Kategorie `project-file`;
+  embark behandelt sie heute als Dateien. Über
+  `marginalia-command-categories` bekommen sie eine eigene Kategorie.
+- Ein embark-Transformer bestimmt die Projektart.
+- `embark-keymap-alist` setzt die Aktionen aus mehreren Keymaps
+  zusammen.
+- Ein `:always`-Hook in `embark-around-action-hooks` lässt die Aktion
+  im markierten Projekt laufen (`project-current-directory-override`,
+  `default-directory`). embark selbst macht es mit `embark--cd` für
+  shell und eshell genauso.
+- **Mehrere Arten zugleich** (Clojure mit `package.json`) braucht einen
+  kleinen Kniff, weil der Transformer nur einen Typ liefert. Lösung:
+  den Typ aus den Arten zusammensetzen und seine Keymaps beim ersten
+  Mal eintragen.
+
+**Gegenvorschläge**
+
+| Variante | Wie | Dafür | Dagegen |
+|---|---|---|---|
+| Liste nach jedem Wechsel (Stand 2.3) | wie jetzt, Kürzel in der Anzeige ergänzen | nichts Neues | der Normalfall kostet immer einen Schritt |
+| Zwei Befehle, ohne embark | `C-x x f` Projekt + Datei; eine zweite Taste Projekt + Aktionsliste | am einfachsten, keine embark-Taste | man muss vor der Projektwahl wissen, dass man die Ausnahme will; die Aktionsliste ist ein eigenes Datenformat neben den Keymaps |
+| embark, Projektarten nur über eine Liste | statische Aktions-Keymap; `j` öffnet eine Suchliste der Befehle dieser Art | kein Transformer-Kniff | eine Stufe mehr; im Buffer anders als in der Liste |
+| transient-Projektmenü | magit-artig | Gruppen, Überschriften | Lese-Menü ohne Suche; bei einem Menü ohne Schalter kein Gewinn (verworfen) |
+| which-key für alle Präfixe | Anzeige nach Verzögerung | ein Mechanismus für die Anzeige | nicht gewollt (verworfen) |
+| project.els eigenes Menü | `project-switch-commands` als Liste | eingebaut | einzeilig im Echo-Bereich, ohne Suche (verworfen) |
+
+**Entschieden (2026-10-29)**
+
+| Nr. | Frage | Entscheidung |
+|---|---|---|
+| 1 | Weg A oder „zwei Befehle“ | Weg A mit embark |
+| 2 | Taste für `embark-act` | zuerst `M-o`, dann `M-x` im Minibuffer (x wie execute; `M-x` wird sonst nur global gebraucht); im Buffer offen |
+| 3 | Anzeige der Aktionen | nur auf `C-h` |
+| 4 | `C-x p` umstellen | nein: eigene Map auf `C-x x p`, wie die übrigen Projekttasten unter `C-x x`; dort auch die Projektart-Befehle (`j`) |
+| 5 | Präfix im Buffer | `C-c M-j` in allen Sprachen mit Projektart-Befehlen |
+| 6 | Befehlssuche | `M-X` wie eingebaut, dazu `embark-bindings` auf `C-h b`; kein `consult-mode-command` |
+| 7 | Wohin | in PR #4 |
+
+**Umgesetzt, mit einer Abweichung vom Plan:** `j` ist kein eigener
+embark-Typ je Projektart, sondern ein Befehl
+(`jtk-project-run-kind-command`), der die Tasten der Projektart erst
+liest, wenn das Projekt schon feststeht. Damit gibt es einen Weg für
+die Liste und für `C-x x p`, und mehrere Arten zugleich brauchen keinen
+Kniff: Ihre Keymaps werden zusammengesetzt. `C-h` nach `j` zeigt sie als
+durchsuchbare Liste.
+
+| Projektart | Marker | Tasten (unter `j` und `C-c M-j`) |
+|---|---|---|
+| Clojure | `project.clj`, `deps.edn`, `shadow-cljs.edn`, `bb.edn` | `jtk-clojure-project-map`: `J` jack-in, `j` connect, `S`/`s` ClojureScript, `B`/`b` beides — wie bisher unter `C-c M-j` |
+| npm | `package.json` | npm-modes eigene Map (`i` install, `r` run, `s` install --save, …), dieselbe wie unter npm-modes `C-c n` |
+| PlatformIO | `platformio.ini` | platformio-modes eigene Map (`b` build, `u` upload, `m` monitor, …), dieselbe wie unter `C-c i` |
+
+- Bei gleicher Taste gewinnt die zuerst angemeldete Art (Clojure vor npm
+  vor PlatformIO). In einem ClojureScript-Projekt mit `package.json` ist
+  `j s` also CIDERs connect, nicht npms install --save.
+- Python und TypeScript bekommen ihr `C-c M-j` in 2.8; in TypeScript
+  belegt tide die Taste heute mit `tide-restart-server`.
+- Nebenbei behoben: `cider-jack-in-dwim` (`J`) las die Profile immer aus
+  `project.clj` und brach in Projekten ohne diese Datei ab; jetzt startet
+  es dort das übliche jack-in.
+
+**Geprüft** (Batch, Emacs 31.1, Tastenfolgen über
+`execute-kbd-macro`; die Zielbefehle protokollierten nur, wo sie
+liefen; alle Zeilen mit `M-x`):
+
+| Eingabe | lief in |
+|---|---|
+| `C-x x f` Clojure-Projekt RET | `project-find-file` im Clojure-Projekt |
+| `C-x x f` Clojure-Projekt `M-x e` | `*clj-eshell*` |
+| `C-x x f` Clojure-Projekt `M-x v` / `M-x g` (aus einem anderen Projekt heraus) | Magit / `consult-git-grep` im Clojure-Projekt |
+| `C-x x f` Clojure-Projekt `M-x j J` | `cider-jack-in-dwim` im Clojure-Projekt |
+| `C-x x f` npm-Projekt `M-x j i` | `npm-mode-npm-install` im npm-Projekt |
+| `C-x x f` ClojureScript + npm `M-x j s` / `M-x j i` | `cider-connect-cljs` / `npm-mode-npm-install` |
+| `C-x x f` PlatformIO-Projekt `M-x j b` | `platformio-build` |
+| `C-x x f` Projekt ohne Art `M-x j` | Meldung „No commands for this kind of project“ |
+| `C-x x f` Clojure-Projekt `M-x j C-h` | die durchsuchbare Liste (`embark-bindings-in-keymap`) |
+| `C-x x f` Clojure-Projekt `M-x C-h @ e` | eshell: `@` und Taste wirken auch in der Liste |
+| in einer `.clj`-Datei `C-x x p j J`, `C-c M-j J`, `C-x x p g` | jack-in bzw. grep im Clojure-Projekt |
+| in einer `.clj`-Datei `C-h b @ C-c M-j J`, `C-x x p j C-h @ J` | jack-in im Clojure-Projekt |
+
+Neben jedem Projekt in der Liste stehen seine Arten („Clojure, npm“).
+
+**Befehlssuche (C), entschieden für `M-X` und `C-h b`:**
+
+| Weg | Was er zeigt | Dafür | Dagegen |
+|---|---|---|---|
+| `M-X` (eingebaut, belegt) | Befehle, die an einen Modus des Buffers gebunden sind oder in einer seiner Keymaps liegen | kein Code; Kürzel und Beschreibung über marginalia | was ein Paket weder bindet noch einem Modus zuordnet, fehlt; Keymaps, die überall aktiv sind (smartparens), füllen die Liste |
+| `consult-mode-command` | alle Befehle aus den Dateien der aktiven Modi, auch ohne Kürzel, gruppiert nach Haupt- und Nebenmodus | vollständig je Paket (alle `cider-…`); eingrenzbar | braucht eine Taste; die Zuordnung über Dateien ist eine Heuristik; Befehle globaler Nebenmodi nur nach Eingrenzen |
+| `embark-bindings` auf `C-h b` | alles, was im Buffer eine Taste hat | genau das Werkzeug zum Kürzel-Lernen; ersetzt den langen Hilfe-Buffer | Befehle ohne Taste fehlen |
+
+**Kürzel direkt in Listen:** In jeder Liste, die `C-h` öffnet
+(Aktionen nach `M-x`, Tasten nach einem Präfix, `C-h b`), führt `@` und
+dann die Taste den Befehl direkt aus. Ohne `@` filtern Buchstaben die
+Liste; beides auf denselben Tasten geht nicht.
+
+**Exportierte Listen:** Was `C-o` in einen embark-Buffer exportiert
+(etwa die Projektliste; Dateien, Zeilen und grep-Treffer gehen nach
+dired, occur und grep), nimmt die Aktionstasten direkt auf dem Eintrag
+unter dem Cursor an, wie nach `M-x` im Minibuffer (embarks
+Direktmodus, immer an; `M-a` schaltet ihn ab). Geprüft im Batch auf der
+exportierten Projektliste, aus einem anderen Projekt heraus: `e`
+eshell, `v` Magit, `j J` jack-in, `j i` npm install, jeweils im
+Projekt des Eintrags; `C-h` listet die Aktionen.
+
+**Gefunden beim Umbau, älter als 2.3:** CIDER legt `cider-jack-in-clj`
+in `clojure-mode-map` zweimal auf `C-c M-j`: aus seinen Autoloads, wenn
+clojure-mode lädt, und noch einmal, wenn cider.el lädt. Die Familie
+`J j S s B b` stand in CIDERs `:bind` und verlor gegen das zweite Mal.
+Auf master war `C-c M-j` deshalb in jedem Clojure-Buffer CIDERs
+normales jack-in, die Familie war nie erreichbar — geprüft im Batch mit
+einer Spur aller `define-key` auf diese Taste. Jetzt wird sie nach
+beiden Malen gesetzt. Der Schnappschuss konnte das nicht zeigen: Er
+lädt alle Pakete auf einmal und sieht nur den Endzustand.
+
+**Reihenfolge**
+
+1. ✅ A und B für Clojure, npm und PlatformIO.
+2. ✅ C: `embark-bindings` auf `C-h b`.
+3. B für Python und TypeScript im jeweiligen Review in 2.8.
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
@@ -722,7 +977,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | ivy / counsel / swiper | M | interface | Vervollständigung, Suche | **ersetzt** (2.1) durch vertico, orderless, marginalia, consult, embark, embark-consult | Ja |
 | winner | e | interface | Fensterlayout zurück | ok, ggf. `tab-bar-history` | Ja |
 | fullframe | M | interface | magit im Vollbild | ggf. `display-buffer-alist` | Ja |
-| buffer-move | M | interface | Puffer tauschen | → `windmove-swap-states-*` | Ja |
+| buffer-move | M | interface | Buffer tauschen | → `windmove-swap-states-*` | Ja |
 | elscreen | M | interface | Bildschirme je Projekt | ungepflegt → `tab-bar-mode` | Ja |
 | ediff | e | interface | Vergleich | ok | Ja |
 | ztree | M | interface | Verzeichnisvergleich | prüfen | Ja |
@@ -732,15 +987,15 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | which-key | M | interface | Tastenhilfe | **entfernt** (2026-10-25): das Rezept klonte das ganze Emacs-Repository, der erste Start hing; nicht mehr gebraucht | |
 | undo-tree | M | interface | Undo-Baum | schwergewichtig → vundo | Ja |
 | multiple-cursors | M | interface | Mehrfach-Cursor | ok | Ja |
-| counsel-projectile / projectile | M | filemanagement | Projekte | counsel-projectile **entfernt** (2.1); projectile → 2.3 | Ja |
+| counsel-projectile / projectile | M | filemanagement | Projekte | counsel-projectile **entfernt** (2.1); projectile **ersetzt** (2.3) durch project.el, bleibt aber als Abhängigkeit von platformio-mode installiert | Ja |
 | git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | prüfen | |
-| treemacs (+ -projectile, -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt | Ja |
+| treemacs (+ -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt; treemacs-projectile **entfernt** (2.3), treemacs fragt project.el | Ja |
 | simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | Ja |
 | org | e | organisation | GTD | bleibt | |
 | dashboard (+ page-break-lines) | M | startup | Startbildschirm | gepflegt | |
 | smartparens | M | development | Klammern, sexp-Editieren | → 2.5 | Ja |
 | aggressive-indent | M | development | Einrücken beim Tippen | ok; Hook-Fehler U3 | Ja |
-| company / company-quickhelp | M | development | Vervollständigung im Puffer | → corfu? | Ja |
+| company / company-quickhelp | M | development | Vervollständigung im Buffer | → corfu? | Ja |
 | magit | M | development | Git | bleibt | Ja |
 | flycheck | M | development | Syntaxprüfung | → flymake? | |
 | yasnippet / yasnippet-snippets | M | development | Snippets | ok | Ja |
