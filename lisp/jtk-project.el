@@ -3,8 +3,8 @@
 ;;; Commentary:
 
 ;; Root and name of the project the current buffer belongs to, as
-;; project.el sees it, or nil outside a project; and a choice of what to
-;; do in a project, which modules add to by the kind of project.
+;; project.el sees it, or nil outside a project; and what embark needs
+;; to act on a project from a list.
 
 ;;; Code:
 
@@ -22,40 +22,16 @@ unlike `project-root', which abbreviates the home directory to ~."
   (when-let* ((project (project-current)))
     (project-name project)))
 
-(defvar jtk-project-actions nil
-  "What `jtk-project-act' offers, as a list of (LABEL COMMAND MARKERS).
-LABEL is shown in the list and COMMAND run in the project's root.
-MARKERS, a list of file names, offers the action only in projects whose
-root holds one of them; without it the action is offered everywhere.")
-
-(defun jtk-project--action-p (root action)
-  "Return non-nil if ACTION is offered in the project at ROOT."
-  (let ((markers (nth 2 action)))
-    (or (null markers)
-        (seq-some (lambda (marker)
-                    (file-exists-p (expand-file-name marker root)))
-                  markers))))
-
-(defun jtk-project-act ()
-  "Choose one of `jtk-project-actions' and run it in the current project."
-  (interactive)
-  (let* ((root
-          (jtk-project-root))
-
-         (actions
-          (seq-filter (apply-partially #'jtk-project--action-p root)
-                      jtk-project-actions))
-
-         (label
-          (completing-read (format "In %s: " (jtk-project-name))
-                           (mapcar #'car actions) nil t))
-
-         ;; NOTE: Some commands, CIDER's among them, take the project
-         ;; from the current directory, not from project.el.
-         (default-directory
-          root))
-
-    (call-interactively (nth 1 (assoc label actions)))))
+(defun jtk-project-act-in-target (&rest arguments)
+  "Run an embark action on a project with that project as the current one.
+Meant for `embark-around-action-hooks'; ARGUMENTS are the hook's, with
+:run, :type and :target."
+  (if (eq (plist-get arguments :type) 'jtk-project)
+      (let* ((directory (expand-file-name (plist-get arguments :target)))
+             (project-current-directory-override directory)
+             (default-directory directory))
+        (apply (plist-get arguments :run) arguments))
+    (apply (plist-get arguments :run) arguments)))
 
 (provide 'jtk-project)
 

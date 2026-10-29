@@ -3,9 +3,9 @@
 ;;; Commentary:
 
 ;; project.el: switching projects and finding files, directories and
-;; buffers within one.  Emacs' own project keys are under C-x p; magit,
-;; consult, xref and eglot ask project.el what the project is.  What to
-;; do after switching is `jtk-project-actions'; languages add theirs.
+;; buffers within one; the project commands on C-x x p, and on a project
+;; in the project list with M-o (embark).  magit, consult, xref and eglot
+;; ask project.el what the project is.
 
 ;;; Code:
 
@@ -22,9 +22,9 @@
   ;; NOTE: Files git ignores are left out anyway; these directories stay
   ;; out where git does not ignore them.
   (project-vc-ignores '("node_modules/" "dist/" "elpa/" "cache/" ".cache/"))
-  ;; NOTE: A list to choose from, as everywhere, instead of project.el's
-  ;; one-key menu in the echo area.
-  (project-switch-commands #'jtk-project-act)
+  ;; NOTE: RET in the project list finds a file; anything else is M-o
+  ;; on the project (see below).
+  (project-switch-commands #'project-find-file)
 
   :config
   (defun save-all-buffers ()
@@ -47,7 +47,6 @@
 
    ("C-x C-d" . nil)
 
-   ;; NOTE: Asks for the project, then what to do there.
    ("C-x x f" . project-switch-project)
    ("C-x x F" . consult-project-buffer)
 
@@ -57,21 +56,36 @@
    ("C-x C-S-S" . save-all-buffers)
 
    ("C-x k" . kill-buffer)
-   ("C-x K" . project-kill-buffers)
+   ("C-x K" . project-kill-buffers)))
 
-   :map project-prefix-map
-   ("m" . magit-project-status)))
+;; NOTE: Emacs' project commands (C-x p), with consult and Magit where
+;; they have something better.  `:prefix' cannot be combined with
+;; `:parent', hence `fset'.
+(defvar-keymap jtk-project-map
+  :doc "Commands for the current project."
+  :parent project-prefix-map
+  "b" #'consult-project-buffer
+  "g" #'consult-git-grep
+  "m" #'magit-project-status
+  "v" #'magit-project-status)
+(fset 'jtk-project-map jtk-project-map)
+(keymap-set ctl-x-x-map "p" 'jtk-project-map)
 
-(dolist (action
-         '(("Find file" project-find-file)
-           ("Find directory" project-find-dir)
-           ("Buffers and recent files" consult-project-buffer)
-           ("Search with git grep" consult-git-grep)
-           ("Magit" magit-project-status)
-           ("Eshell" project-eshell)
-           ("Dired" project-dired)
-           ("Any other command, by its key" project-any-command)))
-  (add-to-list 'jtk-project-actions action t))
+(defvar marginalia-command-categories)
+(defvar embark-keymap-alist)
+(defvar embark-around-action-hooks)
+
+;; NOTE: The candidates of the project list are directories of category
+;; `project-file', which embark treats as files.  Their own category
+;; gives them `jtk-project-map' as actions, run in the marked project.
+(with-eval-after-load 'marginalia
+  (add-to-list 'marginalia-command-categories
+               '(project-switch-project . jtk-project)))
+
+(with-eval-after-load 'embark
+  (add-to-list 'embark-keymap-alist '(jtk-project jtk-project-map))
+  (add-to-list 'embark-around-action-hooks
+               '(:always jtk-project-act-in-target)))
 
 (provide 'init-project)
 

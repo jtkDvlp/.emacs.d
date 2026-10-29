@@ -450,18 +450,6 @@
 
         ("C-_" . cider-repl-history-undo-other-window)))
 
-;; NOTE: Offered after switching to a project with one of these files.
-;; `cider-jack-in-dwim' reads the profiles from project.clj, so it is
-;; for Leiningen projects only.
-(let ((clojure-markers '("project.clj" "deps.edn" "shadow-cljs.edn" "bb.edn")))
-  (dolist (action
-           `(("CIDER: jack in" cider-jack-in-dwim ("project.clj"))
-             ("CIDER: jack in with deps.edn" cider-jack-in-clj ("deps.edn"))
-             ("CIDER: jack in ClojureScript" cider-jack-in-cljs
-              ,clojure-markers)
-             ("CIDER: connect" cider-connect-clj ,clojure-markers)))
-    (add-to-list 'jtk-project-actions action t)))
-
 (provide 'init-lang-clojure)
 
 ;;; init-lang-clojure.el ends here
