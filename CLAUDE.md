@@ -26,7 +26,8 @@ Conventional Commits trotzdem, damit die Historie lesbar bleibt.
   (`windows-nt` bei `sql`, `x` bei der PATH-Übernahme) tragen nichts und
   fallen beim jeweiligen Umbau weg.
 - Schwerpunkt: Clojure/ClojureScript mit CIDER; daneben Elisp, JS/TS,
-  HTML/CSS, Python, C++ (PlatformIO), Org (GTD).
+  HTML/CSS, C++ (PlatformIO), Org (GTD). Python wird nicht mehr unterstützt
+  (seit 2.6).
 
 ## Aufbau (Ist-Stand)
 

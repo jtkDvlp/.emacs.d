@@ -229,12 +229,6 @@
                                elpaca-use-package :type git :protocol
                                https :inherit t :depth treeless :ref
                                "7763ede8babd238b7a9a5835833ef4f4bdc4e53e"))
- (elpy :source "elpaca-menu-lock-file" :recipe
-       (:package "elpy" :fetcher github :repo "jorgenschaefer/elpy"
-                 :files ("*.el" "NEWS.rst" "snippets" "elpy") :source
-                 "elpaca-menu-lock-file" :id elpy :type git :protocol
-                 https :inherit t :depth treeless :ref
-                 "9cdf26dfea1cb044b3cf1dfa9755b6479bfd9a1c"))
  (embark :source "elpaca-menu-lock-file" :recipe
          (:package "embark" :repo "oantolin/embark" :fetcher github
                    :files ("embark.el" "embark-org.el" "embark.texi")
@@ -385,26 +379,6 @@
                       :type git :protocol https :inherit t :depth
                       treeless :ref
                       "3bb4a96535eb5c81dbe6a43bfa8d67a778d449c0"))
- (highlight-indentation :source "elpaca-menu-lock-file" :recipe
-                        (:package "highlight-indentation" :repo
-                                  "antonj/Highlight-Indentation-for-Emacs"
-                                  :fetcher github :files
-                                  ("*.el" "*.el.in" "dir" "*.info"
-                                   "*.texi" "*.texinfo" "doc/dir"
-                                   "doc/*.info" "doc/*.texi"
-                                   "doc/*.texinfo" "lisp/*.el"
-                                   "docs/dir" "docs/*.info"
-                                   "docs/*.texi" "docs/*.texinfo"
-                                   (:exclude ".dir-locals.el"
-                                             "test.el" "tests.el"
-                                             "*-test.el" "*-tests.el"
-                                             "LICENSE" "README*"
-                                             "*-pkg.el"))
-                                  :source "elpaca-menu-lock-file" :id
-                                  highlight-indentation :type git
-                                  :protocol https :inherit t :depth
-                                  treeless :ref
-                                  "d88db4248882da2d4316e76ed673b4ac1fa99ce3"))
  (ht :source "elpaca-menu-lock-file" :recipe
      (:package "ht" :fetcher github :repo "Wilfred/ht.el" :files
                ("*.el" "*.el.in" "dir" "*.info" "*.texi" "*.texinfo"
@@ -747,19 +721,6 @@
                        :type git :protocol https :inherit t :depth
                        treeless :ref
                        "4d2be8680fe445c4ca88177f0ed838051cadfe58"))
- (pyvenv :source "elpaca-menu-lock-file" :recipe
-         (:package "pyvenv" :fetcher github :repo
-                   "jorgenschaefer/pyvenv" :files
-                   ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                    "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
-                    "doc/*.texinfo" "lisp/*.el" "docs/dir"
-                    "docs/*.info" "docs/*.texi" "docs/*.texinfo"
-                    (:exclude ".dir-locals.el" "test.el" "tests.el"
-                              "*-test.el" "*-tests.el" "LICENSE"
-                              "README*" "*-pkg.el"))
-                   :source "elpaca-menu-lock-file" :id pyvenv :type
-                   git :protocol https :inherit t :depth treeless :ref
-                   "31ea715f2164dd611e7fc77b26390ef3ca93509b"))
  (queue :source "elpaca-menu-lock-file" :recipe
         (:package "queue" :repo
                   ("https://github.com/emacsmirror/gnu_elpa" . "queue")
