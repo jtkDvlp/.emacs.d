@@ -30,6 +30,14 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 - Keys of a repeating prefix work alone after the first one, until
   another key is typed (`repeat-mode`): `M-+ f + + -`. Emacs' own
   repeat maps work too, e.g. `C-x o o`.
+- In a list, RET does the usual thing with the marked entry and `M-o`
+  (embark) offers the others; C-h after `M-o` lists them. On a project
+  in the project list (`C-x x f`), `M-o` offers the project commands of
+  `C-x x p` for that project.
+- Each kind of project (Clojure, npm, PlatformIO) brings its commands,
+  under `C-c M-j` in its buffers and under `j` in the project commands.
+- `M-X` lists the commands that fit the current buffer, with their
+  keys.
 
 | Prefix | Keymap | Module | For |
 |---|---|---|---|
@@ -43,8 +51,9 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 | `C-M-'` | `jtk-buffer-move-map` | `init-windows` | moving the buffer to a neighbouring window |
 | `M-v` | `jtk-vc-map` | `init-vc` | git |
 | `C-M--` | `jtk-org-map` | `init-org` | capturing, agenda |
-| `C-x p` | `project-prefix-map` (Emacs) | `init-project` | project commands: find, grep, shell, compile, magit (`m`) |
-| `C-x x` | `ctl-x-x-map` (Emacs) | `init-project`, `init-treemacs` | switching projects, file tree |
+| `C-x x` | `ctl-x-x-map` (Emacs) | `init-project`, `init-treemacs` | switching projects (`f`), file tree (`d`) |
+| `C-x x p` | `jtk-project-map` | `init-project`, languages | project commands: Emacs' `C-x p` with consult for buffers (`b`) and grep (`g`), Magit (`v`, `m`), commands of the project's kinds (`j`) |
+| `C-c M-j` in a project kind's buffers | `jtk-clojure-project-map`, npm-mode's, platformio-mode's | languages | starting or connecting a REPL, npm, PlatformIO |
 | `C-a` in HTML | `jtk-html-attribute-map` | `init-lang-html` | editing attributes (repeats) |
 
 ## todo

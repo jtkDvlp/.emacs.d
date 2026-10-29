@@ -193,6 +193,16 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   `"node_modules"` macht project.el das git-Muster `**/node_modules`, das
   den Inhalt des Ordners nicht trifft; erst `"node_modules/"` wird zu
   `**/node_modules/**`.
+- **embark-Aktionen auf einem Projekt treffen das markierte Projekt nur
+  über `jtk-project-act-in-target`** (in `embark-around-action-hooks`).
+  Die Projektbefehle fragen `project-current` des aktuellen Buffers;
+  ohne den Hook liefen sie still im aktuellen statt im markierten
+  Projekt — kein Fehler, nur das falsche Ziel.
+- **Projektarten teilen sich die Tasten unter `j`.** Bei gleicher Taste
+  gewinnt die zuerst angemeldete Art (heute Clojure vor npm vor
+  PlatformIO, durch die Reihenfolge in `init.el` und weil npm und
+  PlatformIO sich erst anmelden, wenn elpaca ihre Blöcke auswertet).
+  Wer eine Art hinzufügt, prüft die Tasten gegen die übrigen.
 - **`:bind*` mit `:map` wirkt wie `:bind`.** Die Belegung landet in der
   genannten Mode-Map, nicht in der Override-Map. Das Sternchen dort trägt
   nichts und täuscht Absicht vor.

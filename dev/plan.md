@@ -706,25 +706,15 @@ es ab 2.7 zwei Projektbegriffe.
 | `C-x F` | `projectile-find-file` | `project-find-file` |
 | `C-x d` / `C-x D` | `projectile-dired` / `projectile-find-dir` | `project-dired` / `project-find-dir` |
 | `C-x K` | `projectile-kill-buffers` | `project-kill-buffers` |
-| `C-x x f` | `projectile-switch-project` (gleich die Dateiauswahl) | `project-switch-project`, danach eine Auswahl wie überall, was im Projekt geschehen soll (`jtk-project-act`, siehe unten) |
+| `C-x x f` | `projectile-switch-project` (gleich die Dateiauswahl) | `project-switch-project`: RET öffnet die Dateiauswahl, `M-o` bietet die Projektbefehle an (2.3a) |
 | `C-x C-S-F` | `projectile-recentf` | `consult-project-buffer` (wie `C-x B`; die Liste enthält die zuletzt benutzten Dateien des Projekts) |
 | `M-! s s` | `projectile-run-eshell` | `project-eshell` |
 | `M-' c` | `projectile-elscreen-create` | `jtk-elscreen-create-for-project` (umbenannt) |
 | `M-x` | `projectile-httpd/start`, `…/stop` | `jtk-httpd-start-project`, `jtk-httpd-stop-project` (umbenannt) |
 
-Dazu kommt Emacs' Projekt-Map auf `C-x p`, ergänzt um `m` für magit.
-
-**Was nach dem Projektwechsel geschieht**, wählt man in einer Liste wie
-jede andere Auswahl (vertico) statt in project.els Ein-Tasten-Menü im
-Echo-Bereich: Datei, Verzeichnis, Buffer und zuletzt benutzte Dateien,
-git grep, Magit (statt VC-Dir), eshell, Dired, beliebiger Befehl. Ein
-Modul fügt Einträge für seine Art Projekt hinzu
-(`jtk-project-actions`, mit Markerdateien); Clojure bietet in Projekten
-mit `project.clj`, `deps.edn`, `shadow-cljs.edn` oder `bb.edn` CIDERs
-jack-in und connect an. Der Befehl läuft im Projektordner, weil CIDER
-das Projekt aus dem aktuellen Verzeichnis nimmt. Geprüft im Batch: im
-git-Projekt acht Einträge, im Leiningen-Projekt dazu drei für CIDER;
-der gewählte Befehl lief im gewählten Projekt.
+Was nach dem Projektwechsel geschieht und wo die Projektbefehle liegen,
+regelt 2.3a. Ein Zwischenstand dieses PRs bot nach jedem Wechsel eine
+Liste an; 2.3a hat ihn abgelöst.
 
 **Umgesetzt:** Wurzel und Name des Projekts kommen aus `lisp/jtk-project.el`
 (`jtk-project-root`, `jtk-project-name`) — für Fenstertitel,
@@ -751,7 +741,7 @@ jedes Unterprojekt in einem git-Repository zu einem eigenen Projekt.
 project.el (`dashboard-projects-backend` ist `project-el`), nicht aus
 projectile; die Liste füllt sich jetzt mit den benutzten Projekten.
 
-#### 2.3a Standard, Ausnahme, Suche – Plan (2026-10-28, noch nicht entschieden)
+#### 2.3a Standard, Ausnahme, Suche (entschieden 2026-10-29; A und B umgesetzt, C offen)
 
 Anlass: Das Projektmenü aus 2.3 (`jtk-project-act`, eine Liste nach jedem
 Projektwechsel) funktioniert, kostet aber im Normalfall einen Schritt, und
@@ -791,13 +781,15 @@ Befehl und Beschreibung.
 - `C-x x f` (und `C-x p p`): Projektliste; RET öffnet die Dateiauswahl im
   Projekt, wie früher bei projectile (`project-switch-commands` auf
   `project-find-file`).
-- Eine embark-Taste auf dem markierten Projekt (Vorschlag `M-o`, siehe
-  Entscheidungen) bietet die Ausnahmen an — **mit denselben Tasten wie
-  `C-x p`**: Die Aktions-Keymap erbt `project-prefix-map`. `C-x p e` ist
-  eshell im aktuellen Projekt, `M-o e` in der Liste eshell im
-  markierten; einmal gelernt, an beiden Stellen gültig.
-- `C-x p` wird dazu auf die eigenen Werkzeuge gestellt: `b`
+- Eine embark-Taste auf dem markierten Projekt (`M-o`) bietet die
+  Ausnahmen an — **mit denselben Tasten wie die Projektbefehle auf
+  `C-x x p`**: `C-x x p e` ist eshell im aktuellen Projekt, `M-o e` in
+  der Liste eshell im markierten; einmal gelernt, an beiden Stellen
+  gültig.
+- `C-x x p` ist `jtk-project-map`: Emacs' `project-prefix-map` (`C-x p`)
+  als Elternmap, darüber die eigenen Werkzeuge: `b`
   `consult-project-buffer`, `g` `consult-git-grep`, `v` und `m` Magit.
+  `C-x p` selbst bleibt Emacs' Vorgabe.
 - Projektarten: Ein Modul legt eine Keymap für seine Projektart an und
   meldet sie mit Markerdateien an (`project.clj`, `deps.edn` …).
   embark nimmt sie unter `j` in die Aktionen auf, nur bei Projekten
@@ -861,28 +853,74 @@ Technisch trägt das so (alles gegen den Quelltext geprüft):
 | which-key für alle Präfixe | Anzeige nach Verzögerung | ein Mechanismus für die Anzeige | nicht gewollt (verworfen) |
 | project.els eigenes Menü | `project-switch-commands` als Liste | eingebaut | einzeilig im Echo-Bereich, ohne Suche (verworfen) |
 
-**Zu entscheiden**
+**Entschieden (2026-10-29)**
 
-1. Weg A mit embark, oder Gegenvorschlag „zwei Befehle“?
-2. Taste für `embark-act`: `M-o` (global und im Minibuffer frei; „other“)
-   oder `C-.` (embarks Vorschlag, aber hier expreg)? Nur im Minibuffer
-   oder auch im Buffer? Im Buffer handelt es dann auf Datei, URL oder
-   Symbol unter dem Cursor, wird aber in den paar Modi verdeckt, die
-   `M-o` selbst belegen (ibuffer, diff).
-3. Anzeige der Aktionen: nur auf `C-h`, nach 0,5 s (embarks Vorgabe)
-   oder sofort?
-4. `C-x p` auf die eigenen Werkzeuge stellen (`b`, `g`, `v`)?
-5. Präfix für Projektart-Befehle im Buffer: `C-c M-j` in allen Sprachen,
-   `j` in den Projektaktionen?
-6. Befehlssuche: genügt `M-X`, oder zusätzlich `consult-mode-command`
-   bzw. `embark-bindings` auf `C-h b`?
+| Nr. | Frage | Entscheidung |
+|---|---|---|
+| 1 | Weg A oder „zwei Befehle“ | Weg A mit embark |
+| 2 | Taste für `embark-act` | `M-o`, vorerst nur in Listen (Minibuffer); im Buffer offen |
+| 3 | Anzeige der Aktionen | nur auf `C-h` |
+| 4 | `C-x p` umstellen | nein: eigene Map auf `C-x x p`, wie die übrigen Projekttasten unter `C-x x`; dort auch die Projektart-Befehle (`j`) |
+| 5 | Präfix im Buffer | `C-c M-j` in allen Sprachen mit Projektart-Befehlen |
+| 6 | Befehlssuche | offen |
+| 7 | Wohin | in PR #4 |
+
+**Umgesetzt, mit einer Abweichung vom Plan:** `j` ist kein eigener
+embark-Typ je Projektart, sondern ein Befehl
+(`jtk-project-run-kind-command`), der die Tasten der Projektart erst
+liest, wenn das Projekt schon feststeht. Damit gibt es einen Weg für
+die Liste und für `C-x x p`, und mehrere Arten zugleich brauchen keinen
+Kniff: Ihre Keymaps werden zusammengesetzt. `C-h` nach `j` zeigt sie als
+durchsuchbare Liste.
+
+| Projektart | Marker | Tasten (unter `j` und `C-c M-j`) |
+|---|---|---|
+| Clojure | `project.clj`, `deps.edn`, `shadow-cljs.edn`, `bb.edn` | `jtk-clojure-project-map`: `J` jack-in, `j` connect, `S`/`s` ClojureScript, `B`/`b` beides — wie bisher unter `C-c M-j` |
+| npm | `package.json` | npm-modes eigene Map (`i` install, `r` run, `s` install --save, …), dieselbe wie unter npm-modes `C-c n` |
+| PlatformIO | `platformio.ini` | platformio-modes eigene Map (`b` build, `u` upload, `m` monitor, …), dieselbe wie unter `C-c i` |
+
+- Bei gleicher Taste gewinnt die zuerst angemeldete Art (Clojure vor npm
+  vor PlatformIO). In einem ClojureScript-Projekt mit `package.json` ist
+  `j s` also CIDERs connect, nicht npms install --save.
+- Python und TypeScript bekommen ihr `C-c M-j` in 2.8; in TypeScript
+  belegt tide die Taste heute mit `tide-restart-server`.
+- Nebenbei behoben: `cider-jack-in-dwim` (`J`) las die Profile immer aus
+  `project.clj` und brach in Projekten ohne diese Datei ab; jetzt startet
+  es dort das übliche jack-in.
+
+**Geprüft** (Batch, Emacs 31.1, Tastenfolgen über
+`execute-kbd-macro`; die Zielbefehle protokollierten nur, wo sie
+liefen):
+
+| Eingabe | lief in |
+|---|---|
+| `C-x x f` Clojure-Projekt RET | `project-find-file` im Clojure-Projekt |
+| `C-x x f` Clojure-Projekt `M-o e` | `*clj-eshell*` |
+| `C-x x f` Clojure-Projekt `M-o v` / `M-o g` (aus einem anderen Projekt heraus) | Magit / `consult-git-grep` im Clojure-Projekt |
+| `C-x x f` Clojure-Projekt `M-o j J` | `cider-jack-in-dwim` im Clojure-Projekt |
+| `C-x x f` npm-Projekt `M-o j i` | `npm-mode-npm-install` im npm-Projekt |
+| `C-x x f` ClojureScript + npm `M-o j s` / `M-o j i` | `cider-connect-cljs` / `npm-mode-npm-install` |
+| `C-x x f` PlatformIO-Projekt `M-o j b` | `platformio-build` |
+| `C-x x f` Projekt ohne Art `M-o j` | Meldung „No commands for this kind of project“ |
+| `C-x x f` Clojure-Projekt `M-o j C-h` | die durchsuchbare Liste (`embark-bindings-in-keymap`) |
+| in einer `.clj`-Datei `C-x x p j J`, `C-c M-j J`, `C-x x p g` | jack-in bzw. grep im Clojure-Projekt |
+
+Neben jedem Projekt in der Liste stehen seine Arten („Clojure, npm“).
+
+**Offen: Befehlssuche (C).**
+
+| Weg | Was er zeigt | Dafür | Dagegen |
+|---|---|---|---|
+| `M-X` (eingebaut, belegt) | Befehle, die an einen Modus des Buffers gebunden sind oder in einer seiner Keymaps liegen | kein Code; Kürzel und Beschreibung über marginalia | was ein Paket weder bindet noch einem Modus zuordnet, fehlt; Keymaps, die überall aktiv sind (smartparens), füllen die Liste |
+| `consult-mode-command` | alle Befehle aus den Dateien der aktiven Modi, auch ohne Kürzel, gruppiert nach Haupt- und Nebenmodus | vollständig je Paket (alle `cider-…`); eingrenzbar | braucht eine Taste; die Zuordnung über Dateien ist eine Heuristik; Befehle globaler Nebenmodi nur nach Eingrenzen |
+| `embark-bindings` auf `C-h b` | alles, was im Buffer eine Taste hat | genau das Werkzeug zum Kürzel-Lernen; ersetzt den langen Hilfe-Buffer | Befehle ohne Taste fehlen |
 
 **Reihenfolge**
 
-1. A mit der Clojure-Art (`C-c M-j`-Familie als erste Projektart-Keymap)
-   — ersetzt die Liste aus 2.3.
-2. C: nur Einstellungen, dazu eine Sichtung in einem Clojure-Buffer.
-3. B für die übrigen Sprachen im jeweiligen Review in 2.8.
+1. ✅ A und B für Clojure, npm und PlatformIO.
+2. C nach Entscheidung: nur Einstellungen, dazu eine Sichtung in einem
+   Clojure-Buffer.
+3. B für Python und TypeScript im jeweiligen Review in 2.8.
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
