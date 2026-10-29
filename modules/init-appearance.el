@@ -18,6 +18,12 @@
   (require 'spaceline-segments)
   (setq powerline-default-separator 'arrow)
 
+  ;; NOTE: spaceline has segments for flycheck only.
+  (spaceline-define-segment checking
+    "Counts of flymake's findings: errors, warnings, notes."
+    (when (bound-and-true-p flymake-mode)
+      (format-mode-line flymake-mode-line-counters)))
+
   (spaceline-define-segment ide-window
     "Marks the side windows of the IDE-like layout."
     (when (window-parameter (selected-window) 'window-side)
@@ -40,7 +46,7 @@
        :when active)
       (major-mode
        :priority 70)
-      ((flycheck-error flycheck-warning flycheck-info)
+      (checking
        :priority 80
        :when active)
       (version-control

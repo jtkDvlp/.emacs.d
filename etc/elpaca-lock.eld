@@ -327,24 +327,6 @@
                      :type git :protocol https :inherit t :depth
                      treeless :ref
                      "0707e3426edf8dd9529bd8ad1058eb0b3add4507"))
- (flycheck-clj-kondo :source "elpaca-menu-lock-file" :recipe
-                     (:package "flycheck-clj-kondo" :fetcher github
-                               :repo "borkdude/flycheck-clj-kondo"
-                               :files
-                               ("*.el" "*.el.in" "dir" "*.info"
-                                "*.texi" "*.texinfo" "doc/dir"
-                                "doc/*.info" "doc/*.texi"
-                                "doc/*.texinfo" "lisp/*.el" "docs/dir"
-                                "docs/*.info" "docs/*.texi"
-                                "docs/*.texinfo"
-                                (:exclude ".dir-locals.el" "test.el"
-                                          "tests.el" "*-test.el"
-                                          "*-tests.el" "LICENSE"
-                                          "README*" "*-pkg.el"))
-                               :source "elpaca-menu-lock-file" :id
-                               flycheck-clj-kondo :type git :protocol
-                               https :inherit t :depth treeless :ref
-                               "414a3ead1faefb234d658fd8a8ba121c95b71de2"))
  (git-auto-commit-mode :source "elpaca-menu-lock-file" :recipe
                        (:package "git-auto-commit-mode" :fetcher
                                  github :repo

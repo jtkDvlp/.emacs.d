@@ -45,10 +45,6 @@
   (jtk-structural-editing-bind clojure-mode-map))
 
 (use-package
-  flycheck-clj-kondo
-  :after clojure-mode)
-
-(use-package
   clj-refactor
   :after clojure-mode
 
