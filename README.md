@@ -36,6 +36,9 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
   commands of `C-x x p` for that project.
 - Every list that C-h opens is searchable and shows the keys; `@`
   followed by a key runs that key's command directly.
+- A list exported with `C-o` into a buffer of its own (projects, for
+  instance) takes the same action keys directly on the entry under the
+  cursor: `e` on a project opens eshell there; `M-a` turns that off.
 - Each kind of project (Clojure, npm, PlatformIO) brings its commands,
   under `C-c M-j` in its buffers and under `j` in the project commands.
 - `M-X` lists the commands that fit the current buffer, with their

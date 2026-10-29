@@ -923,6 +923,15 @@ Neben jedem Projekt in der Liste stehen seine Arten („Clojure, npm“).
 dann die Taste den Befehl direkt aus. Ohne `@` filtern Buchstaben die
 Liste; beides auf denselben Tasten geht nicht.
 
+**Exportierte Listen:** Was `C-o` in einen embark-Buffer exportiert
+(etwa die Projektliste; Dateien, Zeilen und grep-Treffer gehen nach
+dired, occur und grep), nimmt die Aktionstasten direkt auf dem Eintrag
+unter dem Cursor an, wie nach `M-x` im Minibuffer (embarks
+Direktmodus, immer an; `M-a` schaltet ihn ab). Geprüft im Batch auf der
+exportierten Projektliste, aus einem anderen Projekt heraus: `e`
+eshell, `v` Magit, `j J` jack-in, `j i` npm install, jeweils im
+Projekt des Eintrags; `C-h` listet die Aktionen.
+
 **Gefunden beim Umbau, älter als 2.3:** CIDER legt `cider-jack-in-clj`
 in `clojure-mode-map` zweimal auf `C-c M-j`: aus seinen Autoloads, wenn
 clojure-mode lädt, und noch einmal, wenn cider.el lädt. Die Familie
