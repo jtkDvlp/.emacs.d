@@ -224,10 +224,6 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 - **`:requires` überspringt die ganze Deklaration**, wenn das Feature beim
   Auswerten noch nicht geladen ist — still, ohne Meldung. `:after` ist fast
   immer das Gemeinte.
-- **`cider-eval-dwim` ruft `paredit-backward-up`**, installiert wird
-  `paredit` aber nirgends ausdrücklich — es kommt als Abhängigkeit von
-  `clj-refactor` mit (bestätigt: ohne `paredit` scheitert dessen
-  Installation). Fällt `clj-refactor` weg, bricht die Funktion.
 - **eshell-Tasten gehen über `eshell-mode-map*`**, weil eshell seine
   Mode-Map früher erst beim Start des Modus angelegt hat. Ob das in der
   Zielversion noch nötig ist, ist zu prüfen, bevor es wegfällt.
