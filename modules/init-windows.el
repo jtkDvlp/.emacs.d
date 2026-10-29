@@ -25,11 +25,6 @@
   :bind
   (("C-M-#" . toggle-fullframe-window)))
 
-(use-package
-  fullframe
-  :config
-  (setq fullframe/advice-generic-quit-commands nil))
-
 ;; NOTE: The point moves along with the buffer.
 (use-package
   windmove

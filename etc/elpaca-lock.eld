@@ -365,20 +365,6 @@
                                flycheck-clj-kondo :type git :protocol
                                https :inherit t :depth treeless :ref
                                "414a3ead1faefb234d658fd8a8ba121c95b71de2"))
- (fullframe :source "elpaca-menu-lock-file" :recipe
-            (:package "fullframe" :fetcher sourcehut :repo
-                      "tomterl/fullframe" :files
-                      ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                       "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
-                       "doc/*.texinfo" "lisp/*.el" "docs/dir"
-                       "docs/*.info" "docs/*.texi" "docs/*.texinfo"
-                       (:exclude ".dir-locals.el" "test.el" "tests.el"
-                                 "*-test.el" "*-tests.el" "LICENSE"
-                                 "README*" "*-pkg.el"))
-                      :source "elpaca-menu-lock-file" :id fullframe
-                      :type git :protocol https :inherit t :depth
-                      treeless :ref
-                      "886b831c001b44ec95aec4ff36e8bc1b3003c786"))
  (git-auto-commit-mode :source "elpaca-menu-lock-file" :recipe
                        (:package "git-auto-commit-mode" :fetcher
                                  github :repo
