@@ -65,8 +65,8 @@
                   (:exclude ".dir-locals.el" "test.el" "tests.el"
                             "*-test.el" "*-tests.el" "LICENSE"
                             "README*" "*-pkg.el"))
-                 :source "MELPA" :id cape :type git :protocol https
-                 :inherit t :depth treeless :ref
+                 :source "elpaca-menu-lock-file" :id cape :type git
+                 :protocol https :inherit t :depth treeless :ref
                  "50bc6187daf9af9df1a802fcbbd91fe4b952fc69"))
  (cfrs :source "elpaca-menu-lock-file" :recipe
        (:package "cfrs" :repo "Alexander-Miller/cfrs" :fetcher github
@@ -153,8 +153,8 @@
  (corfu :source "elpaca-menu-lock-file" :recipe
         (:package "corfu" :repo "minad/corfu" :files
                   (:defaults "extensions/corfu-*.el") :fetcher github
-                  :source "MELPA" :id corfu :type git :protocol https
-                  :inherit t :depth treeless :ref
+                  :source "elpaca-menu-lock-file" :id corfu :type git
+                  :protocol https :inherit t :depth treeless :ref
                   "9c2bf9add6c182ae524eb378d0d0f45ecc805eef"))
  (csv-mode :source "elpaca-menu-lock-file" :recipe
            (:package "csv-mode" :repo
@@ -1012,15 +1012,6 @@
                       "elpaca-menu-lock-file" :id yasnippet :type git
                       :protocol https :inherit t :depth treeless :ref
                       "c1e6ff23e9af16b856c88dfaab9d3ad7b746ad37"))
- (yasnippet-snippets :source "elpaca-menu-lock-file" :recipe
-                     (:package "yasnippet-snippets" :repo
-                               "AndreaCrotti/yasnippet-snippets"
-                               :fetcher github :files
-                               ("*.el" "snippets" ".nosearch") :source
-                               "elpaca-menu-lock-file" :id
-                               yasnippet-snippets :type git :protocol
-                               https :inherit t :depth treeless :ref
-                               "606ee926df6839243098de6d71332a697518cb86"))
  (ztree :source "elpaca-menu-lock-file" :recipe
         (:package "ztree" :fetcher codeberg :repo "fourier/ztree"
                   :files

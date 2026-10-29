@@ -2,14 +2,9 @@
 
 ;;; Commentary:
 
-;; yasnippet with the yasnippet-snippets collection; own snippets are
-;; under etc/yasnippet/snippets/.
+;; yasnippet with the own snippets under etc/yasnippet/snippets/.
 
 ;;; Code:
-
-(use-package
-  yasnippet-snippets
-  :defer t)
 
 (use-package
   yasnippet
@@ -19,7 +14,6 @@
    (cider-repl-mode . yas-minor-mode-on))
 
   :config
-  (require 'yasnippet-snippets)
   (yas-reload-all)
 
   :bind
