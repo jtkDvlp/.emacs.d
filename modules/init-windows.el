@@ -3,8 +3,8 @@
 ;;; Commentary:
 
 ;; Undoing window changes, full-frame views, moving buffers between
-;; windows, screens per project (elscreen), choosing windows,
-;; mirroring a window and the IDE-like layout.
+;; windows, screens per project (elscreen), choosing windows and the
+;; IDE-like layout.
 
 ;;; Code:
 
@@ -113,15 +113,6 @@
    aw-scope 'frame
    aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
    aw-dispatch-always t))
-
-(use-package
-  jtk-window-mirror
-  :ensure nil
-  :commands jtk-window-mirror-start-mirroring)
-
-;; (use-package
-;;   google-translate
-;;   ())
 
 (defvar-keymap jtk-frame-map
   :doc "Size of the frame; the keys repeat."
