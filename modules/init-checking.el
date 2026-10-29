@@ -2,20 +2,32 @@
 
 ;;; Commentary:
 
-;; flycheck in programming modes.
+;; flymake in programming modes.  The checks come from the mode (Elisp's
+;; byte compiler and checkdoc, shellcheck for shell scripts) or from the
+;; language server through eglot.
 
 ;;; Code:
 
 (use-package
-  flycheck
-  :diminish
-  flycheck-mode
+  flymake
+  :ensure nil
 
   :hook
-  (prog-mode . flycheck-mode-on-safe)
+  (prog-mode . flymake-mode)
+
+  :bind
+  (:map flymake-mode-map
+        ("C-c ! n" . flymake-goto-next-error)
+        ("C-c ! p" . flymake-goto-prev-error)
+        ("C-c ! l" . flymake-show-buffer-diagnostics)
+        ("C-c ! L" . flymake-show-project-diagnostics))
 
   :config
-  (set-default 'flycheck-disabled-checkers '(sass)))
+  (defvar-keymap jtk-checking-repeat-map
+    :doc "Moving between findings; the keys repeat."
+    :repeat t
+    "n" #'flymake-goto-next-error
+    "p" #'flymake-goto-prev-error))
 
 (provide 'init-checking)
 
