@@ -33,6 +33,7 @@
 (require 'init-completion)
 (require 'init-checking)
 (require 'init-lsp)
+(require 'init-tree-sitter)
 (require 'init-snippets)
 (require 'init-restclient)
 (require 'init-sql)
