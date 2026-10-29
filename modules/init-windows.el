@@ -2,28 +2,13 @@
 
 ;;; Commentary:
 
-;; Undoing window changes, full-frame views, moving buffers between
+;; Undoing window changes, a single window, moving buffers between
 ;; windows, tabs (as a rule one per project), choosing windows and the
 ;; IDE-like layout.
 
 ;;; Code:
 
 (require 'jtk-project)
-
-(use-package
-  winner
-  :ensure nil
-  :demand t
-  :init
-  (defun toggle-fullframe-window ()
-    (interactive)
-    (if (> (length (window-list)) 1)
-        (delete-other-windows)
-      (winner-undo)))
-  :config
-  (winner-mode)
-  :bind
-  (("C-M-#" . toggle-fullframe-window)))
 
 ;; NOTE: The point moves along with the buffer.
 (use-package
@@ -93,6 +78,38 @@
     "O" #'tab-previous)
 
   (tab-bar-mode))
+
+;; NOTE: The window history is kept per tab; winner keeps one per frame
+;; and so mixes up the tabs.  C-c <left> and C-c <right>, the arrows
+;; repeat.
+(tab-bar-history-mode)
+
+(defvar jtk-window--before-single (make-hash-table :test #'eq :weakness 'key)
+  "Window configurations before `jtk-window-toggle-single', by window.")
+
+(defun jtk-window--main-windows ()
+  "Return the windows of the frame, side windows left out."
+  (seq-remove (lambda (window) (window-parameter window 'window-side))
+              (window-list nil 'nomini)))
+
+;; NOTE: The configuration is kept by itself rather than going back in
+;; the tab's history: that history leaves out a command repeated in a
+;; row, so every other C-M-# would go back too far.
+(defun jtk-window-toggle-single ()
+  "Show only the selected window, or bring the other windows back."
+  (interactive)
+  (let ((window (selected-window)))
+    (cond ((length> (jtk-window--main-windows) 1)
+           (puthash window (current-window-configuration)
+                    jtk-window--before-single)
+           (delete-other-windows))
+          ((gethash window jtk-window--before-single)
+           (set-window-configuration
+            (gethash window jtk-window--before-single))
+           (remhash window jtk-window--before-single))
+          (t
+           (user-error "No other windows to bring back")))))
+(keymap-global-set "C-M-#" #'jtk-window-toggle-single)
 
 (use-package
   ace-window
