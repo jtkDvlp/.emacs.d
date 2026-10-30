@@ -1136,6 +1136,66 @@ erst, wenn clojure-lsp das Projekt eingelesen hat — vorher springt
 
 **Offen für die Sichtung in der GUI:** clojure-lsp im echten Projekt neben CIDER (Vervollständigen, `M-j d`, Befunde in der Modeline); die Nachfrage nach der Grammatik beim ersten JSON- oder CSS-File.
 
+#### ✅ 2.8 Sprachen (entschieden und umgesetzt 2026-10-30)
+
+**Umfang (entschieden 2026-10-29):**
+- **Bleibt:** Clojure/ClojureScript, SCSS, etwas CSS, HTML und JS, JSON, Jenkinsfile, Shell, Markdown.
+- **Neu:** XML/XSLT.
+- **Weg:** der Rest.
+- **Wichtig:** Leistung in großen Dateien.
+
+**Gemessen** (Batch, Emacs 31.1, Cloud, volle Konfiguration; Dateien erzeugt):
+
+| Datei | Modus | Öffnen (ms) | Ein Bildschirm einfärben (60 Zeilen, ms) | Ein Tastendruck (ms) | Einrücken einer Form durch aggressive-indent (ms) |
+|---|---|---:|---:|---:|---:|
+| Clojure, 7 700 Zeilen, mit linum | clojure-mode | 56 | 72 | 876 | 0,7 |
+| Clojure, 7 700 Zeilen | clojure-mode | 43 | 45 | 3,5 | 0,7 |
+| Clojure, 7 700 Zeilen | clojure-ts-mode | 1 924 | 13 | 2,9 | 174 |
+| JSON, 5,8 MB | js-json-mode | über 300 000 (abgebrochen) | — | — | — |
+| JSON, 5,8 MB | json-ts-mode | 41 | 92 | 62 | 0,5 |
+| XML, 4,6 MB | web-mode | über 300 000 (abgebrochen) | — | — | — |
+| XML, 4,6 MB | nxml-mode | 1 307 | 124 | 0,3 | — |
+| Markdown, 18 000 Zeilen | markdown-mode | 192 | 11 | 8 | — |
+| Markdown, 18 000 Zeilen | md-mode | 2 207 | 41 | 1,7 | — |
+
+Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` ersetzt. Den Tastendruck in Clojure zerlegt, jeweils einen Nebenmodus abgeschaltet: Nur ohne linum fiel er von 561 auf 0,5 ms. Im 0,9-MB-JSON kostete linum 75 s je Taste.
+
+| Thema | Entschieden | Warum |
+|---|---|---|
+| Zeilennummern | `display-line-numbers-mode` statt linum | siehe Messung; linum ist seit 29 veraltet |
+| Entfernt | tide, PHP, basic-mode, platformio-mode, indium, js2-mode, js2-refactor, xref-js2, npm-mode, clj-refactor, scss-mode- und sass-mode-Paket; mit ihnen flycheck, projectile, paredit, haml-mode | nicht mehr gebraucht bzw. ersetzt |
+| JS | js-ts-mode mit typescript-language-server über eglot | eingebaut; der Server liefert, was js2-refactor und xref-js2 lieferten |
+| Node, npm | envrc (direnv, Node-Version je Projekt aus `.envrc`), eigene npm-Befehle über `compile` unter `C-c M-j` und `j` | npm-mode (2019) und nvm.el (2024-09) stehen still; npm.el zog über jest js2-mode, magit-popup und projectile nach |
+| Clojure-Modus | bleibt clojure-mode | clojure-ts-mode färbt schneller ein, öffnet aber langsamer, aggressive-indent braucht dort 174 statt 0,7 ms, und die Einrückungsregeln gälten nicht |
+| Clojure-Refactoring | clojure-lsp statt clj-refactor; `M-r r/a/o/=` | ohne REPL; beendet `M-r` als clj-refactor-Präfix in jedem Buffer |
+| CIDER-Tasten | `M-j d`/`r` über xref, clojure-lsp zuerst (`cider-xref-fn-depth` 90); Apropos auf `M-j a`; `M-j D` weg | `M-j r` war Apropos statt Referenzen; `cider-grimoire` gibt es nicht mehr |
+| Leiningen-Profile | über die Klammern gelesen statt mit parseedn; Helfer als `jtk-clojure-…` | `project.clj` ist kein EDN: `#(…)` ließ parseedn scheitern |
+| XML/XSLT | nxml-mode, Strukturtasten, hideshow, `xmllint --format`, lemminx über eglot, wo installiert | web-mode kam mit 4,6 MB nicht durch; nxml prüft gegen das mitgelieferte XSLT-1.0-Schema |
+| SCSS | eingebautes scss-mode | kein tree-sitter-Modus; die Grammatik steht seit 2022 still |
+| Jenkinsfile | jenkinsfile-mode auf groovy-mode | beide klein und stabil, seit 2023 ohne Commit |
+| Markdown | md-mode zum Ausprobieren; markdown-mode bleibt per `M-x` | md-mode zeigt Tabellen gerendert im Buffer (`C-c C-v`); markdown-ts-mode ist in 31 experimentell |
+| Doku | README: Abschnitt „External tools“ | Server und Programme außerhalb Emacs |
+
+**Gefunden beim Umbau:**
+- Emacs 31 hat `hs-special-modes-alist` abgekündigt; nxml bekommt seine hideshow-Einstellungen buffer-lokal.
+- clojure-ts-modes eigener Grammatik-Installer legt unter `tree-sitter/` im Konfigurationsverzeichnis ab, nicht unter `var/`. Nur beim Messen aufgetreten, weil clojure-ts-mode nicht eingebunden ist.
+- `eshell/nvm` (init-shell) ruft `nvm-use` aus dem nie installierten nvm.el. Bleibt für 2.9; mit envrc ist es überflüssig.
+
+**Geprüft im Batch:**
+- **JS:** js-ts-mode mit Parser; `C-M-<up>` vertauscht Zeilen. eglot kennt typescript-language-server von Haus aus; der Server selbst ist in der Cloud nicht installiert.
+- **npm:** Projektart in einem Projekt mit `package.json`; die Skripte werden aus `package.json` gelesen; Befehle laufen in der Projektwurzel.
+- **Clojure:** `M-r r/a` sind eglot; `M-j d/r` gehen über xref, und eglot steht vor CIDER; außerhalb von eglot ist `M-r` wieder Emacs' eigenes.
+- **Profile:** aus einem `project.clj` mit `#(…)`, `#"…"`, `^:replace` und `~(…)` richtig gelesen; ein kaputtes `project.clj` startet ohne Profil.
+- **XSLT:** prüft gegen `xslt.rnc` und meldet ein unbekanntes `xsl:`-Element; Zuklappen und Formatieren klappen.
+- **Dateizuordnung:** SCSS → scss-mode, Jenkinsfile (auch `ci/Jenkinsfile.release`) → jenkinsfile-mode, `.md` → md-mode mit gerenderter Ansicht.
+- **Schnappschuss-Diff:** nur die erwarteten Tasten, Modi und Dateizuordnungen.
+
+**Offen für die Sichtung in der GUI:**
+- typescript-language-server in einem JS-Projekt;
+- lemminx und Formatieren in XML;
+- md-mode im Alltag;
+- direnv mit `.envrc` in einem Node-Projekt.
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -1158,7 +1218,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | exec-path-from-shell | M | Bootstrap | PATH aus Login-Shell | installiert, **nie benutzt** — einsetzen | |
 | doom-themes | M | apperance | Theme `doom-one` | gepflegt | |
 | spaceline | M | apperance | Modeline | kaum noch gepflegt | |
-| linum | e | apperance | Zeilennummern | obsolet seit 29.1 | Ja |
+| linum | e | apperance | Zeilennummern | **ersetzt** (2.8) durch `display-line-numbers-mode`: linum machte große Dateien unbenutzbar | Ja |
 | rainbow-mode | M | apperance | Farbwerte einfärben | ok; in jedem `prog-mode` fraglich | Ja |
 | rainbow-delimiters | M | apperance | Klammern einfärben | ok | Ja |
 | kmacro | e | interface | Makros | ok | |
@@ -1191,25 +1251,25 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | restclient | M | development | HTTP-Anfragen | meines Wissens archiviert → verb | Ja |
 | sql | e | development | MySQL | ok | Ja |
 | simple-httpd | M | development | lokaler HTTP-Server | prüfen | |
-| markdown-mode | M | development | Markdown | bleibt | |
+| markdown-mode | M | development | Markdown | bleibt installiert (2.8); `.md` öffnet zum Ausprobieren md-mode | |
 | logview | M | development | Logdateien | gepflegt | Ja |
 | eshell / eshell-up / esh-autosuggest | e/M/M | shell | Shell | ok | Ja |
-| csv-mode | M | csv | CSV | ok | |
-| clojure-mode | M | clojure | Clojure | ggf. clojure-ts-mode | Ja |
+| csv-mode | M | csv | CSV | bleibt (2.8), gepflegt | |
+| clojure-mode | M | clojure | Clojure | bleibt (2.8); clojure-ts-mode gemessen und verworfen | Ja |
 | cider | M | clojure | REPL | bleibt | Ja |
-| clj-refactor | M | clojure | Refactoring | prüfen gegen clojure-lsp | Ja |
-| parseedn | M | clojure | `project.clj` lesen | hängt an Leiningen-Helfern | |
+| clj-refactor | M | clojure | Refactoring | **entfernt** (2.8), clojure-lsp | Ja |
+| parseedn | M | clojure | `project.clj` lesen | nicht mehr selbst benutzt (2.8); bleibt als Abhängigkeit von CIDER | |
 | flycheck-clj-kondo | M | clojure | Linter | **entfernt** (2.7), clj-kondo kommt über clojure-lsp | |
-| js2-mode / js2-refactor / xref-js2 | M | javascript | JS | → `js-ts-mode` + eglot | |
-| indium | M | javascript | JS-Debugger | Pflegestand prüfen | |
-| tide / npm-mode | M | typescript | TS | → `typescript-ts-mode` + eglot | |
-| web-mode | M | html | HTML/XML/XSL | gepflegt | |
+| js2-mode / js2-refactor / xref-js2 | M | javascript | JS | **ersetzt** (2.8) durch js-ts-mode + typescript-language-server | |
+| indium | M | javascript | JS-Debugger | **entfernt** (2.8), letzter Commit 2021 | |
+| tide / npm-mode | M | typescript | TS | **entfernt** (2.8); npm-Befehle eigene, Node-Version über envrc | |
+| web-mode | M | html | HTML/XML/XSL | bleibt für HTML (2.8); XML an nxml-mode | |
 | web-mode-edit-element | M | html | strukturelles HTML-Editieren | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | |
-| scss-mode / sass-mode / css-mode | M/M/e | css | Stylesheets | scss-mode überflüssig | Ja |
+| scss-mode / sass-mode / css-mode | M/M/e | css | Stylesheets | Pakete **entfernt** (2.8); eingebautes scss-mode und css-ts-mode | Ja |
 | elpy | M | python | Python | **entfernt** (2.6), Python wird nicht mehr benutzt | |
-| c++-mode / platformio-mode | e/M | c | Arduino/PlatformIO | prüfen | |
-| basic-mode | M | basic | ASP/BASIC | Fehler B6 | |
-| php-mode / geben / company-php | M | php (inaktiv) | PHP | auskommentiert — löschen? | |
+| c++-mode / platformio-mode | e/M | c | Arduino/PlatformIO | **entfernt** (2.8), mit projectile | |
+| basic-mode | M | basic | ASP/BASIC | **entfernt** (2.8), damit auch B6 | |
+| php-mode / geben / company-php | M | php (inaktiv) | PHP | **entfernt** (2.8) | |
 
 ### Neue Pakete (Kandidaten)
 
@@ -1224,12 +1284,17 @@ Noch nicht in der Konfiguration; aufgenommen auf deinen Wunsch
 | emacs-lsp-booster (+ eglot-booster) | Programm + Emacs-Paket | 2.7, Phase 3 | schnellere JSON-Verarbeitung | nur, wenn eine Messung Bedarf zeigt |
 | treesit-auto | Emacs-Paket, MELPA | 2.7 | `*-ts-mode` und Grammatiken automatisch | **verworfen** (2.7): Emacs 31 kann das selbst (`treesit-enabled-modes`, Installation auf Nachfrage) |
 | clojure-lsp | Language-Server | 2.7 | Navigation, Refactoring, clj-kondo-Befunde | **aufgenommen** (2.7), neben CIDER; Überschneidung mit clj-refactor klärt 2.8 |
-| clojure-ts-mode | Emacs-Paket, MELPA | 2.8 Clojure | tree-sitter-Modus für Clojure | Pflegestand und CIDER-Verträglichkeit prüfen |
-| typescript-language-server | Language-Server (npm) | 2.8 JS/TS | JavaScript und TypeScript | ersetzt tide, xref-js2 und Teile von js2-refactor |
+| clojure-ts-mode | Emacs-Paket, NonGNU ELPA | 2.8 Clojure | tree-sitter-Modus für Clojure | **verworfen** (2.8) nach Messung: langsameres Öffnen, aggressive-indent 250-mal langsamer, eigene Einrückungsregeln gälten nicht |
+| typescript-language-server | Language-Server (npm) | 2.8 JS | JavaScript | **aufgenommen** (2.8) |
 | basedpyright bzw. pyright, dazu ruff | Language-Server | 2.8 Python | Python | ersetzt elpy |
 | vscode-langservers-extracted | Language-Server (npm) | 2.8 HTML/CSS | HTML, CSS/SCSS, JSON | scss ist als benutzt markiert |
 | eat | Emacs-Paket, NonGNU ELPA | 2.9 Werkzeuge | Terminal-Emulator in Emacs; kann in eshell Programme mit Vollbild-Ausgabe zeigen (`eat-eshell-mode`) | aufgenommen auf Wunsch (2026-10-29); Pflegestand im Review nachsehen |
-| clangd | Language-Server | 2.8 C++ | C++, auch PlatformIO über `compile_commands.json` | |
+| lemminx | Language-Server | 2.8 XML | XML Schema, DTD, Formatieren | **aufgenommen** (2.8), startet nur, wo installiert |
+| envrc | Emacs-Paket, MELPA | 2.8 | direnv je Buffer | **aufgenommen** (2.8) |
+| md-mode | Emacs-Paket (GitHub) | 2.8 Markdown | gerenderte Ansicht mit Tabellen | **zum Ausprobieren** (2.8) |
+| jenkinsfile-mode / groovy-mode | Emacs-Pakete, MELPA | 2.8 | Jenkinsfile | **aufgenommen** (2.8) |
+| combobulate | Emacs-Paket (GitHub) | später | strukturelles Editieren auf tree-sitter (HTML, CSS, JS, JSON) | Kandidat für eine Überarbeitung von web-mode-edit-element |
+| clangd | Language-Server | 2.8 C++ | C++ | **nicht nötig** (2.8): C++ entfernt |
 | marksman | Language-Server | 2.8 Markdown | Links und Überschriften in Markdown | optional |
 
 **WATCHOUT: Language-Server sind Programme außerhalb von Emacs.** Die

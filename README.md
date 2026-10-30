@@ -16,6 +16,24 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 - `scripts/check`: loads and byte-compiles the configuration in batch
   mode; CI runs it on every push.
 
+## External tools
+
+Installed outside Emacs; each is optional, and without it the feature it
+serves is simply missing.
+
+| Tool | Install | Used for |
+|---|---|---|
+| Xcode command line tools | `xcode-select --install` | compiling tree-sitter grammars, which Emacs offers to install on the first file of a kind |
+| clojure-lsp | `brew install clojure-lsp/brew/clojure-lsp-native` | Clojure and ClojureScript: findings (clj-kondo), references, renaming, code actions, reference counts |
+| typescript-language-server | `npm install -g typescript-language-server typescript` | JavaScript through eglot |
+| lemminx | binary `lemminx-osx-…` from the [vscode-xml releases](https://github.com/redhat-developer/vscode-xml/releases), on `PATH`; `xattr -d com.apple.quarantine lemminx` once | XML: validation and completion from XML Schema and DTDs, formatting |
+| xmllint | comes with macOS | formatting XML where lemminx does not run (`M-r =`) |
+| shellcheck | `brew install shellcheck` | findings in shell scripts (flymake) |
+| direnv | `brew install direnv` | per-project environment from `.envrc`, e.g. the Node version (`use nvm`, `layout node`) |
+| Leiningen, Clojure CLI | `brew install leiningen clojure` | CIDER's jack-in |
+| node, npm | via nvm or `brew install node` | the npm commands under `C-c M-j` |
+| multimarkdown | `brew install multimarkdown` | markdown-mode's preview |
+
 ## Keys
 
 - Global keys are for global tasks: files, buffers, windows, search,
@@ -49,7 +67,8 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 |---|---|---|---|
 | `M--` | `jtk-bookmarks-map` | `init-bookmarks` | bookmarks of files, directories, MySQL connections |
 | `M-c` | `jtk-multiple-cursors-map` | `init-editing` | multiple cursors |
-| `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`); `M-J` goes back |
+| `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`), in Clojure apropos (`a`); `M-J` goes back |
+| `M-r` where a language server runs | `eglot-mode-map` | `init-lsp` | renaming (`r`), code actions (`a`), organising imports (`o`), formatting (`=`) |
 | `M-m` | `jtk-highlight-symbol-map` | `init-editing` | next, previous, replace symbol (repeats); `C-m` marks it |
 | `M-!` | `jtk-run-map` | `init-keys` | `m` keyboard macros (`jtk-macro-map`), `s` shells (`jtk-shell-map`) |
 | `M-+` | `jtk-view-map` | `init-keys` | `f` font size (`jtk-zoom-map`), `w` frame size (`jtk-frame-map`); both repeat |
@@ -59,6 +78,6 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 | `C-M--` | `jtk-org-map` | `init-org` | capturing, agenda |
 | `C-x x` | `ctl-x-x-map` (Emacs) | `init-project`, `init-treemacs` | switching projects (`f`), file tree (`d`) |
 | `C-x x p` | `jtk-project-map` | `init-project`, languages | project commands: Emacs' `C-x p` with consult for buffers (`b`) and grep (`g`), Magit (`v`, `m`), commands of the project's kinds (`j`) |
-| `C-c M-j` in a project kind's buffers | `jtk-clojure-project-map`, npm-mode's | languages | starting or connecting a REPL, npm |
+| `C-c M-j` in a project kind's buffers | `jtk-clojure-project-map`, `jtk-npm-project-map` | languages | starting or connecting a REPL; npm install, run, update |
 | `C-a` in HTML | `jtk-html-attribute-map` | `init-lang-html` | editing attributes (repeats) |
 
