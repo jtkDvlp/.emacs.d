@@ -1,9 +1,9 @@
-;;; init-lang-html.el --- HTML and XML -*- lexical-binding: t; -*-
+;;; init-lang-html.el --- HTML -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
-;; web-mode for HTML, XML and XSL, and web-mode-edit-element for
-;; editing by elements.
+;; web-mode for HTML, and web-mode-edit-element for editing by
+;; elements.  XML is in init-lang-xml.
 
 ;;; Code:
 
@@ -12,7 +12,7 @@
 (use-package
   web-mode
   :mode
-  "\\.\\(html\\|phtml\\|xml\\|xsl\\|xslt\\|xsd\\)\\'"
+  "\\.\\(html\\|phtml\\)\\'"
 
   :config
   (setq web-mode-markup-indent-offset 2
