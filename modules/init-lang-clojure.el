@@ -16,7 +16,7 @@
 (defvar-keymap jtk-clojure-project-map
   :doc "Starting a REPL (upper case) or connecting to one (lower case)."
   :prefix t
-  "J" #'cider-jack-in-dwim
+  "J" #'jtk-clojure-jack-in-dwim
   "j" #'cider-connect-clj
   "S" #'cider-jack-in-cljs
   "s" #'cider-connect-cljs
@@ -44,9 +44,6 @@
   (jtk-structural-editing-bind clojure-mode-map))
 
 (use-package
-  parseedn)
-
-(use-package
   cider
 
   :commands
@@ -56,9 +53,9 @@
    cider-connect-cljs
    cider-jack-in-clj&cljs
    cider-connect-clj&cljs
-   cider-jack-in-with-args
-   cider-jack-in-with-profile
-   cider-jack-in-dwim)
+   jtk-clojure-jack-in-with-args
+   jtk-clojure-jack-in-with-profile
+   jtk-clojure-jack-in-dwim)
 
   :init
   ;; WATCHOUT: CIDER puts `cider-jack-in-clj' on C-c M-j in
@@ -74,104 +71,108 @@
     (jtk-clojure-bind-project-keys))
 
   :config
-  (require 'parseedn)
+  (defun jtk-clojure--nil-if-blank (string)
+    "Return STRING, or nil if it is empty or only whitespace."
+    (unless (or (null string) (string-blank-p string))
+      string))
 
-  (defun nil-blank-string (s)
-    (when  s
-      (unless (string-blank-p s)
-        s)))
+  (defun jtk-clojure--project-clj ()
+    "Return the project.clj of the current project, or nil."
+    (when-let* ((root (jtk-project-root))
+                (file (expand-file-name "project.clj" root))
+                ((file-exists-p file)))
+      file))
 
-  (defun get-file-content (filePath)
-    "Return filePath's file content."
+  ;; WATCHOUT: project.clj is code, not EDN: #(...), ~(...) and the like
+  ;; made an EDN reader fail on files that Leiningen reads fine.  So the
+  ;; profiles are found by their parens, with Clojure's syntax table.
+  (defun jtk-clojure-lein-profiles (file)
+    "Return the names of the profiles in the Leiningen project FILE.
+Signals an error if the :profiles map cannot be read."
     (with-temp-buffer
-      (insert-file-contents filePath)
-      (buffer-string)))
+      (insert-file-contents file)
+      (with-syntax-table clojure-mode-syntax-table
+        (goto-char (point-min))
+        (let (found)
+          (while (and (not found)
+                      (re-search-forward "\\_<:profiles\\_>" nil t))
+            (setq found (not (nth 8 (syntax-ppss)))))
+          (when found
+            (forward-comment (buffer-size))
+            (unless (eq (char-after) ?{)
+              (user-error ":profiles in %s is not a map" file))
+            (forward-char)
+            (let (names)
+              (while (progn (forward-comment (buffer-size))
+                            (not (memq (char-after) '(?} nil))))
+                (let ((start (point)))
+                  (forward-sexp)
+                  (push (string-remove-prefix
+                         ":" (buffer-substring-no-properties start (point)))
+                        names))
+                (forward-comment (buffer-size))
+                ;; NOTE: Metadata, as ^:replace, comes before the value.
+                (while (eq (char-after) ?^)
+                  (forward-char)
+                  (forward-sexp)
+                  (forward-comment (buffer-size)))
+                (forward-sexp))
+              (nreverse names)))))))
 
-  (defun lein-project-clj-filepath ()
-    (thread-first
-      (jtk-project-root)
-      (concat "project.clj")))
+  (defun jtk-clojure--jack-in-profiles ()
+    "Return the profiles of the project to offer for jack-in, as +NAME too.
+Leiningen's own profiles are left out.  If project.clj cannot be read,
+say so and return nil."
+    (when-let* ((file (jtk-clojure--project-clj)))
+      (condition-case err
+          (thread-last
+            (jtk-clojure-lein-profiles file)
+            (seq-remove (lambda (profile)
+                          (member profile
+                                  '("dev" "repl" "provided" "uberjar"))))
+            (seq-mapcat (lambda (profile)
+                          (list profile (concat "+" profile)))))
+        (error
+         (message "Profiles of %s not read: %s"
+                  file (error-message-string err))
+         nil))))
 
-  (defun lein-project-clj-content (filepath)
-    (let* ((data
-            (thread-first
-              filepath
-              (get-file-content)
-              (parseedn-read-str)))
-
-           (name
-            (nth 1 data))
-
-           (version
-            (nth 2 data))
-
-           (rest-root-level-values
-            (seq-drop data 3))
-
-           (result
-            (make-hash-table :test 'equal)))
-
-      (puthash :name name result)
-      (puthash :version version result)
-
-      (mapc (lambda (pair) (puthash (car pair) (car (cdr pair)) result))
-            (seq-partition rest-root-level-values 2))
-
-      result))
-
-  (defun lein-project-clj-profiles (filepath)
-    (let* ((profiles
-            (thread-last filepath
-                         (lein-project-clj-content)
-                         (gethash :profiles))))
-
-      (when profiles
-        (thread-last profiles
-                     (hash-table-keys)
-                     (mapcar 'symbol-name)
-                     (mapcar (lambda (profile) (substring profile 1)))))))
-
-  (defun cider-jack-in-with-args (args)
+  (defun jtk-clojure-jack-in-with-args (args)
+    "Start a REPL with the Leiningen arguments ARGS."
     (interactive "sjack-in repl with args: ")
-    (let ((cider-lein-parameters
-           args))
+    (let ((cider-lein-parameters args))
       (cider-jack-in nil)))
 
-  (defun cider-jack-in-with-profile (profile)
+  (defun jtk-clojure-jack-in-with-profile (profile)
+    "Start a REPL with the Leiningen PROFILE."
     (interactive "sjack-in repl with profile: ")
-    (cider-jack-in-with-args (concat "with-profile " profile " repl")))
+    (jtk-clojure-jack-in-with-args (concat "with-profile " profile " repl")))
 
-  (defun lein-project-clj-jack-in-profiles ()
-    (thread-last
-      (lein-project-clj-filepath)
-      (lein-project-clj-profiles)
-      (seq-filter (lambda (profile) (not (member profile '("dev" "repl" "provided" "uberjar")))))
-      (seq-map (lambda (profile) (list profile (concat "+" profile))))
-      (apply 'append)))
-
-  (defun cider-jack-in-dwim ()
+  (defun jtk-clojure-jack-in-dwim ()
+    "Start a REPL, offering the project's Leiningen profiles if any."
     (interactive)
     (let* ((profiles
-            (when (file-exists-p (lein-project-clj-filepath))
-              (lein-project-clj-jack-in-profiles)))
+            (jtk-clojure--jack-in-profiles))
 
            (profile
-            (unless (seq-empty-p profiles)
-              (nil-blank-string
+            (when profiles
+              (jtk-clojure--nil-if-blank
                (completing-read "jack-in repl with profile: "
                                 profiles nil nil nil nil "")))))
 
       (if profile
-          (cider-jack-in-with-profile profile)
+          (jtk-clojure-jack-in-with-profile profile)
         (cider-jack-in nil))))
 
-  (defun cider-jack-in-cljs-dwim ()
+  (defun jtk-clojure-jack-in-cljs-dwim ()
+    "Start a ClojureScript REPL with the desktop development profile."
     (interactive)
-    (let ((cider-lein-parameters
-           (concat "with-profile -dev,+dev-desktop repl")))
+    (let ((cider-lein-parameters "with-profile -dev,+dev-desktop repl"))
       (cider-jack-in-cljs nil)))
 
-  (defun cider-eval-dwim ()
+  (defun jtk-clojure-eval-dwim ()
+    "Evaluate the form inside a `comment' at point, else the top form.
+A test definition is run as a test as well."
     (interactive)
     (save-excursion
       (let ((cursor nil)
@@ -188,7 +189,8 @@
         (when (string-match-p "^(\\([^\/]*\/\\)?deftest" (cider-sexp-at-point))
           (cider-test-run-test)))))
 
-  (defun cider-repl-user-system-start ()
+  (defun jtk-clojure-user-system-start ()
+    "Start the user system, or restart it if it runs."
     (interactive)
     (cider-interactive-eval
      "(if-let [system-go (resolve 'user/system-go!)]
@@ -199,28 +201,33 @@
           (user/system-restart!))
         (user/system-restart!))"))
 
-  (defun cider-repl-user-system-stop ()
+  (defun jtk-clojure-user-system-stop ()
+    "Stop the user system."
     (interactive)
     (cider-interactive-eval
      "(user/system-stop!)"))
 
-  (defun cider-figwheel-main-profiles ()
+  (defun jtk-clojure--figwheel-builds ()
+    "Return the figwheel-main builds of the project: its *.cljs.edn files."
     (thread-last
       (jtk-project-root)
       (directory-files)
-      (seq-filter (lambda (filename) (s-ends-with? ".cljs.edn" filename)))
-      (seq-map (lambda (build-filename) (substring build-filename 0 (- 0 (length ".cljs.edn")))))))
+      (seq-filter (lambda (filename)
+                    (string-suffix-p ".cljs.edn" filename)))
+      (seq-map (lambda (filename)
+                 (string-remove-suffix ".cljs.edn" filename)))))
 
-  (defun cider-repl-user-fig-init ()
+  (defun jtk-clojure-figwheel-start ()
+    "Start a figwheel-main build, chosen among the project's."
     (interactive)
-    (let* ((profiles
-            (cider-figwheel-main-profiles))
+    (let* ((builds
+            (jtk-clojure--figwheel-builds))
 
            (build
-            (unless (seq-empty-p profiles)
-              (nil-blank-string
+            (when builds
+              (jtk-clojure--nil-if-blank
                (completing-read "jack-in cljs-repl with build: "
-                                profiles nil nil nil nil "")))))
+                                builds nil nil nil nil "")))))
 
       (cider-interactive-eval
        (if build
@@ -230,24 +237,24 @@
             build)
          "(user/fig-init)"))))
 
-  (defun cider-repl-user-quit-cljs-repl ()
+  (defun jtk-clojure-figwheel-quit ()
+    "Leave the ClojureScript REPL."
     (interactive)
     (cider-interactive-eval
      ":cljs/quit"))
 
-  (defun cider-repl-user-switch-cljs-repl ()
+  (defun jtk-clojure-figwheel-switch ()
+    "Switch the ClojureScript REPL to another figwheel-main build."
     (interactive)
-    (let* ((profiles
-            (cider-figwheel-main-profiles))
+    (let* ((builds
+            (jtk-clojure--figwheel-builds))
 
            (build
-            (unless (seq-empty-p profiles)
-              (nil-blank-string
-               (completing-read "switch cljs-repl to build: "
-                                profiles nil nil nil nil ""))))
-
-           (build
-            (or build "dev")))
+            (or (when builds
+                  (jtk-clojure--nil-if-blank
+                   (completing-read "switch cljs-repl to build: "
+                                    builds nil nil nil nil "")))
+                "dev")))
 
       (cider-interactive-eval
        ":cljs/quit")
@@ -258,15 +265,17 @@
        (format
         "(require 'figwheel.main.api)
          (figwheel.main.api/cljs-repl \"%s\")"
-        build build))
-      ))
+        build))))
 
-  (defun cider-repl-refresh-all ()
+  (defun jtk-clojure-refresh-all ()
+    "Reload all namespaces with tools.namespace."
     (interactive)
     (cider-interactive-eval
-     "(do (require 'clojure.tools.namespace.repl) (clojure.tools.namespace.repl/refresh-all))"))
+     "(do (require 'clojure.tools.namespace.repl)
+          (clojure.tools.namespace.repl/refresh-all))"))
 
-  (defun cider-repl-switch-to-repl-buffer-and-ns ()
+  (defun jtk-clojure-switch-to-repl-and-ns ()
+    "Switch to the REPL, in the namespace of the current buffer."
     (interactive)
     (call-interactively 'cider-repl-set-ns)
     (call-interactively 'cider-switch-to-repl-buffer))
@@ -306,7 +315,6 @@
    (println 'defun)
    (pprint 'defun)
    (lazy-seq'defun)
-   (routes 'defun)
    (render 'defun)
    (go 'defun)
    (html 'defun)
@@ -370,7 +378,6 @@
    (reg-acofx 'defun)
    (reg-acofx-by-fx 'defun)
    (as-task 'defun)
-   (register 'defun)
    (reg 'defun)
    (reg-remote-sub 'defun)
    (reg-remote-sub-raw 'defun)
@@ -385,11 +392,11 @@
   :bind
   (:map clojure-mode-map
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
-        ("C-c C-M-S-J" . cider-repl-switch-to-repl-buffer-and-ns)
+        ("C-c C-M-S-J" . jtk-clojure-switch-to-repl-and-ns)
 
         :map cider-mode-map
         ("C-M-g" . cider-interrupt)
-        ("C-c C-c" . cider-eval-dwim)
+        ("C-c C-c" . jtk-clojure-eval-dwim)
         ("C-M-x" . cider-eval-last-sexp)
         ("C-M-S-X" . cider-insert-last-sexp-in-repl)
         ("C-c M-k" . cider-load-buffer)
@@ -403,7 +410,7 @@
 
         ("C-c M-j" . nil)
         ("C-c C-M-j" . cider-switch-to-repl-buffer)
-        ("C-c C-M-S-J" . cider-repl-switch-to-repl-buffer-and-ns)
+        ("C-c C-M-S-J" . jtk-clojure-switch-to-repl-and-ns)
 
         ("C-c M-q" . cider-quit)
         ("C-c M-r" . cider-restart)
@@ -411,11 +418,11 @@
         ("C-c M-c" . cider-completion-flush-caches)
 
         ("M-u" . nil)
-        ("M-u s" . cider-repl-user-system-start)
-        ("M-u S" . cider-repl-user-system-stop)
-        ("M-u f" . cider-repl-user-fig-init)
-        ("M-u w" . cider-repl-user-switch-cljs-repl)
-        ("M-u W" . cider-repl-user-quit-cljs-repl)
+        ("M-u s" . jtk-clojure-user-system-start)
+        ("M-u S" . jtk-clojure-user-system-stop)
+        ("M-u f" . jtk-clojure-figwheel-start)
+        ("M-u w" . jtk-clojure-figwheel-switch)
+        ("M-u W" . jtk-clojure-figwheel-quit)
 
         :map cider-repl-mode-map
         ("C-c M-j" . nil)
@@ -440,11 +447,11 @@
         ("M-j n" . cider-find-ns)
 
         ("M-u" . nil)
-        ("M-u s" . cider-repl-user-system-start)
-        ("M-u S" . cider-repl-user-system-stop)
-        ("M-u f" . cider-repl-user-fig-init)
-        ("M-u w" . cider-repl-user-switch-cljs-repl)
-        ("M-u W" . cider-repl-user-quit-cljs-repl)
+        ("M-u s" . jtk-clojure-user-system-start)
+        ("M-u S" . jtk-clojure-user-system-stop)
+        ("M-u f" . jtk-clojure-figwheel-start)
+        ("M-u w" . jtk-clojure-figwheel-switch)
+        ("M-u W" . jtk-clojure-figwheel-quit)
 
         ("C-c M-q" . cider-quit)
         ("C-c M-r" . cider-restart)

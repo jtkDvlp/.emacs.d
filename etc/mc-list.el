@@ -46,7 +46,7 @@
 
 (setq mc/cmds-to-run-once
       '(
-        cider-eval-dwim
+        jtk-clojure-eval-dwim
         mac-mwheel-scroll
         mouse-drag-vertical-line
         mouse-set-region

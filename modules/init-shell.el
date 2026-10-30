@@ -130,8 +130,8 @@
 
   (defun eshell/repl (&rest profile)
     (if (seq-empty-p profile)
-        (call-interactively 'cider-jack-in-dwim)
-      (cider-jack-in-with-profile (apply 'concat profile))))
+        (call-interactively 'jtk-clojure-jack-in-dwim)
+      (jtk-clojure-jack-in-with-profile (apply 'concat profile))))
 
   (defun eshell/nvm (version)
     (nvm-use version))
