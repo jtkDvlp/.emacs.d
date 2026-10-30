@@ -9,6 +9,37 @@
 
 (require 'jtk-project)
 
+(defvar eglot-server-programs)
+
+;; WATCHOUT: typescript-language-server brings no TypeScript of its own; it
+;; looks for the project's node_modules/typescript and fails to start
+;; ("Could not find a valid TypeScript installation") where a project
+;; has none, as most plain JavaScript projects.  It is then pointed to a
+;; global installation (npm install -g typescript, or brew).
+(defun jtk-javascript--global-typescript ()
+  "Return the lib directory of a global TypeScript installation, or nil."
+  (let ((npm-root (when (executable-find "npm")
+                    (string-trim (shell-command-to-string "npm root -g")))))
+    (seq-find
+     #'file-directory-p
+     (delq nil
+           (list (when npm-root
+                   (expand-file-name "typescript/lib" npm-root))
+                 (concat "/opt/homebrew/opt/typescript/libexec/lib/"
+                         "node_modules/typescript/lib"))))))
+
+(defun jtk-javascript-server-contact (&optional _interactive)
+  "Return how eglot starts typescript-language-server for this project."
+  (let ((own-typescript
+         (when-let* ((root (jtk-project-root)))
+           (file-directory-p (expand-file-name "node_modules/typescript"
+                                               root))))
+        (global-typescript
+         (jtk-javascript--global-typescript)))
+    `("typescript-language-server" "--stdio"
+      ,@(when (and (not own-typescript) global-typescript)
+          `(:initializationOptions (:tsserver (:path ,global-typescript)))))))
+
 (use-package
   js
   :ensure nil
@@ -17,11 +48,16 @@
   (setopt treesit-enabled-modes (cons 'js-ts-mode treesit-enabled-modes))
 
   ;; NOTE: typescript-language-server, installed outside Emacs, serves
-  ;; JavaScript as well.
+  ;; JavaScript as well; see `jtk-javascript-server-contact'.
   :hook
   (js-ts-mode . eglot-ensure)
 
   :config
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '((js-ts-mode :language-id "javascript")
+                   . jtk-javascript-server-contact)))
+
   (defun jtk-javascript-transpose-line-up ()
     "Move the current line above the previous one."
     (interactive)
