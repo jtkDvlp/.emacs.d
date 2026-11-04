@@ -15,18 +15,29 @@
 ;; looks for the project's node_modules/typescript and fails to start
 ;; ("Could not find a valid TypeScript installation") where a project
 ;; has none, as most plain JavaScript projects.  It is then pointed to a
-;; global installation (npm install -g typescript, or brew).
+;; global installation (brew install typescript, or npm install -g).
+(defun jtk-javascript--typescript-of-tsc ()
+  "Return the lib directory of the TypeScript whose tsc is on the PATH.
+tsc is a chain of links into the package, as Homebrew lays it out
+(bin/tsc to the Cellar to libexec/lib/node_modules/typescript/bin/tsc)
+or npm does; its real file sits in the package's bin directory."
+  (when-let* ((tsc (executable-find "tsc"))
+              (lib (expand-file-name
+                    "../lib" (file-name-directory (file-truename tsc))))
+              ((file-exists-p (expand-file-name "tsserver.js" lib))))
+    lib))
+
 (defun jtk-javascript--global-typescript ()
-  "Return the lib directory of a global TypeScript installation, or nil."
-  (let ((npm-root (when (executable-find "npm")
-                    (string-trim (shell-command-to-string "npm root -g")))))
-    (seq-find
-     #'file-directory-p
-     (delq nil
-           (list (when npm-root
-                   (expand-file-name "typescript/lib" npm-root))
-                 (concat "/opt/homebrew/opt/typescript/libexec/lib/"
-                         "node_modules/typescript/lib"))))))
+  "Return the lib directory of a global TypeScript installation, or nil.
+Tried in turn: the one whose tsc is on the PATH, the one in npm's
+global root."
+  (or (jtk-javascript--typescript-of-tsc)
+      (when-let* (((executable-find "npm"))
+                  (root (string-trim
+                         (shell-command-to-string "npm root -g")))
+                  (lib (expand-file-name "typescript/lib" root))
+                  ((file-directory-p lib)))
+        lib)))
 
 (defun jtk-javascript-server-contact (&optional _interactive)
   "Return how eglot starts typescript-language-server for this project."
