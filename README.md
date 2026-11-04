@@ -25,7 +25,7 @@ serves is simply missing.
 |---|---|---|
 | Xcode command line tools | `xcode-select --install` | compiling tree-sitter grammars, which Emacs offers to install on the first file of a kind |
 | clojure-lsp | `brew install clojure-lsp/brew/clojure-lsp-native` | Clojure and ClojureScript: findings (clj-kondo), references, renaming, code actions, reference counts |
-| typescript-language-server, typescript | `npm install -g typescript-language-server typescript` (or `brew install typescript-language-server typescript`) | JavaScript through eglot; typescript is used where a project has none in its `node_modules` |
+| typescript-language-server, typescript 6 or older | `npm install -g typescript-language-server typescript@6` | JavaScript through eglot; the global typescript is used where a project has none in its `node_modules`. TypeScript 7 (Homebrew's `typescript` today) is native and has no `tsserver.js`, which the server needs |
 | lemminx | binary `lemminx-osx-…` from the [vscode-xml releases](https://github.com/redhat-developer/vscode-xml/releases), on `PATH`; `xattr -d com.apple.quarantine lemminx` once | XML: validation and completion from XML Schema and DTDs, formatting |
 | xmllint | comes with macOS | formatting XML where lemminx does not run (`M-r =`) |
 | shellcheck | `brew install shellcheck` | findings in shell scripts (flymake) |

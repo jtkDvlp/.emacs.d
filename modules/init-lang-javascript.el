@@ -15,7 +15,8 @@
 ;; looks for the project's node_modules/typescript and fails to start
 ;; ("Could not find a valid TypeScript installation") where a project
 ;; has none, as most plain JavaScript projects.  It is then pointed to a
-;; global installation (brew install typescript, or npm install -g).
+;; global installation of TypeScript 6 or older (npm install -g
+;; typescript@6): TypeScript 7 is native and has no tsserver.js.
 (defun jtk-javascript--typescript-of-tsc ()
   "Return the lib directory of the TypeScript whose tsc is on the PATH.
 tsc is a chain of links into the package, as Homebrew lays it out
