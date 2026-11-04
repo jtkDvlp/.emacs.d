@@ -1164,7 +1164,7 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 |---|---|---|
 | Zeilennummern | `display-line-numbers-mode` statt linum | siehe Messung; linum ist seit 29 veraltet |
 | Entfernt | tide, PHP, basic-mode, platformio-mode, indium, js2-mode, js2-refactor, xref-js2, npm-mode, clj-refactor, scss-mode- und sass-mode-Paket; mit ihnen flycheck, projectile, paredit, haml-mode | nicht mehr gebraucht bzw. ersetzt |
-| JS | js-ts-mode mit typescript-language-server über eglot | eingebaut; der Server liefert, was js2-refactor und xref-js2 lieferten |
+| JS | js-ts-mode mit TypeScripts eigenem Language-Server (`tsc --lsp --stdio`, ab TypeScript 7) über eglot; ohne `tsc` kein Server | eingebaut; der Server liefert, was js2-refactor und xref-js2 lieferten. typescript-language-server verworfen: braucht `tsserver.js`, das TypeScript 7 nicht mehr hat |
 | Node, npm | envrc (direnv, Node-Version je Projekt aus `.envrc`), eigene npm-Befehle über `compile` unter `C-c M-j` und `j` | npm-mode (2019) und nvm.el (2024-09) stehen still; npm.el zog über jest js2-mode, magit-popup und projectile nach |
 | Clojure-Modus | bleibt clojure-mode | clojure-ts-mode färbt schneller ein, öffnet aber langsamer, aggressive-indent braucht dort 174 statt 0,7 ms, und die Einrückungsregeln gälten nicht |
 | Clojure-Refactoring | clojure-lsp statt clj-refactor; `M-r r/a/o/=` | ohne REPL; beendet `M-r` als clj-refactor-Präfix in jedem Buffer |
@@ -1182,7 +1182,7 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 - `eshell/nvm` (init-shell) ruft `nvm-use` aus dem nie installierten nvm.el. Bleibt für 2.9; mit envrc ist es überflüssig.
 
 **Geprüft im Batch:**
-- **JS:** js-ts-mode mit Parser; `C-M-<up>` vertauscht Zeilen. eglot kennt typescript-language-server von Haus aus; der Server selbst ist in der Cloud nicht installiert.
+- **JS:** js-ts-mode mit Parser; `C-M-<up>` vertauscht Zeilen. Mit TypeScript 7.0.2 (`tsc --lsp --stdio`) verbindet eglot (Server „typescript-go“), findet Definition und Referenzen. Befunde gibt es in reinem JS erst mit `checkJs` in einer `jsconfig.json`.
 - **npm:** Projektart in einem Projekt mit `package.json`; die Skripte werden aus `package.json` gelesen; Befehle laufen in der Projektwurzel.
 - **Clojure:** `M-r r/a` sind eglot; `M-j d/r` gehen über xref, und eglot steht vor CIDER; außerhalb von eglot ist `M-r` wieder Emacs' eigenes.
 - **Profile:** aus einem `project.clj` mit `#(…)`, `#"…"`, `^:replace` und `~(…)` richtig gelesen; ein kaputtes `project.clj` startet ohne Profil.
@@ -1191,7 +1191,7 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 - **Schnappschuss-Diff:** nur die erwarteten Tasten, Modi und Dateizuordnungen.
 
 **Offen für die Sichtung in der GUI:**
-- typescript-language-server in einem JS-Projekt;
+- TypeScripts Language-Server in einem JS-Projekt;
 - lemminx und Formatieren in XML;
 - md-mode im Alltag;
 - direnv mit `.envrc` in einem Node-Projekt.
@@ -1260,7 +1260,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | clj-refactor | M | clojure | Refactoring | **entfernt** (2.8), clojure-lsp | Ja |
 | parseedn | M | clojure | `project.clj` lesen | nicht mehr selbst benutzt (2.8); bleibt als Abhängigkeit von CIDER | |
 | flycheck-clj-kondo | M | clojure | Linter | **entfernt** (2.7), clj-kondo kommt über clojure-lsp | |
-| js2-mode / js2-refactor / xref-js2 | M | javascript | JS | **ersetzt** (2.8) durch js-ts-mode + typescript-language-server | |
+| js2-mode / js2-refactor / xref-js2 | M | javascript | JS | **ersetzt** (2.8) durch js-ts-mode + TypeScripts Language-Server | |
 | indium | M | javascript | JS-Debugger | **entfernt** (2.8), letzter Commit 2021 | |
 | tide / npm-mode | M | typescript | TS | **entfernt** (2.8); npm-Befehle eigene, Node-Version über envrc | |
 | web-mode | M | html | HTML/XML/XSL | bleibt für HTML (2.8); XML an nxml-mode | |
@@ -1285,7 +1285,7 @@ Noch nicht in der Konfiguration; aufgenommen auf deinen Wunsch
 | treesit-auto | Emacs-Paket, MELPA | 2.7 | `*-ts-mode` und Grammatiken automatisch | **verworfen** (2.7): Emacs 31 kann das selbst (`treesit-enabled-modes`, Installation auf Nachfrage) |
 | clojure-lsp | Language-Server | 2.7 | Navigation, Refactoring, clj-kondo-Befunde | **aufgenommen** (2.7), neben CIDER; Überschneidung mit clj-refactor klärt 2.8 |
 | clojure-ts-mode | Emacs-Paket, NonGNU ELPA | 2.8 Clojure | tree-sitter-Modus für Clojure | **verworfen** (2.8) nach Messung: langsameres Öffnen, aggressive-indent 250-mal langsamer, eigene Einrückungsregeln gälten nicht |
-| typescript-language-server | Language-Server (npm) | 2.8 JS | JavaScript | **aufgenommen** (2.8) |
+| typescript-language-server | Language-Server (npm) | 2.8 JS | JavaScript | **verworfen** (2.8): kann TypeScript 7 nicht nutzen; dessen `tsc --lsp --stdio` ersetzt ihn |
 | basedpyright bzw. pyright, dazu ruff | Language-Server | 2.8 Python | Python | ersetzt elpy |
 | vscode-langservers-extracted | Language-Server (npm) | 2.8 HTML/CSS | HTML, CSS/SCSS, JSON | scss ist als benutzt markiert |
 | eat | Emacs-Paket, NonGNU ELPA | 2.9 Werkzeuge | Terminal-Emulator in Emacs; kann in eshell Programme mit Vollbild-Ausgabe zeigen (`eat-eshell-mode`) | aufgenommen auf Wunsch (2026-10-29); Pflegestand im Review nachsehen |

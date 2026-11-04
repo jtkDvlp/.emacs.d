@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 
-;; js-ts-mode, the tree-sitter mode, with typescript-language-server
+;; js-ts-mode, the tree-sitter mode, with TypeScript's language server
 ;; through eglot and keys for structural editing, and npm's commands.
 
 ;;; Code:
@@ -11,46 +11,14 @@
 
 (defvar eglot-server-programs)
 
-;; WATCHOUT: typescript-language-server brings no TypeScript of its own; it
-;; looks for the project's node_modules/typescript and fails to start
-;; ("Could not find a valid TypeScript installation") where a project
-;; has none, as most plain JavaScript projects.  It is then pointed to a
-;; global installation of TypeScript 6 or older (npm install -g
-;; typescript@6): TypeScript 7 is native and has no tsserver.js.
-(defun jtk-javascript--typescript-of-tsc ()
-  "Return the lib directory of the TypeScript whose tsc is on the PATH.
-tsc is a chain of links into the package, as Homebrew lays it out
-(bin/tsc to the Cellar to libexec/lib/node_modules/typescript/bin/tsc)
-or npm does; its real file sits in the package's bin directory."
-  (when-let* ((tsc (executable-find "tsc"))
-              (lib (expand-file-name
-                    "../lib" (file-name-directory (file-truename tsc))))
-              ((file-exists-p (expand-file-name "tsserver.js" lib))))
-    lib))
-
-(defun jtk-javascript--global-typescript ()
-  "Return the lib directory of a global TypeScript installation, or nil.
-Tried in turn: the one whose tsc is on the PATH, the one in npm's
-global root."
-  (or (jtk-javascript--typescript-of-tsc)
-      (when-let* (((executable-find "npm"))
-                  (root (string-trim
-                         (shell-command-to-string "npm root -g")))
-                  (lib (expand-file-name "typescript/lib" root))
-                  ((file-directory-p lib)))
-        lib)))
-
-(defun jtk-javascript-server-contact (&optional _interactive)
-  "Return how eglot starts typescript-language-server for this project."
-  (let ((own-typescript
-         (when-let* ((root (jtk-project-root)))
-           (file-directory-p (expand-file-name "node_modules/typescript"
-                                               root))))
-        (global-typescript
-         (jtk-javascript--global-typescript)))
-    `("typescript-language-server" "--stdio"
-      ,@(when (and (not own-typescript) global-typescript)
-          `(:initializationOptions (:tsserver (:path ,global-typescript)))))))
+;; NOTE: TypeScript 7 serves JavaScript itself, through `tsc --lsp
+;; --stdio'; typescript-language-server cannot use it, since TypeScript 7
+;; is native and has no tsserver.js.  Without tsc on the PATH, there is
+;; simply no language server.
+(defun jtk-javascript-start-language-server ()
+  "Start TypeScript's language server through eglot, if tsc is installed."
+  (when (executable-find "tsc")
+    (eglot-ensure)))
 
 (use-package
   js
@@ -59,16 +27,14 @@ global root."
   :init
   (setopt treesit-enabled-modes (cons 'js-ts-mode treesit-enabled-modes))
 
-  ;; NOTE: typescript-language-server, installed outside Emacs, serves
-  ;; JavaScript as well; see `jtk-javascript-server-contact'.
   :hook
-  (js-ts-mode . eglot-ensure)
+  (js-ts-mode . jtk-javascript-start-language-server)
 
   :config
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs
                  '((js-ts-mode :language-id "javascript")
-                   . jtk-javascript-server-contact)))
+                   . ("tsc" "--lsp" "--stdio"))))
 
   (defun jtk-javascript-transpose-line-up ()
     "Move the current line above the previous one."
