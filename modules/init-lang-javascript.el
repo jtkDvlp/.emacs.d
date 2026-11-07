@@ -10,6 +10,7 @@
 (require 'jtk-project)
 
 (defvar eglot-server-programs)
+(defvar eglot-workspace-configuration)
 
 ;; NOTE: TypeScript 7 serves JavaScript itself, through `tsc --lsp
 ;; --stdio'; typescript-language-server cannot use it, since TypeScript 7
@@ -34,7 +35,16 @@
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs
                  '((js-ts-mode :language-id "javascript")
-                   . ("tsc" "--lsp" "--stdio"))))
+                   . ("tsc" "--lsp" "--stdio")))
+    ;; NOTE: The server counts references as code lenses only when asked
+    ;; to; then each function shows them at the end of its line, as in
+    ;; Clojure.  Unused imports, functions and variables it reports
+    ;; anyway, greyed out.
+    (setq-default eglot-workspace-configuration
+                  (plist-put (default-value 'eglot-workspace-configuration)
+                             :javascript
+                             '(:referencesCodeLens
+                               (:enabled t :showOnAllFunctions t)))))
 
   (defun jtk-javascript-transpose-line-up ()
     "Move the current line above the previous one."
