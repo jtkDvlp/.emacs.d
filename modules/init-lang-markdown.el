@@ -16,7 +16,13 @@
   md-mode
   :ensure (:host github :repo "yibie/md-mode")
   :mode
-  ("\\.\\(md\\|markdown\\)\\'" . md-mode))
+  ("\\.\\(md\\|markdown\\)\\'" . md-mode)
+
+  ;; NOTE: Rendering is to Markdown what evaluating the buffer is to
+  ;; code, so it takes that key as well as md-mode's own C-c C-v.
+  :bind
+  (:map md-mode-map
+        ("C-c M-k" . md-mode-toggle-markup)))
 
 (use-package
   markdown-mode

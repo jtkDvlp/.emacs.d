@@ -5,8 +5,8 @@
 ;; nxml-mode for XML, XSLT and XML Schema: validation while typing
 ;; against a schema (Emacs brings one for XSLT 1.0), completion of
 ;; elements and attributes, closing tags, moving by elements with the
-;; keys for structural editing, folding elements (hideshow's C-c @
-;; keys), and formatting.
+;; keys for structural editing, folding elements (TAB and S-TAB, as in
+;; code; init-editing), and formatting (M-r =).
 ;; lemminx, a language server installed outside Emacs, adds validation
 ;; and completion from XML Schema and DTDs through eglot.
 

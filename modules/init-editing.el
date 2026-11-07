@@ -3,7 +3,7 @@
 ;;; Commentary:
 
 ;; Keyboard macros, jumping (to definitions, references and lines),
-;; documentation at point, growing the region, narrowing, undo,
+;; documentation at point, growing the region, narrowing, folding, undo,
 ;; multiple cursors, comments, trailing whitespace, indentation and
 ;; symbol highlighting.  Editing by s-expressions is in
 ;; init-structural-editing.
@@ -74,6 +74,25 @@
   :bind
   (("C--" . jtk-narrow-dwim)
    ("C-+" . jtk-narrow-widen)))
+
+;; NOTE: Folding as in Org and Markdown: TAB on the first line of a block,
+;; within its indentation, hides or shows it; S-TAB hides or shows all.
+;; Elsewhere TAB keeps its meaning.
+(defun jtk-editing-at-indentation-p ()
+  "Return non-nil if point is within the indentation of its line."
+  (<= (current-column) (current-indentation)))
+
+(use-package
+  hideshow
+  :ensure nil
+  :diminish hs-minor-mode
+  :hook
+  (prog-mode . hs-minor-mode)
+  :custom
+  (hs-cycle-filter #'jtk-editing-at-indentation-p)
+  :bind
+  (:map hs-minor-mode-map
+        ("<backtab>" . hs-toggle-all)))
 
 ;; NOTE: Emacs' own undo: C-/ undoes, C-? redoes (`undo-redo'), and
 ;; vundo shows the tree of changes to walk through.  M-_ redoes as well.
