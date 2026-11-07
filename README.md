@@ -34,6 +34,38 @@ serves is simply missing.
 | node, npm | via nvm or `brew install node` | the npm commands under `C-c M-j` |
 | multimarkdown | `brew install multimarkdown` | markdown-mode's preview |
 
+## Per-project environment (direnv)
+
+`envrc` gives the buffers of a project the environment of its `.envrc`,
+so shells, `C-c M-j` (npm) and language servers see the project's Node
+version and variables. Set up once:
+
+```bash
+brew install direnv
+# for the terminal, in ~/.zshrc (Emacs does not need it):
+eval "$(direnv hook zsh)"
+```
+
+and, for Node from nvm, in `~/.config/direnv/direnvrc`:
+
+```bash
+export NODE_VERSIONS="$HOME/.nvm/versions/node"
+export NODE_VERSION_PREFIX="v"
+```
+
+Per project, a `.envrc` in its root:
+
+```bash
+use node      # version from .nvmrc or .node-version, or e.g. "use node 20"
+layout node   # ./node_modules/.bin on the PATH
+# export API_URL=http://localhost:3000   # variables for this project only
+# dotenv                                 # read a .env file as well
+```
+
+then `direnv allow` in that directory, again after every change to it.
+`node --version` in eshell (`M-! s s`) in a file of the project shows
+the version the `.envrc` names.
+
 ## Keys
 
 - Global keys are for global tasks: files, buffers, windows, search,
