@@ -16,6 +16,56 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 - `scripts/check`: loads and byte-compiles the configuration in batch
   mode; CI runs it on every push.
 
+## External tools
+
+Installed outside Emacs; each is optional, and without it the feature it
+serves is simply missing.
+
+| Tool | Install | Used for |
+|---|---|---|
+| Xcode command line tools | `xcode-select --install` | compiling tree-sitter grammars, which Emacs offers to install on the first file of a kind |
+| clojure-lsp | `brew install clojure-lsp/brew/clojure-lsp-native` | Clojure and ClojureScript: findings (clj-kondo), references, renaming, code actions, reference counts |
+| typescript 7 or newer | `brew install typescript` | JavaScript through eglot (`tsc --lsp --stdio`); without it, JavaScript has no language server |
+| lemminx | binary `lemminx-osx-…` from the [vscode-xml releases](https://github.com/redhat-developer/vscode-xml/releases), on `PATH`; `xattr -d com.apple.quarantine lemminx` once | XML: validation and completion from XML Schema and DTDs, formatting |
+| xmllint | comes with macOS | formatting XML where lemminx does not run (`M-r =`) |
+| shellcheck | `brew install shellcheck` | findings in shell scripts (flymake) |
+| direnv | `brew install direnv` | per-project environment from `.envrc`, e.g. the Node version (`use nvm`, `layout node`) |
+| Leiningen, Clojure CLI | `brew install leiningen clojure` | CIDER's jack-in |
+| node, npm | via nvm or `brew install node` | the npm commands under `C-c M-j` |
+| multimarkdown | `brew install multimarkdown` | markdown-mode's preview |
+
+## Per-project environment (direnv)
+
+`envrc` gives the buffers of a project the environment of its `.envrc`,
+so shells, `C-c M-j` (npm) and language servers see the project's Node
+version and variables. Set up once:
+
+```bash
+brew install direnv
+# for the terminal, in ~/.zshrc (Emacs does not need it):
+eval "$(direnv hook zsh)"
+```
+
+and, for Node from nvm, in `~/.config/direnv/direnvrc`:
+
+```bash
+export NODE_VERSIONS="$HOME/.nvm/versions/node"
+export NODE_VERSION_PREFIX="v"
+```
+
+Per project, a `.envrc` in its root:
+
+```bash
+use node      # version from .nvmrc or .node-version, or e.g. "use node 20"
+layout node   # ./node_modules/.bin on the PATH
+# export API_URL=http://localhost:3000   # variables for this project only
+# dotenv                                 # read a .env file as well
+```
+
+then `direnv allow` in that directory, again after every change to it.
+`node --version` in eshell (`M-! s s`) in a file of the project shows
+the version the `.envrc` names.
+
 ## Keys
 
 - Global keys are for global tasks: files, buffers, windows, search,
@@ -39,17 +89,35 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 - A list exported with `C-o` into a buffer of its own (projects, for
   instance) takes the same action keys directly on the entry under the
   cursor: `e` on a project opens eshell there; `M-a` turns that off.
-- Each kind of project (Clojure, npm, PlatformIO) brings its commands,
-  under `C-c M-j` in its buffers and under `j` in the project commands.
+- Each kind of project (Clojure, npm) brings its commands, under
+  `C-c M-j` in every buffer of the project and under `j` in the project
+  commands.
 - `M-X` lists the commands that fit the current buffer, with their
   keys; `C-h b` lists all keys of the buffer to search (with `C-u` the
   global ones too).
+
+Same purpose, same key, in every language that has it:
+
+| Purpose | Key |
+|---|---|
+| move along / into / out of the structure (s-expressions, elements) | `C-<left>` `C-<right>` `C-<down>` `C-<up>` |
+| change the structure (slurp, barf, raise, …) | `M-<arrows>`, `C-M-<arrows>`; see `init-structural-editing` |
+| jump to definition / references / line; search names | `M-j d` / `M-j r` / `M-j l`; `M-j s`; `M-J` goes back |
+| documentation at point | `C-h h` |
+| rename / code actions / organise imports / format | `M-r r` / `M-r a` / `M-r o` / `M-r =` |
+| evaluate the form at point / the last one / the buffer | `C-c C-c` / `C-M-x` / `C-c M-k` (Markdown: render) |
+| commands of the project's kind (REPL, npm) | `C-c M-j`, in every buffer of the project |
+| next / previous finding, list them | `C-c ! n` / `C-c ! p`, `C-c ! l` |
+| fold the block whose first line point is on / all blocks | `TAB` within the line's indentation / `S-TAB` |
+| narrow to the region or defun / widen | `C--` / `C-+` |
+| comment | `C-;` |
 
 | Prefix | Keymap | Module | For |
 |---|---|---|---|
 | `M--` | `jtk-bookmarks-map` | `init-bookmarks` | bookmarks of files, directories, MySQL connections |
 | `M-c` | `jtk-multiple-cursors-map` | `init-editing` | multiple cursors |
-| `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`); `M-J` goes back |
+| `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`), in Clojure apropos (`s`); `M-J` goes back |
+| `M-r` where a language server runs | `eglot-mode-map` | `init-lsp` | renaming (`r`), code actions (`a`), organising imports (`o`), formatting (`=`) |
 | `M-m` | `jtk-highlight-symbol-map` | `init-editing` | next, previous, replace symbol (repeats); `C-m` marks it |
 | `M-!` | `jtk-run-map` | `init-keys` | `m` keyboard macros (`jtk-macro-map`), `s` shells (`jtk-shell-map`) |
 | `M-+` | `jtk-view-map` | `init-keys` | `f` font size (`jtk-zoom-map`), `w` frame size (`jtk-frame-map`); both repeat |
@@ -59,9 +127,6 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 | `C-M--` | `jtk-org-map` | `init-org` | capturing, agenda |
 | `C-x x` | `ctl-x-x-map` (Emacs) | `init-project`, `init-treemacs` | switching projects (`f`), file tree (`d`) |
 | `C-x x p` | `jtk-project-map` | `init-project`, languages | project commands: Emacs' `C-x p` with consult for buffers (`b`) and grep (`g`), Magit (`v`, `m`), commands of the project's kinds (`j`) |
-| `C-c M-j` in a project kind's buffers | `jtk-clojure-project-map`, npm-mode's, platformio-mode's | languages | starting or connecting a REPL, npm, PlatformIO |
+| `C-c M-j` in a project of a known kind | `jtk-project-run-kind-command`, in Clojure buffers `jtk-clojure-project-map` | `init-project`, languages | starting or connecting a REPL; npm install, run, update |
 | `C-a` in HTML | `jtk-html-attribute-map` | `init-lang-html` | editing attributes (repeats) |
 
-## todo
-- support language php
-- support language typescript

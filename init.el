@@ -43,14 +43,12 @@
 (require 'init-shell)
 (require 'init-lang-csv)
 (require 'init-lang-elisp)
-(require 'init-lang-typescript)
 (require 'init-lang-javascript)
-;; (require 'init-lang-php)
 (require 'init-lang-html)
+(require 'init-lang-xml)
 (require 'init-lang-css)
+(require 'init-lang-jenkinsfile)
 (require 'init-lang-clojure)
-(require 'init-lang-basic)
-(require 'init-lang-c)
 
 (provide 'init)
 

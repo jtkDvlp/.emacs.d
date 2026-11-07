@@ -27,7 +27,6 @@
         org-metaright
         org-self-insert-command
         org-shiftright
-        platformio-build
         sp-backward-sexp
         sp-backward-up-sexp
         sp-convolute-sexp
@@ -47,9 +46,8 @@
 
 (setq mc/cmds-to-run-once
       '(
-        cider-eval-dwim
+        jtk-clojure-eval-dwim
         mac-mwheel-scroll
         mouse-drag-vertical-line
         mouse-set-region
-        platformio-build
         ))

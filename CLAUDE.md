@@ -25,17 +25,17 @@ Conventional Commits trotzdem, damit die Historie lesbar bleibt.
 - Plattform: **nur macOS.** Fallunterscheidungen für Linux, X oder Windows
   (`windows-nt` bei `sql`, `x` bei der PATH-Übernahme) tragen nichts und
   fallen beim jeweiligen Umbau weg.
-- Schwerpunkt: Clojure/ClojureScript mit CIDER; daneben Elisp, JS/TS,
-  HTML/CSS, C++ (PlatformIO), Org (GTD). Python wird nicht mehr unterstützt
-  (seit 2.6).
+- Schwerpunkt: Clojure/ClojureScript mit CIDER; daneben SCSS, etwas CSS,
+  HTML und JS, XML/XSLT, JSON, Jenkinsfile, Shell, Markdown, Elisp, Org
+  (GTD). Weitere Sprachen sind bewusst entfernt (2.6, 2.8).
 
 ## Aufbau (Ist-Stand)
 
 Phase 1 des Plans ist umgesetzt: die Struktur steht. Phase 2 prüft die
 Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 (Tastatur-Infrastruktur), 2.3 (Projekte), 2.4 (Fenster und Tabs), 2.5
-(Editieren), 2.6 (Vervollständigen im Buffer, Snippets) und 2.7
-(Language-Server, flymake, tree-sitter).
+(Editieren), 2.6 (Vervollständigen im Buffer, Snippets), 2.7
+(Language-Server, flymake, tree-sitter) und 2.8 (Sprachen).
 
 | Pfad | Inhalt | versioniert |
 |---|---|---|
@@ -44,9 +44,9 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 | `modules/init-packages.el` | elpaca-Installer (gepinnt über die Lockdatei), `elpaca-use-package`, no-littering, diminish. | ja |
 | `modules/init-core.el` | Grundverhalten ohne eigenes Thema: `local.el`, PATH, Sicherungen, Kodierung, Auto-Revert, Scrollen, Rückfragen. | ja |
 | `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `org`, `startup`, `structural-editing`, `completion`, `checking`, `lsp`, `tree-sitter`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`. Jede Datei sagt im Kopf, was hineingehört. | ja |
-| `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. `init-lang-php` wird nicht geladen. | ja |
+| `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. | ja |
 | `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`lsp-lens`, `narrow`, `project`, `zoom`), Symbole mit Präfix `jtk-`. | ja |
-| `etc/elpaca-lock.eld` | Commit jedes Pakets (83, mit Abhängigkeiten und elpaca selbst). | ja |
+| `etc/elpaca-lock.eld` | Commit jedes Pakets (73, mit Abhängigkeiten und elpaca selbst). | ja |
 | `etc/yasnippet/snippets/` | Handgeschriebene yasnippet-Vorlagen. | ja |
 | `etc/eshell/aliases` | Handgeschriebene eshell-Aliase. | ja |
 | `etc/mc-list.el` | Von multiple-cursors **erzeugt**, aber inhaltlich gepflegt — deshalb versioniert. | ja |
@@ -171,8 +171,8 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   weder Byte-Compiler noch Schnappschuss bemerken den Fehler.
 - **Der Schnappschuss sieht nur, was geladen wird — und nur den
   Endzustand.** Ein Block, der an einem nie geladenen Paket hängt, fehlt
-  vorher wie nachher (so `tide`, das auf das nicht installierte
-  `typescript-mode` wartet). Und weil er alle Pakete auf einmal lädt,
+  vorher wie nachher (so einst `tide`, das auf das nie installierte
+  `typescript-mode` wartete). Und weil er alle Pakete auf einmal lädt,
   sieht er nicht, in welcher Reihenfolge eine echte Sitzung sie lädt:
   Dass CIDER die `C-c M-j`-Familie überschrieb, sobald eine `.clj`-Datei
   offen war, zeigte erst eine Spur der `define-key`-Aufrufe. Für solche
@@ -214,9 +214,9 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   ohne den Hook liefen sie still im aktuellen statt im markierten
   Projekt — kein Fehler, nur das falsche Ziel.
 - **Projektarten teilen sich die Tasten unter `j`.** Bei gleicher Taste
-  gewinnt die zuerst angemeldete Art (heute Clojure vor npm vor
-  PlatformIO, durch die Reihenfolge in `init.el` und weil npm und
-  PlatformIO sich erst anmelden, wenn elpaca ihre Blöcke auswertet).
+  gewinnt die zuerst angemeldete Art (heute Clojure vor npm, durch die
+  Reihenfolge in `init.el` und weil npm sich erst anmeldet, wenn elpaca
+  seinen Block auswertet).
   Wer eine Art hinzufügt, prüft die Tasten gegen die übrigen.
 - **`:bind*` mit `:map` wirkt wie `:bind`.** Die Belegung landet in der
   genannten Mode-Map, nicht in der Override-Map. Das Sternchen dort trägt
@@ -232,6 +232,9 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 - **`:requires` überspringt die ganze Deklaration**, wenn das Feature beim
   Auswerten noch nicht geladen ist — still, ohne Meldung. `:after` ist fast
   immer das Gemeinte.
+- **Externe Programme stehen in der README** (Abschnitt „External
+  tools“). Wer einen Language-Server oder ein Hilfsprogramm einbindet,
+  trägt es dort mit Installationsbefehl ein.
 - **eshell-Tasten gehen über `eshell-mode-map*`**, weil eshell seine
   Mode-Map früher erst beim Start des Modus angelegt hat. Ob das in der
   Zielversion noch nötig ist, ist zu prüfen, bevor es wegfällt.
@@ -252,6 +255,7 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 | nach 2.5, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 88 Einträgen reproduziert | 0 | 20 |
 | nach 2.6, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 84 Einträgen reproduziert | 0 | 20 |
 | nach 2.7, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 83 Einträgen reproduziert | 0 | 20 |
+| nach 2.8, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 73 Einträgen reproduziert | 0 | 17 |
 
 Der Unterschied von 3 Warnungen bis 2.1: Die `ns-*`- und `mac-*`-Variablen
 gibt es nur unter macOS; in der Cloud meldete der Byte-Compiler sie als

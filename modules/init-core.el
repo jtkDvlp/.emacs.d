@@ -22,6 +22,16 @@
   ;; `shell-file-name', and PATH is set up for the login shell.
   (setq shell-file-name "/bin/bash"))
 
+;; NOTE: direnv's .envrc of a project sets PATH and the environment for
+;; its buffers alone, so each project gets its own Node (`use nvm',
+;; `layout node'), Java and so on; shells, compilation and language
+;; servers started there see them too.  Turned on after all packages,
+;; since it has to come first in the hooks it shares with them.
+(use-package
+  envrc
+  :hook
+  (elpaca-after-init . envrc-global-mode))
+
 (global-so-long-mode 1)
 
 (setq

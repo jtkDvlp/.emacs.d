@@ -2,31 +2,59 @@
 
 ;;; Commentary:
 
-;; js2-mode with refactoring, cross references and the indium
-;; debugger.
+;; js-ts-mode, the tree-sitter mode, with TypeScript's language server
+;; through eglot and keys for structural editing, and npm's commands.
 
 ;;; Code:
 
+(require 'jtk-project)
+
+(defvar eglot-server-programs)
+(defvar eglot-workspace-configuration)
+
+;; NOTE: TypeScript 7 serves JavaScript itself, through `tsc --lsp
+;; --stdio'; typescript-language-server cannot use it, since TypeScript 7
+;; is native and has no tsserver.js.  Without tsc on the PATH, there is
+;; simply no language server.
+(defun jtk-javascript-start-language-server ()
+  "Start TypeScript's language server through eglot, if tsc is installed."
+  (when (executable-find "tsc")
+    (eglot-ensure)))
+
 (use-package
-  js2-mode
-  :mode
-  ("\\.js\\'")
+  js
+  :ensure nil
+
+  :init
+  (setopt treesit-enabled-modes (cons 'js-ts-mode treesit-enabled-modes))
+
   :hook
-  (js2-mode . js2-imenu-extras-mode)
+  (js-ts-mode . jtk-javascript-start-language-server)
 
   :config
-  (defun js2-mode-backward-sexp (&optional n)
-    (interactive)
-    (let ((n (if n n 1)))
-      (js2-mode-forward-sexp (* n -1))))
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '((js-ts-mode :language-id "javascript")
+                   . ("tsc" "--lsp" "--stdio")))
+    ;; NOTE: The server counts references as code lenses only when asked
+    ;; to; then each function shows them at the end of its line, as in
+    ;; Clojure.  Unused imports, functions and variables it reports
+    ;; anyway, greyed out.
+    (setq-default eglot-workspace-configuration
+                  (plist-put (default-value 'eglot-workspace-configuration)
+                             :javascript
+                             '(:referencesCodeLens
+                               (:enabled t :showOnAllFunctions t)))))
 
-  (defun js2-mode-forward-transpose ()
+  (defun jtk-javascript-transpose-line-up ()
+    "Move the current line above the previous one."
     (interactive)
     (transpose-lines 1)
     (forward-line -2)
     (indent-according-to-mode))
 
-  (defun js2-mode-backward-transpose ()
+  (defun jtk-javascript-transpose-line-down ()
+    "Move the current line below the next one."
     (interactive)
     (forward-line 1)
     (transpose-lines 1)
@@ -36,42 +64,57 @@
   ;; NOTE: Statements are lines, so moving one up or down transposes
   ;; lines instead of s-expressions.
   (jtk-structural-editing-bind
-   js2-mode-map
-   '(("C-M-<up>" . js2-mode-forward-transpose)
-     ("C-M-<down>" . js2-mode-backward-transpose))))
+   js-ts-mode-map
+   '(("C-M-<up>" . jtk-javascript-transpose-line-up)
+     ("C-M-<down>" . jtk-javascript-transpose-line-down))))
 
-(use-package
-  js2-refactor
-  :after js2-mode
-  :diminish js2-refactor-mode
-  :hook
-  (js2-mode . js2-refactor-mode)
-  :bind
-  (:map js2-mode-map
-        ("M-<down>" . js2r-unwrap)
+;; NOTE: npm runs in the project's root through `compile', so its output
+;; gets a buffer with links to errors; the Node version comes from the
+;; project's .envrc (init-core).
+(defun jtk-npm--run (arguments)
+  "Run npm with ARGUMENTS, a string, in the root of the current project."
+  (let ((default-directory (or (jtk-project-root) default-directory)))
+    (compile (concat "npm " arguments))))
 
-        ("M-r r" . js2r-rename-var)
-        ("M-r o" . js2r-debug-this)
-        ("M-r f" . js2r-extract-function)
-        ("M-r m" . js2r-extract-method)))
+(defun jtk-npm--scripts ()
+  "Return the names of the scripts in the project's package.json."
+  (when-let* ((root (jtk-project-root))
+              (file (expand-file-name "package.json" root))
+              ((file-exists-p file)))
+    (with-temp-buffer
+      (insert-file-contents file)
+      (mapcar #'symbol-name
+              (map-keys (map-elt (json-parse-buffer :object-type 'alist)
+                                 'scripts))))))
 
-(use-package
-  xref-js2
-  :after js2-mode
-  :init
-  ;; NOTE: Buffer-local: the backend answers for every buffer, so on the
-  ;; global hook it would take over xref in all modes without their own.
-  (defun jtk-xref-js2-enable ()
-    (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))
-  :hook
-  (js2-mode . jtk-xref-js2-enable))
+(defun jtk-npm-install ()
+  "Install the project's dependencies."
+  (interactive)
+  (jtk-npm--run "install"))
 
-(use-package
-  indium
-  :after js2-mode
-  :diminish indium-interaction-mode
-  :hook
-  (js2-mode . indium-interaction-mode))
+(defun jtk-npm-update ()
+  "Update the project's dependencies."
+  (interactive)
+  (jtk-npm--run "update"))
+
+(defun jtk-npm-run (script)
+  "Run SCRIPT from the project's package.json."
+  (interactive
+   (list (completing-read "npm run: " (jtk-npm--scripts) nil t)))
+  (jtk-npm--run (concat "run " (shell-quote-argument script))))
+
+;; NOTE: Under C-c M-j in every buffer of a project with a package.json,
+;; and under j in the project commands.
+(defvar-keymap jtk-npm-project-map
+  :doc "npm: installing (i), running a script (r), updating (u)."
+  :prefix t
+  "i" #'jtk-npm-install
+  "r" #'jtk-npm-run
+  "u" #'jtk-npm-update)
+
+(add-to-list 'jtk-project-kinds
+             '("npm" ("package.json") jtk-npm-project-map)
+             t)
 
 (provide 'init-lang-javascript)
 
