@@ -404,7 +404,7 @@ A test definition is run as a test as well."
         ("C-h h" . cider-doc)
         ("C-h H" . cider-javadoc)
 
-        ("M-j a" . cider-apropos)
+        ("M-j s" . cider-apropos)
         ("M-j f" . cider-find-resource)
         ("M-j n" . cider-find-ns)
 
@@ -442,7 +442,7 @@ A test definition is run as a test as well."
         ("C-h h" . cider-doc)
         ("C-h H" . cider-javadoc)
 
-        ("M-j a" . cider-apropos)
+        ("M-j s" . cider-apropos)
         ("M-j f" . cider-find-resource)
         ("M-j n" . cider-find-ns)
 

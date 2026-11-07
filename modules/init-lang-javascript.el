@@ -103,8 +103,8 @@
    (list (completing-read "npm run: " (jtk-npm--scripts) nil t)))
   (jtk-npm--run (concat "run " (shell-quote-argument script))))
 
-;; NOTE: Under C-c M-j in JavaScript buffers and under j in the project
-;; commands, for every project with a package.json.
+;; NOTE: Under C-c M-j in every buffer of a project with a package.json,
+;; and under j in the project commands.
 (defvar-keymap jtk-npm-project-map
   :doc "npm: installing (i), running a script (r), updating (u)."
   :prefix t
@@ -115,9 +115,6 @@
 (add-to-list 'jtk-project-kinds
              '("npm" ("package.json") jtk-npm-project-map)
              t)
-
-(with-eval-after-load 'js
-  (keymap-set js-ts-mode-map "C-c M-j" 'jtk-npm-project-map))
 
 (provide 'init-lang-javascript)
 
