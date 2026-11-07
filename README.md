@@ -57,17 +57,34 @@ serves is simply missing.
 - A list exported with `C-o` into a buffer of its own (projects, for
   instance) takes the same action keys directly on the entry under the
   cursor: `e` on a project opens eshell there; `M-a` turns that off.
-- Each kind of project (Clojure, npm) brings its commands,
-  under `C-c M-j` in its buffers and under `j` in the project commands.
+- Each kind of project (Clojure, npm) brings its commands, under
+  `C-c M-j` in every buffer of the project and under `j` in the project
+  commands.
 - `M-X` lists the commands that fit the current buffer, with their
   keys; `C-h b` lists all keys of the buffer to search (with `C-u` the
   global ones too).
+
+Same purpose, same key, in every language that has it:
+
+| Purpose | Key |
+|---|---|
+| move along / into / out of the structure (s-expressions, elements) | `C-<left>` `C-<right>` `C-<down>` `C-<up>` |
+| change the structure (slurp, barf, raise, …) | `M-<arrows>`, `C-M-<arrows>`; see `init-structural-editing` |
+| jump to definition / references / line; search names | `M-j d` / `M-j r` / `M-j l`; `M-j s`; `M-J` goes back |
+| documentation at point | `C-h h` |
+| rename / code actions / organise imports / format | `M-r r` / `M-r a` / `M-r o` / `M-r =` |
+| evaluate the form at point / the last one / the buffer | `C-c C-c` / `C-M-x` / `C-c M-k` (Markdown: render) |
+| commands of the project's kind (REPL, npm) | `C-c M-j`, in every buffer of the project |
+| next / previous finding, list them | `C-c ! n` / `C-c ! p`, `C-c ! l` |
+| fold the block whose first line point is on / all blocks | `TAB` within the line's indentation / `S-TAB` |
+| narrow to the region or defun / widen | `C--` / `C-+` |
+| comment | `C-;` |
 
 | Prefix | Keymap | Module | For |
 |---|---|---|---|
 | `M--` | `jtk-bookmarks-map` | `init-bookmarks` | bookmarks of files, directories, MySQL connections |
 | `M-c` | `jtk-multiple-cursors-map` | `init-editing` | multiple cursors |
-| `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`), in Clojure apropos (`a`); `M-J` goes back |
+| `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`), in Clojure apropos (`s`); `M-J` goes back |
 | `M-r` where a language server runs | `eglot-mode-map` | `init-lsp` | renaming (`r`), code actions (`a`), organising imports (`o`), formatting (`=`) |
 | `M-m` | `jtk-highlight-symbol-map` | `init-editing` | next, previous, replace symbol (repeats); `C-m` marks it |
 | `M-!` | `jtk-run-map` | `init-keys` | `m` keyboard macros (`jtk-macro-map`), `s` shells (`jtk-shell-map`) |
@@ -78,6 +95,6 @@ serves is simply missing.
 | `C-M--` | `jtk-org-map` | `init-org` | capturing, agenda |
 | `C-x x` | `ctl-x-x-map` (Emacs) | `init-project`, `init-treemacs` | switching projects (`f`), file tree (`d`) |
 | `C-x x p` | `jtk-project-map` | `init-project`, languages | project commands: Emacs' `C-x p` with consult for buffers (`b`) and grep (`g`), Magit (`v`, `m`), commands of the project's kinds (`j`) |
-| `C-c M-j` in a project kind's buffers | `jtk-clojure-project-map`, `jtk-npm-project-map` | languages | starting or connecting a REPL; npm install, run, update |
+| `C-c M-j` in a project of a known kind | `jtk-project-run-kind-command`, in Clojure buffers `jtk-clojure-project-map` | `init-project`, languages | starting or connecting a REPL; npm install, run, update |
 | `C-a` in HTML | `jtk-html-attribute-map` | `init-lang-html` | editing attributes (repeats) |
 
