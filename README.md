@@ -94,8 +94,8 @@ data comes through the pipe, or as file names after the form, which
 ```
 
 Inside the form, `TAB` completes Clojure's names, with Babashka's
-aliases (`str/`, `fs/`, `json/`, ...). `C-c '` edits the form in a
-Clojure buffer, with highlighting and structural editing; `C-c '` or
+aliases (`str/`, `fs/`, `json/`, ...). `C-o` edits the form in a
+Clojure buffer, with highlighting and structural editing; `C-o` or
 `C-c C-c` puts it back quoted, `C-c C-k` drops it. In eshell's single
 quotes, `''` is one `'`.
 

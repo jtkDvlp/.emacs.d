@@ -181,7 +181,7 @@ back quoted, \\[jtk-babashka-edit-abort] drops the change."
   (quit-window 'kill))
 
 (defvar-keymap jtk-babashka-edit-mode-map
-  "C-c '" #'jtk-babashka-edit-finish
+  "C-o" #'jtk-babashka-edit-finish
   "C-c C-c" #'jtk-babashka-edit-finish
   "C-c C-k" #'jtk-babashka-edit-abort)
 

@@ -108,9 +108,11 @@ ARG is passed on as to `eshell'."
    ;; input typed so far; eshell's history mode binds them.
    :map eshell-mode-map
    ("C-<return>" . end-of-buffer)
-   ("C-o" . eshell-insert-buffer-name)
    ("M-P" . consult-history)
-   ("C-c '" . jtk-babashka-edit-form))
+   ;; NOTE: C-o takes something into a buffer of its own, as it exports
+   ;; a list from the minibuffer (init-minibuffer).  eshell's own key
+   ;; for inserting a buffer name, C-c M-b, stays.
+   ("C-o" . jtk-babashka-edit-form))
 
   :config
   (require 'em-smart)
