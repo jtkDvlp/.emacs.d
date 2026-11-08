@@ -1197,6 +1197,27 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 - md-mode im Alltag;
 - direnv mit `.envrc` in einem Node-Projekt.
 
+#### 2.9 Werkzeuge (in Arbeit, 2026-11-08)
+
+| Thema | Entschieden | Warum |
+|---|---|---|
+| Gerrit | bleibt; Befehle als `jtk-vc-gerrit-push…` unter `P`/`U`/`A` im magit-Push | wird benutzt |
+| git-auto-commit-mode | **entfernt** | nicht benutzt |
+| eshell | Prompt, `eshell/repl` und `eshell/open` bleiben; `eshell/nvm`, `zshell` und die Umbelegung über `eshell-mode-map*` fallen weg | nvm.el nie installiert, envrc liefert die Node-Version; `<up>`, `<down>`, `M-p` waren immer eshells eigene Verlaufstasten |
+| Vorschlag aus dem Verlauf | eingebautes `completion-preview-mode` mit `cape-history` statt esh-autosuggest | gleicher Vorschlag, ohne company; `TAB` nimmt ihn |
+| sql | eingebaut, nur noch `sql-mysql`; Windows-Optionen weg | nur macOS |
+| simple-httpd | bleibt; Befehle `jtk-httpd-start`/`-stop`/`-start-project`; HTML zeigt `C-c M-k` über den Server, wenn er die Datei ausliefert | wie Auswerten in den anderen Sprachen |
+| simple-bookmarks | **ersetzt** durch Emacs' eigene Lesezeichen und `consult-bookmark` unter `M--` (`l`, `c`, `m`, `k`, `e`); MySQL-Verbindungen als Lesezeichen mit eigenem Handler, Passwort aus auth-source | eingebaut; das Passwort stand bisher im Klartext in der Lesezeichendatei |
+| restclient, logview, eshell-up | bleiben | gepflegt (restclient: letzter Commit 2026-06) |
+| Terminal | **offen:** heute `ansi-term`; Kandidaten ghostel, vterm | eat ist zu langsam |
+
+**Umzug der Lesezeichen (einmal):** `M-x jtk-bookmarks-import-simple-bookmarks` liest `var/simple-bookmarks.el`. Die Passwörter der MySQL-Einträge landen nicht in den Lesezeichen, sondern als Zeilen für `~/.authinfo.gpg` in einem eigenen Buffer.
+
+**Geprüft im Batch:**
+- **Lesezeichen:** `M--`-Tasten; der Import legt Dateien, Verzeichnisse und MySQL-Verbindungen an, übergeht Unbekanntes mit Meldung und listet nur nicht leere Passwörter; der Sprung ruft `sql-mysql` mit Benutzer, Server, Datenbank und dem Passwort aus auth-source, ohne Passwort fragt `sql-mysql` danach.
+- **eshell:** der Verlauf schlägt „git st“ zu „git status --short“ vor; Prompt mit Projekt, Zweig und Pfad.
+- **Schnappschuss-Diff:** neben den erwarteten Tasten fehlen company, esh-autosuggest, git-auto-commit und simple-bookmarks. Außerdem fehlen die Optionen von `em-prompt` und `desktop`: Die entfernten Pakete hatten beide Bibliotheken beim Laden mitgeladen. Der Schnappschuss führt eine Option erst, wenn ihre Bibliothek geladen ist; `eshell-prompt-function` setzt die Konfiguration trotzdem, und den Prompt zeigt die Probe.
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -1237,24 +1258,24 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | undo-tree | M | interface | Undo-Baum | **ersetzt** (2.5) durch `undo-redo` und vundo | Ja |
 | multiple-cursors | M | interface | Mehrfach-Cursor | bleibt (2.5), gepflegt | Ja |
 | counsel-projectile / projectile | M | filemanagement | Projekte | counsel-projectile **entfernt** (2.1); projectile **ersetzt** (2.3) durch project.el, bleibt aber als Abhängigkeit von platformio-mode installiert | Ja |
-| git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | prüfen | |
+| git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | **entfernt** (2.9), nicht benutzt | |
 | treemacs (+ -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt; treemacs-projectile **entfernt** (2.3), treemacs fragt project.el | Ja |
-| simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | Ja |
+| simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | **ersetzt** (2.9) durch bookmark.el und `consult-bookmark`; Passwörter aus auth-source | Ja |
 | org | e | organisation | GTD | bleibt | |
 | dashboard (+ page-break-lines) | M | startup | Startbildschirm | gepflegt | |
 | smartparens | M | development | Klammern, sexp-Editieren | bleibt (2.5), gepflegt; Sprachregeln über `smartparens-config` | Ja |
 | aggressive-indent | M | development | Einrücken beim Tippen | bleibt (2.5), global ab dem Start | Ja |
-| company / company-quickhelp | M | development | Vervollständigung im Buffer | **ersetzt** (2.6) durch corfu und cape; company bleibt als Abhängigkeit installiert | Ja |
+| company / company-quickhelp | M | development | Vervollständigung im Buffer | **ersetzt** (2.6) durch corfu und cape; als Abhängigkeit mit esh-autosuggest **entfernt** (2.9) | Ja |
 | magit | M | development | Git | bleibt | Ja |
 | flycheck | M | development | Syntaxprüfung | **ersetzt** (2.7) durch flymake; bleibt als Abhängigkeit von tide installiert | Ja |
 | yasnippet / yasnippet-snippets | M | development | Snippets | yasnippet bleibt (2.6); yasnippet-snippets **entfernt**, nicht benutzt | Ja |
 | highlight-symbol | M | development | Symbol hervorheben | **ersetzt** (2.5) durch symbol-overlay | Ja |
-| restclient | M | development | HTTP-Anfragen | meines Wissens archiviert → verb | Ja |
-| sql | e | development | MySQL | ok | Ja |
-| simple-httpd | M | development | lokaler HTTP-Server | prüfen | |
+| restclient | M | development | HTTP-Anfragen | bleibt (2.9), gepflegt (letzter Commit 2026-06); die frühere Einschätzung „archiviert“ war falsch | Ja |
+| sql | e | development | MySQL | bleibt (2.9); Verbindungen als Lesezeichen | Ja |
+| simple-httpd | M | development | lokaler HTTP-Server | bleibt (2.9) | |
 | markdown-mode | M | development | Markdown | bleibt installiert (2.8); `.md` öffnet zum Ausprobieren md-mode | |
 | logview | M | development | Logdateien | gepflegt | Ja |
-| eshell / eshell-up / esh-autosuggest | e/M/M | shell | Shell | ok | Ja |
+| eshell / eshell-up / esh-autosuggest | e/M/M | shell | Shell | eshell und eshell-up bleiben (2.9); esh-autosuggest **ersetzt** durch `completion-preview-mode` | Ja |
 | csv-mode | M | csv | CSV | bleibt (2.8), gepflegt | |
 | clojure-mode | M | clojure | Clojure | bleibt (2.8); clojure-ts-mode gemessen und verworfen | Ja |
 | cider | M | clojure | REPL | bleibt | Ja |
