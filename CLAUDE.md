@@ -35,8 +35,8 @@ Phase 1 des Plans ist umgesetzt: die Struktur steht. Phase 2 prüft die
 Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 (Tastatur-Infrastruktur), 2.3 (Projekte), 2.4 (Fenster und Tabs), 2.5
 (Editieren), 2.6 (Vervollständigen im Buffer, Snippets), 2.7
-(Language-Server, flymake, tree-sitter), 2.8 (Sprachen) und 2.9
-(Werkzeuge).
+(Language-Server, flymake, tree-sitter), 2.8 (Sprachen), 2.9
+(Werkzeuge) und 2.11 (Shell mit Clojure); 2.10 (TRAMP) ist offen.
 
 | Pfad | Inhalt | versioniert |
 |---|---|---|
@@ -46,7 +46,7 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 | `modules/init-core.el` | Grundverhalten ohne eigenes Thema: `local.el`, PATH, Sicherungen, Kodierung, Auto-Revert, Scrollen, Rückfragen. | ja |
 | `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `org`, `startup`, `structural-editing`, `completion`, `checking`, `lsp`, `tree-sitter`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`. Jede Datei sagt im Kopf, was hineingehört. | ja |
 | `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. | ja |
-| `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`lsp-lens`, `narrow`, `project`, `zoom`), Symbole mit Präfix `jtk-`. | ja |
+| `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`babashka`, `lsp-lens`, `narrow`, `project`, `zoom`), Symbole mit Präfix `jtk-`. | ja |
 | `etc/elpaca-lock.eld` | Commit jedes Pakets (71, mit Abhängigkeiten und elpaca selbst). | ja |
 | `etc/yasnippet/snippets/` | Handgeschriebene yasnippet-Vorlagen. | ja |
 | `etc/eshell/aliases` | Handgeschriebene eshell-Aliase. | ja |
