@@ -16,6 +16,7 @@
 (declare-function cider-jack-in-clj "cider")
 (declare-function clojure-mode "clojure-mode")
 (defvar eshell-in-pipeline-p)
+(defvar eshell-last-output-end)
 
 ;; NOTE: Not `clj', which would hide the Clojure CLI's `clj' in eshell.
 (defvar jtk-babashka-eshell-commands '("bbe" "clje")
@@ -135,16 +136,28 @@ at the next pipe, `;' or `&', or at the end of the line."
       (skip-chars-backward " \t" start)
       (point))))
 
+(defun jtk-babashka--input-bounds ()
+  "Return the bounds of the eshell input at point, as (START . END).
+The input being typed runs from the prompt to the end of the buffer,
+over several lines if a form has them; earlier input counts by line."
+  (if (and (markerp (bound-and-true-p eshell-last-output-end))
+           (>= (point) eshell-last-output-end))
+      (cons (marker-position eshell-last-output-end) (point-max))
+    (cons (save-excursion (beginning-of-line) (point))
+          (line-end-position))))
+
 (defun jtk-babashka--commands-on-line ()
-  "Return our commands on the eshell input at point, from left to right.
+  "Return our commands in the eshell input at point, from left to right.
 Each is (COMMAND-START FORM-START FORM-END), wherever a command can
 start: at the beginning, or after a pipe, `;' or `&'."
   (save-excursion
-    (let ((input-start (progn (beginning-of-line) (point)))
-          (regexp (concat (regexp-opt jtk-babashka-eshell-commands 'symbols)
-                          "[ \t]*"))
-          commands)
-      (while (re-search-forward regexp (line-end-position) t)
+    (pcase-let* ((`(,input-start . ,input-end) (jtk-babashka--input-bounds))
+                 (regexp (concat (regexp-opt jtk-babashka-eshell-commands
+                                             'symbols)
+                                 "[ \t]*"))
+                 (commands nil))
+      (goto-char input-start)
+      (while (re-search-forward regexp input-end t)
         (when (jtk-babashka--command-position-p (match-beginning 0)
                                                 input-start)
           (push (list (match-beginning 0) (match-end 0)
