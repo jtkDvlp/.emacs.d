@@ -1213,6 +1213,19 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 | Terminal | eat statt `ansi-term` (`M-! s t`), dazu `eat-eshell-visual-command-mode`: Vollbild-Programme aus eshell laufen in eat; ghostel sieht sich der Nutzer an | eat ist reines Elisp und braucht kein Modul; ghostel wäre schneller (libghostty), ist aber jung |
 | Echte Shell mit Emacs-Editieren | mistty mit zsh auf `M-! s z`, im Projekt in dessen Wurzel; das schnellere Terminal-Modul (alacritty) holt `M-x mistty-install` bei Bedarf | eshell ist keine echte Shell (kein `nvm use`, keine `~/.zshrc`); `M-x shell` verlöre den Zeileneditor der zsh. mistty gepflegt (letzter Commit 2026-11-07, Version 2.2.1) |
 
+**Gemessen: Durchsatz der Shells** (2026-11-08; Batch, Emacs 31.1, Cloud, bash ohne rc; Zeit vom Absenden bis zur letzten Zeile im Buffer, ohne Bildschirmaufbau, denn den gibt es im Batch nicht):
+
+| Shell | 100 000 Zeilen, 590 KB (s) | 20 000 rot gefärbte Zeilen (s) |
+|---|---:|---:|
+| eshell | 0,04 | 0,30 |
+| `M-x shell` | 0,05–0,07 | 0,54 |
+| ansi-term | 1,28–1,38 | 0,43 |
+| eat | 1,25–1,36 | 0,46 |
+| mistty mit Emacs' Terminal (eterm) | 3,75–4,66 | 1,02–1,25 |
+| mistty mit Modul (alacritty) | 2,77–3,00 | 0,71 |
+
+Spannen aus zwei bis drei Läufen. ghostel und vterm sind nicht gemessen (nicht installiert). Die Shells im Buffer (eshell, `M-x shell`) sind um gut eine Größenordnung schneller als jede Terminal-Emulation; mistty ist die langsamste, mit Modul etwa doppelt so langsam wie eat.
+
 **Umzug der Lesezeichen (einmal):** `M-x jtk-bookmarks-import-simple-bookmarks` liest `var/simple-bookmarks.el`. Die Passwörter der MySQL-Einträge landen nicht in den Lesezeichen, sondern als Zeilen für `~/.authinfo.gpg` in einem eigenen Buffer.
 
 **Geprüft im Batch:**
