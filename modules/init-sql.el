@@ -2,17 +2,15 @@
 
 ;;; Commentary:
 
-;; Options for the MySQL client of sql.el.
+;; sql.el's MySQL client; saved connections are bookmarks
+;; (init-bookmarks).
 
 ;;; Code:
 
 (use-package
   sql
   :ensure nil
-  :commands (sql-mysql)
-  :config
-  (when (equal system-type 'windows-nt)
-    (setq sql-mysql-options '("-C" "-t" "-f" "-n"))))
+  :commands (sql-mysql))
 
 (provide 'init-sql)
 
