@@ -16,6 +16,7 @@
 (require 'jtk-babashka)
 
 (defvar corfu-auto)
+(declare-function cape-history "cape")
 (defvar pcomplete-exit-function)
 (declare-function pcomplete-default-exit-function "pcomplete")
 (declare-function eshell/pwd "em-dirs")
@@ -101,12 +102,31 @@ STATUS is as for `pcomplete-default-exit-function'."
 ;; typing, as in fish; TAB takes it.  The history comes first in this
 ;; buffer's completion, so TAB completes from it too, and from files
 ;; and commands where the history has nothing; in the form of bbe and
-;; clje, Clojure's names come before both.  corfu does not pop up by
-;; itself here, so the two do not show at once.
+;; clje, Clojure's names come before both.  On a path the history keeps
+;; out of the way and files complete as usual.  corfu does not pop up
+;; by itself here, so the two do not show at once.
+(defun jtk-shell--path-at-point-p ()
+  "Return non-nil if the word at point looks like a file name.
+It does if it holds a slash, starts with ~ or a dot, or begins the name
+of a file in a local current directory; a server is not asked, which
+would cost a round trip on every key."
+  (let ((word (or (thing-at-point 'filename t) "")))
+    (and (not (string-empty-p word))
+         (or (string-match-p "/" word)
+             (string-match-p "\\`[~.]" word)
+             (and (not (file-remote-p default-directory))
+                  (file-name-all-completions word default-directory))))))
+
+(defun jtk-shell-history-completion-at-point ()
+  "Complete from the history, unless the word at point is a path."
+  (unless (jtk-shell--path-at-point-p)
+    (cape-history)))
+
 (defun jtk-shell-suggest-from-history ()
   "Turn on suggestions from the history in the current eshell."
   (setq-local completion-at-point-functions
-              (append '(jtk-babashka-completion-at-point cape-history)
+              (append '(jtk-babashka-completion-at-point
+                        jtk-shell-history-completion-at-point)
                       completion-at-point-functions)
               corfu-auto nil)
   (completion-preview-mode 1))
