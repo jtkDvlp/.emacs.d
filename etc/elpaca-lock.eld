@@ -431,8 +431,8 @@
                     (:exclude ".dir-locals.el" "test.el" "tests.el"
                               "*-test.el" "*-tests.el" "LICENSE"
                               "README*" "*-pkg.el"))
-                   :source "MELPA" :id mistty :type git :protocol
-                   https :inherit t :depth treeless :ref
+                   :source "elpaca-menu-lock-file" :id mistty :type
+                   git :protocol https :inherit t :depth treeless :ref
                    "0ddc08da299be84a6b28f0cebeaccd950856dd42"))
  (multiple-cursors :source "elpaca-menu-lock-file" :recipe
                    (:package "multiple-cursors" :fetcher github :repo
