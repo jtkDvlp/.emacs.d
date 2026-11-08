@@ -139,6 +139,15 @@ precmd_functions+=(osc7_precmd)
 In mistty, `C-e` takes a zsh autosuggestion, and `S-<return>` adds a
 line to the command without running it.
 
+## Colors in eshell
+
+The input is highlighted while typing: commands, Lisp functions,
+aliases, options, strings, variables and files, unknown commands in a
+face of their own (eshell-syntax-highlighting; not on a server, where
+each check would cost a round trip). Programs see
+`TERM=dumb-emacs-ansi`, a terminal that shows colors but cannot move
+the cursor, so git, grep and others color their output again.
+
 ## Servers (TRAMP)
 
 Files, directories and shells on a server open like local ones, with
