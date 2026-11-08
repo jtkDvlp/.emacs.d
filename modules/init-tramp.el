@@ -31,6 +31,12 @@
   (tramp-use-scp-direct-remote-copying t)
 
   :config
+  ;; NOTE: /remote:host:/path is the preferred method under a name of its
+  ;; own, today scp: ssh to log in, scp for files above
+  ;; `tramp-copy-size-limit'.  A later change of method is one line here.
+  (add-to-list 'tramp-methods
+               (cons "remote" (cdr (assoc "scp" tramp-methods))))
+
   ;; NOTE: Programs (eshell, compile, magit, eglot) start through ssh
   ;; directly instead of through TRAMP's shell on the server.
   ;; WATCHOUT: That needs a login without asking: an ssh key, ssh-agent,
@@ -39,7 +45,7 @@
   (connection-local-set-profile-variables
    'jtk-tramp-direct-async
    '((tramp-direct-async-process . t)))
-  (dolist (protocol '("ssh" "scp"))
+  (dolist (protocol '("ssh" "scp" "remote"))
     (connection-local-set-profiles
      `(:application tramp :protocol ,protocol)
      'jtk-tramp-direct-async))
