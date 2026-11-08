@@ -19,6 +19,7 @@
 (defvar corfu-auto)
 (declare-function cape-history "cape")
 (defvar pcomplete-exit-function)
+(defvar eshell-variable-aliases-list)
 (declare-function pcomplete-default-exit-function "pcomplete")
 (declare-function eshell/pwd "em-dirs")
 (declare-function magit-anything-modified-p "magit-git")
@@ -94,15 +95,12 @@ on any other input this is `eshell-insert-buffer-name'."
 ;; eshell turns into faces.  Under TERM=dumb, or none at all, as from a
 ;; GUI Emacs, they leave it plain.  Full-screen programs run in eat,
 ;; which sets its own TERM.
+;; WATCHOUT: Through `eshell-variable-aliases-list', which eshell reads
+;; at every program start, not through the buffer's
+;; `process-environment': envrc resets that in every eshell, with or
+;; without an .envrc, and TERM was dumb again.
 (defconst jtk-shell-term "dumb-emacs-ansi"
   "Terminal type programs in eshell see.")
-
-(defun jtk-shell-announce-colors ()
-  "Make the programs of the current eshell see `jtk-shell-term'."
-  (setq-local process-environment
-              (cons (concat "TERM=" jtk-shell-term)
-                    (seq-remove (lambda (var) (string-prefix-p "TERM=" var))
-                                process-environment))))
 
 ;; WATCHOUT: pcomplete adds a space after every completion reported
 ;; as finished.  TAB on its own never reports a directory so, since one
@@ -153,8 +151,7 @@ would cost a round trip on every key."
   :commands (eshell)
 
   :hook
-  ((eshell-mode . jtk-shell-suggest-from-history)
-   (eshell-mode . jtk-shell-announce-colors))
+  (eshell-mode . jtk-shell-suggest-from-history)
 
   :bind
   (:map jtk-run-map
@@ -179,6 +176,7 @@ would cost a round trip on every key."
   (require 'em-smart)
   (require 'pcomplete)
   (setq pcomplete-exit-function #'jtk-shell-pcomplete-exit)
+  (add-to-list 'eshell-variable-aliases-list '("TERM" jtk-shell-term t))
   (advice-add 'eshell/cd :filter-args #'jtk-shell-cd-on-server)
   (add-hook 'eshell-named-command-hook #'jtk-babashka-eshell-command)
   (dolist (name jtk-babashka-eshell-commands)
