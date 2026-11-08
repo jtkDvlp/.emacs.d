@@ -1197,7 +1197,7 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 - md-mode im Alltag;
 - direnv mit `.envrc` in einem Node-Projekt.
 
-#### 2.9 Werkzeuge (in Arbeit, 2026-11-08)
+#### ✅ 2.9 Werkzeuge (entschieden und umgesetzt 2026-11-08)
 
 | Thema | Entschieden | Warum |
 |---|---|---|
@@ -1209,12 +1209,13 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 | simple-httpd | bleibt; Befehle `jtk-httpd-start`/`-stop`/`-start-project`; HTML zeigt `C-c M-k` über den Server, wenn er die Datei ausliefert | wie Auswerten in den anderen Sprachen |
 | simple-bookmarks | **ersetzt** durch Emacs' eigene Lesezeichen und `consult-bookmark` unter `M--` (`l`, `c`, `m`, `k`, `e`); MySQL-Verbindungen als Lesezeichen mit eigenem Handler, Passwort aus auth-source | eingebaut; das Passwort stand bisher im Klartext in der Lesezeichendatei |
 | restclient, logview, eshell-up | bleiben | gepflegt (restclient: letzter Commit 2026-06) |
-| Terminal | **offen:** heute `ansi-term`; Kandidaten ghostel, vterm | eat ist zu langsam |
+| Terminal | eat statt `ansi-term` (`M-! s t`), dazu `eat-eshell-visual-command-mode`: Vollbild-Programme aus eshell laufen in eat; ghostel sieht sich der Nutzer an | eat ist reines Elisp und braucht kein Modul; ghostel wäre schneller (libghostty), ist aber jung |
 
 **Umzug der Lesezeichen (einmal):** `M-x jtk-bookmarks-import-simple-bookmarks` liest `var/simple-bookmarks.el`. Die Passwörter der MySQL-Einträge landen nicht in den Lesezeichen, sondern als Zeilen für `~/.authinfo.gpg` in einem eigenen Buffer.
 
 **Geprüft im Batch:**
 - **Lesezeichen:** `M--`-Tasten; der Import legt Dateien, Verzeichnisse und MySQL-Verbindungen an, übergeht Unbekanntes mit Meldung und listet nur nicht leere Passwörter; der Sprung ruft `sql-mysql` mit Benutzer, Server, Datenbank und dem Passwort aus auth-source, ohne Passwort fragt `sql-mysql` danach.
+- **eat:** `M-! s t` öffnet eat, die Shell antwortet; eshell schaltet `eat-eshell-visual-command-mode` beim Laden ein.
 - **eshell:** der Verlauf schlägt „git st“ zu „git status --short“ vor; Prompt mit Projekt, Zweig und Pfad.
 - **Schnappschuss-Diff:** neben den erwarteten Tasten fehlen company, esh-autosuggest, git-auto-commit und simple-bookmarks. Außerdem fehlen die Optionen von `em-prompt` und `desktop`: Die entfernten Pakete hatten beide Bibliotheken beim Laden mitgeladen. Der Schnappschuss führt eine Option erst, wenn ihre Bibliothek geladen ist; `eshell-prompt-function` setzt die Konfiguration trotzdem, und den Prompt zeigt die Probe.
 
@@ -1310,7 +1311,8 @@ Noch nicht in der Konfiguration; aufgenommen auf deinen Wunsch
 | typescript-language-server | Language-Server (npm) | 2.8 JS | JavaScript | **verworfen** (2.8): kann TypeScript 7 nicht nutzen; dessen `tsc --lsp --stdio` ersetzt ihn |
 | basedpyright bzw. pyright, dazu ruff | Language-Server | 2.8 Python | Python | ersetzt elpy |
 | vscode-langservers-extracted | Language-Server (npm) | 2.8 HTML/CSS | HTML, CSS/SCSS, JSON | scss ist als benutzt markiert |
-| eat | Emacs-Paket, NonGNU ELPA | 2.9 Werkzeuge | Terminal-Emulator in Emacs; kann in eshell Programme mit Vollbild-Ausgabe zeigen (`eat-eshell-mode`) | aufgenommen auf Wunsch (2026-10-29); Pflegestand im Review nachsehen |
+| eat | Emacs-Paket, NonGNU ELPA | 2.9 Werkzeuge | Terminal-Emulator in Emacs; kann in eshell Programme mit Vollbild-Ausgabe zeigen (`eat-eshell-mode`) | **aufgenommen** (2.9) als Terminal und für Vollbild-Programme in eshell |
+| ghostel | Emacs-Paket, MELPA, mit Modul (libghostty) | später | schnelleres Terminal, ebenfalls mit eshell-Anbindung | Kandidat; der Nutzer sieht es sich an |
 | lemminx | Language-Server | 2.8 XML | XML Schema, DTD, Formatieren | **aufgenommen** (2.8), startet nur, wo installiert |
 | envrc | Emacs-Paket, MELPA | 2.8 | direnv je Buffer | **aufgenommen** (2.8) |
 | md-mode | Emacs-Paket (GitHub) | 2.8 Markdown | gerenderte Ansicht mit Tabellen | **zum Ausprobieren** (2.8) |
