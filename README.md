@@ -154,6 +154,13 @@ login shell, which is slower for large ones.
 - `M-! s s` in a buffer on a server opens eshell there; programs run on
   the server, `bbe` here (see above). `M-! s z` starts the server's own
   shell in mistty.
+- In eshell on a server, `cd` stays there as in a shell on the server:
+  `cd /var/log`, `cd ~` and `cd` alone are the server's. `cd /local:DIR`
+  goes to `DIR` on this machine, `cd /local:` to its home directory.
+  Other commands keep eshell's rule: an absolute file name in a Lisp
+  command such as `ls` or `cat` means this machine.
+- Full-screen programs such as `htop` run on the server in eat, which
+  announces itself there as `xterm-256color`.
 - Programs start through ssh directly, over the connection TRAMP keeps
   open. The first access to a server asks for a password or passphrase
   in the minibuffer, if the login needs one; programs then start without

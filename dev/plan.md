@@ -1282,6 +1282,15 @@ mal im LAN, mal extern.
 | Programm bei offener Verbindung | scheitert: ssh fragt selbst, Exit 9 | läuft ohne Rückfrage |
 | Programm nach geschlossener Verbindung | scheitert | TRAMP öffnet die Verbindung neu, fragt einmal im Minibuffer, dann läuft es |
 
+**Nachgezogen (2026-11-08, nach Rückmeldung):**
+
+| Thema | Umgesetzt | Warum |
+|---|---|---|
+| `cd` auf dem Server | absolute Verzeichnisse, `~` und `cd` allein bleiben auf dem Server; `cd /local:DIR` bzw. `cd /local:` geht auf den Mac | eshell nahm sie als lokal; so verhält es sich wie eine Shell auf dem Server, und `/local:` heißt dasselbe wie beim Programmstart. eshell ersetzt `~` vor `cd` durch das lokale Home; der Code dreht das zurück (WATCHOUT) |
+| Vollbild-Programme auf dem Server | eat startet sie dort als `env -u TERMINFO TERM=xterm-256color PROGRAMM`, mit Namen, wie der Server sie sieht | eat reichte den vollen TRAMP-Namen (`/remote:host:/bin/top`) weiter, den der Server nicht findet („not found“); und TRAMP setzt `TERM=dumb` über eats Typ, den ein Server ohnehin nicht kennt. Geprüft mit `top` interaktiv und im Batch |
+
+Nicht geändert: Lisp-Befehle wie `ls` oder `cat` mit absolutem Pfad meinen in eshell weiterhin den Mac.
+
 **Offen für die Sichtung:** echte Server im LAN und extern; unter macOS legt TRAMP den ControlMaster-Socket mit relativem Pfad an (`tramp.%C`), das Teilen der Verbindung dort ist nur am Mac zu sehen.
 
 #### ✅ 2.11 Shell mit Clojure (entschieden und umgesetzt 2026-11-08)
@@ -1318,6 +1327,8 @@ eingerichteten zsh.
 | Hervorhebung | `C-o` bearbeitet den Ausdruck in einem Clojure-Buffer (Hervorhebung, strukturelles Editieren); `C-o`/`C-c C-c` setzt ihn gequotet zurück, `C-c C-k` verwirft | eshell färbt Eingaben nicht; so gilt alles aus clojure-mode. `C-o` wie im Minibuffer: etwas in einen eigenen Buffer holen (Wunsch 2026-11-08, statt `C-c '` wie in Org). Auf jeder anderen Eingabe fügt `C-o` weiter einen Buffernamen ein, wie zuvor (auch `C-c M-b`). `bbe`/`clje` werden überall erkannt, wo ein Befehl beginnen kann (Anfang, nach `|`, `;`, `&`), nicht in Anführungszeichen; so auch in `seq 1 3 \| clje '…' \| sort` |
 | Tasks aus `bb.edn` | Projektart „Babashka“, `t` unter `C-c M-j`/`j`; läuft über `compile` | wie npm; die Tasks liest bb selbst (`bb tasks`), denn `bb.edn` darf mehr als EDN |
 | REPL ohne Projekt | `M-! b`: Scratch-Buffer `var/babashka/scratch.clj` mit Babashka-REPL über CIDER | ein leeres `bb.edn` daneben macht das Verzeichnis zum Babashka-Projekt, so fragt CIDER nichts |
+
+**Nachgezogen (2026-11-08, nach Rückmeldung):** `C-o` und die Vervollständigung finden `bbe`/`clje` auch nach `|`, `;`, `&` und über mehrere Zeilen der Eingabe; nach einem Verzeichnis hängt die Vervollständigung kein Leerzeichen mehr an (pcomplete tat das, sobald die Vorschau oder corfu übernahm); auf einem Pfad bleibt der Verlauf aus dem Weg, `TAB` vervollständigt Dateien (Pfad heißt: mit `/`, beginnt mit `~` oder `.`, oder Anfang eines lokalen Dateinamens).
 
 **Geprüft im Batch:** `clje '(+ 1 2)'` → `3`; im entfernten Verzeichnis zählt `bbe '(count … (slurp (first *command-line-args*)))' clj-app.log` die 4 Zeilen der Datei dort, die Kopie ist danach weg; `str/joi` vervollständigt zu `str/join`, außerhalb von `bbe` bietet sich nichts an; `C-o` zeigt `(+ 1 2)` in clojure-mode, zurück wird aus `(str 'it "'s")` die eshell-Eingabe `bbe '(str ''it "''s")'`, die `it's` ausgibt; ein Projekt mit `bb.edn` ist „Clojure“ und „Babashka“, `bb tasks` liefert `hello` und `build` (nicht das private `-private`), `t` führt `hello` aus; `M-! b` startet die REPL, `(+ 1 2)` ergibt dort `3` mit Babashka 1.13.229.
 
