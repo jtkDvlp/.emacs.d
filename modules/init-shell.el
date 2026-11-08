@@ -162,6 +162,7 @@ would cost a round trip on every key."
   (require 'em-smart)
   (require 'pcomplete)
   (setq pcomplete-exit-function #'jtk-shell-pcomplete-exit)
+  (advice-add 'eshell/cd :filter-args #'jtk-shell-cd-on-server)
   (add-hook 'eshell-named-command-hook #'jtk-babashka-eshell-command)
 
   (setq eshell-where-to-jump 'begin
@@ -210,6 +211,37 @@ ARGS are BUFFER NAME COMMAND STARTFILE SWITCHES; locally they stay."
                           (concat "TERM=" jtk-shell-eat-server-term)
                           (jtk-shell--local-name command))
                     (mapcar #'jtk-shell--local-name switches))))))
+
+;; WATCHOUT: eshell replaces ~ by this machine's home before cd sees
+;; it, so on a server ~ has to be told by that name.
+(defun jtk-shell--home-as-tilde (dir)
+  "Return DIR with this machine's home directory written as ~."
+  (let ((home (directory-file-name (expand-file-name "~"))))
+    (if (or (string= dir home) (string-prefix-p (concat home "/") dir))
+        (concat "~" (substring dir (length home)))
+      dir)))
+
+;; NOTE: On a server, cd stays there as in a shell on the server: an
+;; absolute directory, ~ and cd alone are the server's, where eshell
+;; would take them as this machine's.  /local: in front goes to this
+;; machine, as it runs a command here.
+(defun jtk-shell-cd-on-server (args)
+  "Return the ARGS of `eshell/cd' with directories on the current host.
+/local:DIR is DIR on this machine, /local: alone its home directory."
+  (let ((dir (car args))
+        (server (file-remote-p default-directory)))
+    (cond
+     ((and (stringp dir) (string-prefix-p "/local:" dir))
+      (cons (expand-file-name (let ((local (substring dir 7)))
+                                (if (string-empty-p local) "~" local)))
+            (cdr args)))
+     ((not server) args)
+     ((null args) (list (concat server "~")))
+     ((and (stringp dir)
+           (not (file-remote-p dir))
+           (string-match-p "\\`[/~]" dir))
+      (cons (concat server (jtk-shell--home-as-tilde dir)) (cdr args)))
+     (t args))))
 
 ;; NOTE: Only the programs in `eshell-visual-commands' and their kin run
 ;; in eat; the rest of eshell's output stays plain text.
