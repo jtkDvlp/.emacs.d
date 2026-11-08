@@ -7,6 +7,8 @@
 ;; etc/eshell/aliases.  eat is the terminal: zsh on its own, and the
 ;; display of programs in eshell that need a terminal (top, less, ...).
 ;; mistty runs zsh too, but edits its command line with Emacs' keys.
+;; In eshell, bbe evaluates Clojure with a local Babashka, also on data
+;; from a remote host.
 
 ;;; Code:
 
@@ -19,6 +21,8 @@
 (declare-function eat "eat")
 (declare-function mistty "mistty")
 (declare-function mistty-in-project "mistty-project")
+(declare-function eshell-remote-command "esh-ext")
+(defvar eshell-in-pipeline-p)
 
 (defun jtk-shell-eshell (arg)
   "Open eshell in the current project's root, or as `eshell' outside one.
@@ -67,6 +71,31 @@ ARG is passed on as to `eshell'."
       (mistty-in-project)
     (mistty)))
 
+;; NOTE: Not `clj', which would hide the Clojure CLI's `clj' in eshell.
+(defvar jtk-shell-babashka-command "bbe"
+  "Eshell command that evaluates Clojure with Babashka.")
+
+(defun jtk-shell--local-babashka ()
+  "Return the local bb, also when the current directory is remote."
+  (let ((default-directory (expand-file-name "~/")))
+    (or (executable-find "bb")
+        (user-error "%s: bb not found" jtk-shell-babashka-command))))
+
+(defun jtk-shell-babashka (command args)
+  "Evaluate ARGS as Clojure with a local Babashka if COMMAND is `bbe'.
+Input from a pipe is `*input*', a sequence of lines; a sequence as
+result prints line by line.  bb runs on this machine also where the
+current directory is remote, so data from there comes through the pipe.
+For `eshell-named-command-hook'."
+  (when (equal command jtk-shell-babashka-command)
+    (let ((piped? (memq eshell-in-pipeline-p '(t last))))
+      ;; WATCHOUT: Return the process.  With only t, eshell cannot
+      ;; connect a pipe to it, and the input shows on screen instead.
+      (or (eshell-remote-command
+           (jtk-shell--local-babashka)
+           (append (list (if piped? "-io" "-o") "-e") args))
+          t))))
+
 ;; NOTE: A suggestion from the history shows greyed after point while
 ;; typing, as in fish; TAB takes it.  The history comes first in this
 ;; buffer's completion, so TAB completes from it too, and from files
@@ -108,6 +137,7 @@ ARG is passed on as to `eshell'."
 
   :config
   (require 'em-smart)
+  (add-hook 'eshell-named-command-hook #'jtk-shell-babashka)
 
   (setq eshell-where-to-jump 'begin
         eshell-review-quick-commands nil
