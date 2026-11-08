@@ -561,6 +561,7 @@ Je Block ein PR. Für jedes Paket dieselben Fragen, in dieser Reihenfolge:
 | 2.7 Sprach-Infrastruktur (LSP) | — (heute je Sprache eigene Lösung: tide, elpy, xref-js2, company-php) | Grundsatzentscheidung einmal treffen statt je Sprache. Nach 2.1 und 2.6, weil ein LSP-Client Vervollständigung und Prüfung beliefert. | **Neu aufgenommen (2026-10-25):** LSP-Client plus Language-Server je Sprache, dazu tree-sitter-Modi (`*-ts-mode`); Kandidaten im Inventar unter „Neue Pakete“ |
 | 2.8 Sprachen | nach Gewicht: Clojure (cider, clj-refactor, parseedn, flycheck-clj-kondo, Einrückungsregeln, Leiningen-Helfer), Elisp, JS/TS (js2-mode, js2-refactor, xref-js2, indium, tide, npm-mode), HTML/CSS (web-mode, web-mode-edit-element, scss-/sass-mode), Python (elpy), C++ (platformio-mode), PHP, BASIC | Setzt 2.5–2.7 voraus. Clojure zuerst, weil es am meisten benutzt wird. | Clojure: clojure-lsp über eglot **neben** CIDER, ggf. clojure-ts-mode, `deps.edn` neben Leiningen. Übrige: meist eglot + `*-ts-mode` |
 | 2.9 Werkzeuge | magit (Gerrit), git-auto-commit-mode, ediff, ztree, eshell, eshell-up, esh-autosuggest, restclient, sql, simple-httpd, logview, csv-mode, markdown-mode, simple-bookmarks | Weitgehend unabhängig; nach den Grundlagen, weil Vervollständigung und Projekte hineinspielen. | magit bleibt; restclient ist meines Wissens archiviert → `verb` prüfen; **eshell und eat** gemeinsam prüfen (gewünscht 2026-10-29): eshell bleibt die Shell in Emacs, eat als Terminal für Programme, die eins brauchen, und als Anzeige in eshell (`eat-eshell-mode`) |
+| 2.10 TRAMP | — (heute nichts eingestellt, Emacs' Vorgaben) | Gewünscht 2026-11-08: entfernte Rechner schnell und effizient nutzen. Nach 2.9, weil die Shells hineinspielen. | Kandidaten und offene Fragen im Abschnitt 2.10 |
 | 2.10 Organisation | org (GTD), dashboard | Unabhängig, aber persönlich — braucht dein Urteil mehr als Technik. | — |
 | 2.11 Aussehen | doom-themes, spaceline, linum, rainbow-mode, rainbow-delimiters, Hervorhebung von `TODO`/`WATCHOUT`, Fenstertitel | Zuletzt: die Modeline zeigt Segmente aus 2.3, 2.4 und 2.6 (Projekt, IDE-Fenster, Prüfergebnisse) — erst wenn die feststehen, lohnt ihr Umbau. | doom-modeline oder eingebaute Modeline, `display-line-numbers-mode`, hl-todo |
 
@@ -1220,6 +1221,41 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 - **mistty:** `M-! s z` öffnet die Shell, aus einer Projektdatei in der Projektwurzel, sonst im aktuellen Verzeichnis; Befehle laufen und antworten (geprüft mit bash, die Cloud hat keine zsh).
 - **eshell:** der Verlauf schlägt „git st“ zu „git status --short“ vor; Prompt mit Projekt, Zweig und Pfad.
 - **Schnappschuss-Diff:** neben den erwarteten Tasten fehlen company, esh-autosuggest, git-auto-commit und simple-bookmarks. Außerdem fehlen die Optionen von `em-prompt` und `desktop`: Die entfernten Pakete hatten beide Bibliotheken beim Laden mitgeladen. Der Schnappschuss führt eine Option erst, wenn ihre Bibliothek geladen ist; `eshell-prompt-function` setzt die Konfiguration trotzdem, und den Prompt zeigt die Probe.
+
+#### 2.10 TRAMP (offen, aufgenommen 2026-11-08)
+
+Ziel: entfernte Rechner schnell und effizient nutzen. Heute ist TRAMP
+nicht eingestellt.
+
+**Offene Fragen an den Nutzer:**
+1. Wie wird verbunden: nur `ssh`, auch `sudo`, Docker-Container, Sprungrechner (Multi-Hop)?
+2. Was wird dort gemacht: Dateien editieren, Shell, magit, dired, eine Clojure-REPL?
+3. Wie weit weg sind die Rechner: lokales Netz oder Server mit spürbarer Latenz?
+
+**Kandidaten** (nachgeschlagen im TRAMP-Handbuch von Emacs 31.1, Abschnitte „How to speed up TRAMP?“ und „Improving performance of asynchronous remote processes“):
+
+| Stellschraube | Wirkung | Haken |
+|---|---|---|
+| `tramp-direct-async-process` als connection-local Variable, etwa für `:protocol "ssh"` | Prozesse (magit, eglot, Compile, Shells) starten direkt per ssh statt über TRAMPs Shell; laut Handbuch der große Gewinn bei Prozessen | keine interaktive Anmeldung (ssh-agent bzw. Schlüssel nötig), nicht über Multi-Hop, kein `interrupt-process` |
+| ssh-Verbindung teilen (`ControlMaster`; `tramp-use-connection-share` ist Vorgabe `t`) | eine Verbindung für alle Zugriffe | alternativ eigene Einstellungen in `~/.ssh/config` mit `tramp-use-connection-share` `nil` |
+| `vc-ignore-dir-regexp` um `tramp-file-name-regexp` erweitern, oder `vc-handled-backends` auf Git kürzen | keine Versionskontrolle beim Öffnen entfernter Dateien | Modeline zeigt dort keinen Zweig; magit geht weiter |
+| `remote-file-name-inhibit-locks` `t` | keine Sperrdateien auf dem Rechner | nur, wenn keine zweite Emacs-Sitzung dieselbe Datei bearbeitet |
+| `remote-file-name-inhibit-cache` `nil` | Dateiattribute bleiben im Cache | wenn Dateien nur über TRAMP geändert werden |
+| `tramp-use-scp-direct-remote-copying` und die Methode `scp` für große Dateien (`tramp-copy-size-limit`) | schnelleres Kopieren | — |
+| `dired-check-symlinks` `nil` (neu in 31), connection-local | dired prüft Links nicht einzeln | kaputte Links nicht mehr markiert |
+| `shell-history-file-name` `t` | `M-x shell` liest den Verlauf auf dem Rechner nicht | — |
+| Paket tramp-hlo (GNU ELPA) | schnellere Fassungen von `locate-dominating-file` und dir-locals für TRAMP | Zusatzpaket; Wirkung erst messen |
+
+Bereits günstig in den Vorgaben: `auto-revert-remote-files` `nil`,
+`enable-remote-dir-locals` `nil`, Auto-Save-Dateien lokal,
+`tramp-verbose` 3.
+
+**Befunde in der eigenen Konfiguration:**
+- `jtk-shell-eshell` (`M-! s s`) und `jtk-shell-mistty` (`M-! s z`) suchen auch remote die Projektwurzel, also Git-Aufrufe über die Leitung bei jedem Start. Der eshell-Prompt überspringt das remote bereits.
+- `mistty-shell-command` ist `/bin/zsh`; mistty startet aus einem entfernten Verzeichnis die Shell **auf dem Rechner**, wo es `/bin/zsh` womöglich nicht gibt. Remote die Shell des Rechners nehmen (connection-local).
+- `global-auto-revert-non-file-buffers` (init-core) lässt dired-Buffer neu einlesen, auch entfernte; prüfen, ob das über TRAMP Zugriffe kostet.
+
+**Messen statt raten:** Vor und nach den Einstellungen dieselben Abläufe gegen einen echten Rechner zeitlich messen (Datei öffnen, speichern, dired, magit-status, Shell starten). Die Cloud hat keinen entfernten Rechner; gemessen wird auf dem Mac, oder in der Cloud gegen einen lokalen sshd.
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
