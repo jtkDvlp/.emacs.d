@@ -2,10 +2,11 @@
 
 ;;; Commentary:
 
-;; eshell with a project-aware prompt, history and commands, and a
-;; suggestion from the history while typing; aliases are in
-;; etc/eshell/aliases.  eat is the terminal: zsh on its own, and the
-;; display of programs in eshell that need a terminal (top, less, ...).
+;; eshell with a project-aware prompt, history and commands, a
+;; suggestion from the history while typing, highlighting of the input
+;; and colors from programs; aliases are in etc/eshell/aliases.  eat is
+;; the terminal: zsh on its own, and the display of programs in eshell
+;; that need a terminal (top, less, ...).
 ;; mistty runs zsh too, but edits its command line with Emacs' keys.
 ;; In eshell, bbe and clje evaluate Clojure with a local Babashka, also
 ;; on data from a remote host (jtk-babashka).
@@ -88,6 +89,21 @@ on any other input this is `eshell-insert-buffer-name'."
        #'jtk-babashka-edit-form
      #'eshell-insert-buffer-name)))
 
+;; NOTE: Programs see a terminal that shows colors but cannot move the
+;; cursor, so git, grep and others color their output again, which
+;; eshell turns into faces.  Under TERM=dumb, or none at all, as from a
+;; GUI Emacs, they leave it plain.  Full-screen programs run in eat,
+;; which sets its own TERM.
+(defconst jtk-shell-term "dumb-emacs-ansi"
+  "Terminal type programs in eshell see.")
+
+(defun jtk-shell-announce-colors ()
+  "Make the programs of the current eshell see `jtk-shell-term'."
+  (setq-local process-environment
+              (cons (concat "TERM=" jtk-shell-term)
+                    (seq-remove (lambda (var) (string-prefix-p "TERM=" var))
+                                process-environment))))
+
 ;; WATCHOUT: pcomplete adds a space after every completion reported
 ;; as finished.  TAB on its own never reports a directory so, since one
 ;; can go on into it; taking the greyed suggestion with TAB, and corfu,
@@ -137,7 +153,8 @@ would cost a round trip on every key."
   :commands (eshell)
 
   :hook
-  (eshell-mode . jtk-shell-suggest-from-history)
+  ((eshell-mode . jtk-shell-suggest-from-history)
+   (eshell-mode . jtk-shell-announce-colors))
 
   :bind
   (:map jtk-run-map
@@ -164,6 +181,9 @@ would cost a round trip on every key."
   (setq pcomplete-exit-function #'jtk-shell-pcomplete-exit)
   (advice-add 'eshell/cd :filter-args #'jtk-shell-cd-on-server)
   (add-hook 'eshell-named-command-hook #'jtk-babashka-eshell-command)
+  (dolist (name jtk-babashka-eshell-commands)
+    (defalias (intern (concat "eshell/" name))
+      #'jtk-babashka-eshell-placeholder))
 
   (setq eshell-where-to-jump 'begin
         eshell-review-quick-commands nil
@@ -171,8 +191,7 @@ would cost a round trip on every key."
         eshell-hist-ignoredups t
         eshell-history-size 1024
         eshell-rc-script "~/.eshellrc"
-        eshell-prompt-function #'jtk-shell-prompt
-        eshell-prompt-regexp "^[^λ]*λ\s")
+        eshell-prompt-function #'jtk-shell-prompt)
 
   (defun eshell/repl (&rest profile)
     "Start a Clojure REPL, with the Leiningen PROFILE if given."
@@ -276,6 +295,16 @@ ARGS are BUFFER NAME COMMAND STARTFILE SWITCHES; locally they stay."
    '((mistty-shell-command . nil)))
   (connection-local-set-profiles
    '(:application tramp) 'jtk-shell-mistty-on-server))
+
+;; NOTE: Highlights the input while typing: commands, Lisp functions,
+;; aliases, options, strings, variables, files; unknown commands in
+;; their own face.  Not in a directory on a server, where each check
+;; would cost a round trip (the package's default).
+(use-package
+  eshell-syntax-highlighting
+  :after esh-mode
+  :config
+  (eshell-syntax-highlighting-global-mode 1))
 
 (use-package eshell-up
   :commands

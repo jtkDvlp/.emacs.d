@@ -232,6 +232,29 @@
                   :source "elpaca-menu-lock-file" :id envrc :type git
                   :protocol https :inherit t :depth treeless :ref
                   "af7e0a699060c8128fdd8318d28a7401b82bb3fd"))
+ (eshell-syntax-highlighting :source "elpaca-menu-lock-file" :recipe
+                             (:package "eshell-syntax-highlighting"
+                                       :fetcher github :repo
+                                       "akreisher/eshell-syntax-highlighting"
+                                       :files
+                                       ("*.el" "*.el.in" "dir"
+                                        "*.info" "*.texi" "*.texinfo"
+                                        "doc/dir" "doc/*.info"
+                                        "doc/*.texi" "doc/*.texinfo"
+                                        "lisp/*.el" "docs/dir"
+                                        "docs/*.info" "docs/*.texi"
+                                        "docs/*.texinfo"
+                                        (:exclude ".dir-locals.el"
+                                                  "test.el" "tests.el"
+                                                  "*-test.el"
+                                                  "*-tests.el"
+                                                  "LICENSE" "README*"
+                                                  "*-pkg.el"))
+                                       :source "elpaca-menu-lock-file"
+                                       :id eshell-syntax-highlighting
+                                       :type git :protocol https
+                                       :inherit t :depth treeless :ref
+                                       "62418fd8b2380114a3f6dad699c1ba45329db1d2"))
  (eshell-up :source "elpaca-menu-lock-file" :recipe
             (:package "eshell-up" :fetcher github :repo
                       "peterwvj/eshell-up" :files

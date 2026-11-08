@@ -76,6 +76,14 @@ directory becomes a local copy.  For `eshell-named-command-hook'."
       ;; connect a pipe to it, and the input shows on screen instead.
       (or process t))))
 
+(defun jtk-babashka-eshell-placeholder (&rest _)
+  "Stand in as `eshell/bbe' and `eshell/clje', which eshell never calls.
+The commands run through `jtk-babashka-eshell-command' in
+`eshell-named-command-hook', which comes first; a function by their
+name makes them known commands, for highlighting and `which'."
+  (error "Run through `jtk-babashka-eshell-command' in %s"
+         'eshell-named-command-hook))
+
 ;;;; Completion
 
 (defvar jtk-babashka--symbols nil
