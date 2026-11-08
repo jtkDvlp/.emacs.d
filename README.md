@@ -133,6 +133,26 @@ precmd_functions+=(osc7_precmd)
 In mistty, `C-e` takes a zsh autosuggestion, and `S-<return>` adds a
 line to the command without running it.
 
+## Servers (TRAMP)
+
+Files, directories and shells on a server open like local ones, with
+`C-x C-f /scp:user@host:/path` (or `/-:user@host:/path`, the default
+method). Prefer `/scp:` to `/ssh:`: both log in with ssh, but `/scp:`
+copies files above 10 KB with scp, while `/ssh:` sends them through
+the login shell.
+
+- In dired with a local directory in one window and a server's in the
+  other, `C` copies and `R` moves to the other window's directory, which
+  replaces calling scp by hand.
+- `M-! s s` in a buffer on a server opens eshell there; programs run on
+  the server, `bbe` here (see above). `M-! s z` starts the server's own
+  shell in mistty.
+- Programs start through ssh directly. That needs a login without a
+  password prompt: an ssh key with `ssh-agent`, or a connection TRAMP
+  already opened. Over several hops TRAMP uses its slower way by itself.
+- Files on a server get no version control in the mode line and no
+  lock files; magit works there all the same.
+
 ## Keys
 
 - Global keys are for global tasks: files, buffers, windows, search,
