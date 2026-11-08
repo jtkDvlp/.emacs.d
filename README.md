@@ -95,10 +95,15 @@ data comes through the pipe, or as file names after the form, which
 
 Inside the form, `TAB` completes Clojure's names, with Babashka's
 aliases (`str/`, `fs/`, `json/`, ...). `C-o` edits the form in a
-Clojure buffer (on any other eshell input, `C-o` inserts a buffer's
-name, as eshell's `C-c M-b`), with highlighting and structural editing; `C-o` or
-`C-c C-c` puts it back quoted, `C-c C-k` drops it. In eshell's single
-quotes, `''` is one `'`.
+Clojure buffer, with highlighting and structural editing, also where
+`bbe` stands in a pipe (`seq 1 3 | clje '...' | sort`); `C-o` or
+`C-c C-c` puts it back quoted, `C-c C-k` drops it. On input without
+`bbe` or `clje`, `C-o` inserts a buffer's name, as eshell's `C-c M-b`.
+In eshell's single quotes, `''` is one `'`.
+
+The piped input is `*input*`, a lazy sequence of its lines. For the
+whole text, `(str/join "\n" *input*)`; for EDN or JSON, read that, as in
+`(edn/read-string (str/join "\n" *input*))`.
 
 Other file names inside the code are local. Babashka with all its
 options is `bb` (on the server, if it has one) or `/local:bb` (here).
