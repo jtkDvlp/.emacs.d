@@ -155,7 +155,17 @@ ARG is passed on as to `eshell'."
   mistty
   :commands (mistty mistty-in-project)
   :custom
-  (mistty-shell-command '("/bin/zsh")))
+  (mistty-shell-command '("/bin/zsh"))
+
+  :config
+  ;; NOTE: On a server mistty starts the server's shell, which need not
+  ;; be zsh: there the command is unset, and mistty takes the shell
+  ;; TRAMP knows for the connection.
+  (connection-local-set-profile-variables
+   'jtk-shell-mistty-on-server
+   '((mistty-shell-command . nil)))
+  (connection-local-set-profiles
+   '(:application tramp) 'jtk-shell-mistty-on-server))
 
 (use-package eshell-up
   :commands
