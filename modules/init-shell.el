@@ -16,6 +16,8 @@
 (require 'jtk-babashka)
 
 (defvar corfu-auto)
+(defvar pcomplete-exit-function)
+(declare-function pcomplete-default-exit-function "pcomplete")
 (declare-function eshell/pwd "em-dirs")
 (declare-function magit-anything-modified-p "magit-git")
 (declare-function magit-get-current-branch "magit-git")
@@ -85,6 +87,16 @@ on any other input this is `eshell-insert-buffer-name'."
        #'jtk-babashka-edit-form
      #'eshell-insert-buffer-name)))
 
+;; WATCHOUT: pcomplete adds a space after every completion reported
+;; as finished.  TAB on its own never reports a directory so, since one
+;; can go on into it; taking the greyed suggestion with TAB, and corfu,
+;; always do, and `cd sub' became `cd subdir/ ', with no way on.
+(defun jtk-shell-pcomplete-exit (completion status)
+  "Finish COMPLETION as pcomplete does, but with no space after a directory.
+STATUS is as for `pcomplete-default-exit-function'."
+  (unless (string-suffix-p "/" completion)
+    (pcomplete-default-exit-function completion status)))
+
 ;; NOTE: A suggestion from the history shows greyed after point while
 ;; typing, as in fish; TAB takes it.  The history comes first in this
 ;; buffer's completion, so TAB completes from it too, and from files
@@ -128,6 +140,8 @@ on any other input this is `eshell-insert-buffer-name'."
 
   :config
   (require 'em-smart)
+  (require 'pcomplete)
+  (setq pcomplete-exit-function #'jtk-shell-pcomplete-exit)
   (add-hook 'eshell-named-command-hook #'jtk-babashka-eshell-command)
 
   (setq eshell-where-to-jump 'begin
