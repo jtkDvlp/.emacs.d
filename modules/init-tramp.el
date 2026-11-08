@@ -13,6 +13,7 @@
 
 (defvar vc-ignore-dir-regexp)
 (defvar tramp-file-name-regexp)
+(declare-function tramp-ssh-or-plink-options "tramp-sh")
 
 ;; NOTE: With a local and a remote directory side by side in dired,
 ;; copying (C) and moving (R) offer the other window's directory, which
@@ -49,6 +50,18 @@
     (connection-local-set-profiles
      `(:application tramp :protocol ,protocol)
      'jtk-tramp-direct-async))
+
+  ;; WATCHOUT: Emacs 31.1's TRAMP asks a function
+  ;; `tramp-ssh-controlmaster-options' for the ssh options of a program
+  ;; started directly, but tramp-sh now calls it
+  ;; `tramp-ssh-or-plink-options'; the call finds nothing and stays
+  ;; silent.  Without the alias the program opens its own ssh connection
+  ;; instead of sharing TRAMP's, which cannot ask for a password and
+  ;; fails wherever the login needs one.
+  (with-eval-after-load 'tramp-sh
+    (unless (fboundp 'tramp-ssh-controlmaster-options)
+      (defalias 'tramp-ssh-controlmaster-options
+        #'tramp-ssh-or-plink-options)))
 
   ;; NOTE: dired checks no symbolic link on a server, one round trip
   ;; each; broken links are no longer marked there.
