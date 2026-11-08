@@ -6,6 +6,7 @@
 ;; suggestion from the history while typing; aliases are in
 ;; etc/eshell/aliases.  eat is the terminal: zsh on its own, and the
 ;; display of programs in eshell that need a terminal (top, less, ...).
+;; mistty runs zsh too, but edits its command line with Emacs' keys.
 
 ;;; Code:
 
@@ -16,6 +17,8 @@
 (declare-function magit-anything-modified-p "magit-git")
 (declare-function magit-get-current-branch "magit-git")
 (declare-function eat "eat")
+(declare-function mistty "mistty")
+(declare-function mistty-in-project "mistty-project")
 
 (defun jtk-shell-eshell (arg)
   "Open eshell in the current project's root, or as `eshell' outside one.
@@ -57,6 +60,13 @@ ARG is passed on as to `eshell'."
   (interactive)
   (eat "/bin/zsh"))
 
+(defun jtk-shell-mistty ()
+  "Open zsh in mistty, in the current project's root if there is one."
+  (interactive)
+  (if (jtk-project-root)
+      (mistty-in-project)
+    (mistty)))
+
 ;; NOTE: A suggestion from the history shows greyed after point while
 ;; typing, as in fish; TAB takes it.  The history comes first in this
 ;; buffer's completion, so TAB completes from it too, and from files
@@ -81,10 +91,12 @@ ARG is passed on as to `eshell'."
   (:map jtk-run-map
         :prefix-map jtk-shell-map
         :prefix "s"
-        :prefix-docstring "Shells: eshell, a terminal, a single command."
+        :prefix-docstring
+        "Shells: eshell, a terminal, zsh in mistty, a single command."
         ("s" . jtk-shell-eshell)
         ("S" . eshell)
         ("t" . jtk-shell-terminal)
+        ("z" . jtk-shell-mistty)
         ("c" . shell-command)
 
    ;; NOTE: <up>, <down>, M-p and M-n go through the history of the
@@ -125,6 +137,16 @@ ARG is passed on as to `eshell'."
   :commands (eat)
   :hook
   (eshell-load . eat-eshell-visual-command-mode))
+
+;; NOTE: Without its module mistty uses Emacs' own terminal (eterm).
+;; `M-x mistty-install' fetches the faster one (alacritty) into the
+;; package's build; the module is bound to mistty's version, so after an
+;; update mistty falls back to eterm until it is fetched again.
+(use-package
+  mistty
+  :commands (mistty mistty-in-project)
+  :custom
+  (mistty-shell-command '("/bin/zsh")))
 
 (use-package eshell-up
   :commands

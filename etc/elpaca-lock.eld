@@ -421,6 +421,19 @@
                    md-mode :host github :repo "yibie/md-mode" :type
                    git :protocol https :inherit t :depth treeless :ref
                    "d9e7e1d83a8601a9bda2fd604f6a0881a4f9a838"))
+ (mistty :source "elpaca-menu-lock-file" :recipe
+         (:package "mistty" :fetcher github :repo "szermatt/mistty"
+                   :files
+                   ("*.el" "*.el.in" "dir" "*.info" "*.texi"
+                    "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
+                    "doc/*.texinfo" "lisp/*.el" "docs/dir"
+                    "docs/*.info" "docs/*.texi" "docs/*.texinfo"
+                    (:exclude ".dir-locals.el" "test.el" "tests.el"
+                              "*-test.el" "*-tests.el" "LICENSE"
+                              "README*" "*-pkg.el"))
+                   :source "MELPA" :id mistty :type git :protocol
+                   https :inherit t :depth treeless :ref
+                   "0ddc08da299be84a6b28f0cebeaccd950856dd42"))
  (multiple-cursors :source "elpaca-menu-lock-file" :recipe
                    (:package "multiple-cursors" :fetcher github :repo
                              "magnars/multiple-cursors.el" :files
