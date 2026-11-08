@@ -22,6 +22,7 @@
 (declare-function eat "eat")
 (declare-function mistty "mistty")
 (declare-function mistty-in-project "mistty-project")
+(declare-function eshell-insert-buffer-name "esh-arg")
 
 (defun jtk-shell-eshell (arg)
   "Open eshell in the current project's root, or as `eshell' outside one.
@@ -70,6 +71,20 @@ ARG is passed on as to `eshell'."
       (mistty-in-project)
     (mistty)))
 
+;; NOTE: C-o takes something into a buffer of its own, as it exports a
+;; list from the minibuffer (init-minibuffer); elsewhere in eshell it
+;; keeps inserting a buffer's name, as before.  eshell's own key for
+;; that, C-c M-b, works too.
+(defun jtk-shell-edit-form-or-insert-buffer-name ()
+  "Edit the form of a `bbe' or `clje' command, else insert a buffer name.
+The form opens in a Clojure buffer of its own (`jtk-babashka-edit-form');
+on any other input this is `eshell-insert-buffer-name'."
+  (interactive)
+  (call-interactively
+   (if (jtk-babashka-eshell-command-line-p)
+       #'jtk-babashka-edit-form
+     #'eshell-insert-buffer-name)))
+
 ;; NOTE: A suggestion from the history shows greyed after point while
 ;; typing, as in fish; TAB takes it.  The history comes first in this
 ;; buffer's completion, so TAB completes from it too, and from files
@@ -109,10 +124,7 @@ ARG is passed on as to `eshell'."
    :map eshell-mode-map
    ("C-<return>" . end-of-buffer)
    ("M-P" . consult-history)
-   ;; NOTE: C-o takes something into a buffer of its own, as it exports
-   ;; a list from the minibuffer (init-minibuffer).  eshell's own key
-   ;; for inserting a buffer name, C-c M-b, stays.
-   ("C-o" . jtk-babashka-edit-form))
+   ("C-o" . jtk-shell-edit-form-or-insert-buffer-name))
 
   :config
   (require 'em-smart)

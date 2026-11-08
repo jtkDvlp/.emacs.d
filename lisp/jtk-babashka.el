@@ -96,13 +96,18 @@ directory becomes a local copy.  For `eshell-named-command-hook'."
               (process-lines (jtk-babashka-executable)
                              "-e" jtk-babashka--symbols-form)))))
 
+(defun jtk-babashka-eshell-command-line-p ()
+  "Return non-nil if the eshell input at point runs one of our commands.
+The match data then hold the command's name."
+  (save-excursion
+    (beginning-of-line)
+    (looking-at (regexp-opt jtk-babashka-eshell-commands 'words))))
+
 (defun jtk-babashka--in-eshell-command-p ()
   "Return non-nil if point is in the input of one of our eshell commands."
-  (save-excursion
-    (let ((point (point)))
-      (beginning-of-line)
-      (and (looking-at (regexp-opt jtk-babashka-eshell-commands 'words))
-           (<= (match-end 0) point)))))
+  (let ((point (point)))
+    (and (jtk-babashka-eshell-command-line-p)
+         (<= (match-end 0) point))))
 
 (defun jtk-babashka-completion-at-point ()
   "Complete a Clojure name in the form of `bbe' or `clje' in eshell."
