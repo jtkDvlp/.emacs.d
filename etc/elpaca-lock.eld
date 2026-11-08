@@ -304,26 +304,6 @@
                    :source "elpaca-menu-lock-file" :id extmap :type
                    git :protocol https :inherit t :depth treeless :ref
                    "bb4867e13ec7480d4dbc1d99888627e4cc8ef2f6"))
- (git-auto-commit-mode :source "elpaca-menu-lock-file" :recipe
-                       (:package "git-auto-commit-mode" :fetcher
-                                 github :repo
-                                 "ryuslash/git-auto-commit-mode"
-                                 :files
-                                 ("*.el" "*.el.in" "dir" "*.info"
-                                  "*.texi" "*.texinfo" "doc/dir"
-                                  "doc/*.info" "doc/*.texi"
-                                  "doc/*.texinfo" "lisp/*.el"
-                                  "docs/dir" "docs/*.info"
-                                  "docs/*.texi" "docs/*.texinfo"
-                                  (:exclude ".dir-locals.el" "test.el"
-                                            "tests.el" "*-test.el"
-                                            "*-tests.el" "LICENSE"
-                                            "README*" "*-pkg.el"))
-                                 :source "elpaca-menu-lock-file" :id
-                                 git-auto-commit-mode :type git
-                                 :protocol https :inherit t :depth
-                                 treeless :ref
-                                 "a7b59acea622a737d23c783ce7d212fefb29f7e6"))
  (groovy-mode :source "elpaca-menu-lock-file" :recipe
               (:package "groovy-mode" :fetcher github :repo
                         "Groovy-Emacs-Modes/groovy-emacs-modes" :files

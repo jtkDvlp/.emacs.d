@@ -2,8 +2,7 @@
 
 ;;; Commentary:
 
-;; magit, including pushes for review to Gerrit, and
-;; git-auto-commit-mode.
+;; magit, including pushes for review to Gerrit.
 
 ;;; Code:
 
@@ -38,39 +37,33 @@
           window)
       (magit-display-buffer-traditional buffer)))
 
-  (defun magit-push-to-gerrit-local-branch-or-commit-to-branch (source target)
+  (defun jtk-vc-gerrit-push-to-branch (source target)
+    "Push SOURCE, a branch or commit, to Gerrit for review on TARGET."
     (interactive
-     (let ((source (magit-read-local-branch-or-commit "Push"))
-           (target (magit-read-local-branch-or-commit "On")))
-       (list source target)))
-    (magit-git-command-topdir (concat "git push origin " source (concat ":refs/for/" target))))
+     (list (magit-read-local-branch-or-commit "Push")
+           (magit-read-local-branch-or-commit "On")))
+    (magit-git-command-topdir
+     (format "git push origin %s:refs/for/%s" source target)))
 
-  (defun magit-push-to-gerrit-local-branch-or-commit (source)
+  (defun jtk-vc-gerrit-push (source)
+    "Push SOURCE, a branch or commit, to Gerrit for review on itself."
     (interactive
-     (let ((source (magit-read-local-branch-or-commit "Push")))
-       (list source)))
-    (magit-git-command-topdir (concat "git push origin " source (concat ":refs/for/" source))))
+     (list (magit-read-local-branch-or-commit "Push")))
+    (jtk-vc-gerrit-push-to-branch source source))
 
-  (defun magit-push-to-gerrit-current-branch ()
+  (defun jtk-vc-gerrit-push-current-branch ()
+    "Push the current branch to Gerrit for review."
     (interactive)
-    (magit-push-to-gerrit-local-branch-or-commit (magit-get-current-branch)))
+    (jtk-vc-gerrit-push (magit-get-current-branch)))
 
   :config
   (transient-append-suffix 'magit-push "e"
-    '("P" "Push current branch to Gerrit" magit-push-to-gerrit-current-branch))
+    '("P" "Push current branch to Gerrit" jtk-vc-gerrit-push-current-branch))
   (transient-append-suffix 'magit-push "e"
-    '("U" "Push branch / commit to Gerrit" magit-push-to-gerrit-local-branch-or-commit))
+    '("U" "Push branch / commit to Gerrit" jtk-vc-gerrit-push))
   (transient-append-suffix 'magit-push "e"
-    '("A" "Push branch / commit to Gerrit on branch" magit-push-to-gerrit-local-branch-or-commit-to-branch)))
-
-(use-package
-  git-auto-commit-mode
-  :diminish git-auto-commit-mode
-
-  :config
-  (setq-default
-   gac-ask-for-summary-p nil
-   gac-debounce-interval (* 10 60)))
+    '("A" "Push branch / commit to Gerrit on branch"
+      jtk-vc-gerrit-push-to-branch)))
 
 (provide 'init-vc)
 
