@@ -235,9 +235,6 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 - **Externe Programme stehen in der README** (Abschnitt „External
   tools“). Wer einen Language-Server oder ein Hilfsprogramm einbindet,
   trägt es dort mit Installationsbefehl ein.
-- **eshell-Tasten gehen über `eshell-mode-map*`**, weil eshell seine
-  Mode-Map früher erst beim Start des Modus angelegt hat. Ob das in der
-  Zielversion noch nötig ist, ist zu prüfen, bevor es wegfällt.
 
 ## Messwerte
 

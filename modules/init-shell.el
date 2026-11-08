@@ -2,166 +2,120 @@
 
 ;;; Commentary:
 
-;; eshell with a project-aware prompt, history and commands; aliases
-;; are in etc/eshell/aliases.  Also zsh in a terminal.
+;; eshell with a project-aware prompt, history and commands, and a
+;; suggestion from the history while typing; aliases are in
+;; etc/eshell/aliases.  Also zsh in a terminal.
 
 ;;; Code:
 
 (require 'jtk-project)
 
-(use-package eshell
+(defvar corfu-auto)
+(declare-function eshell/pwd "em-dirs")
+(declare-function magit-anything-modified-p "magit-git")
+
+(defun jtk-shell-eshell (arg)
+  "Open eshell in the current project's root, or as `eshell' outside one.
+ARG is passed on as to `eshell'."
+  (interactive "P")
+  (if (jtk-project-root)
+      (call-interactively #'project-eshell)
+    (eshell arg)))
+
+;; NOTE: Runs git twice through magit (branch, anything modified) for
+;; every prompt; 6.7 ms in this repository (Emacs 31.1, cloud, batch).
+(defun jtk-shell-prompt ()
+  "Return the eshell prompt: project, branch and path, or the path."
+  (let* ((home (getenv "HOME"))
+         (pwd (replace-regexp-in-string
+               "~" home (concat (eshell/pwd) "/")))
+         (remote? (string-match tramp-file-name-regexp pwd))
+         (project-root (unless remote? (jtk-project-root)))
+         (git-branch (when-let* (((and project-root
+                                       (fboundp 'magit-get-current-branch)))
+                                 (branch (magit-get-current-branch)))
+                       (replace-regexp-in-string "master" "m" branch)))
+         (git-info
+          (cond ((null git-branch) "")
+                ((magit-anything-modified-p)
+                 (propertize (format "(%s)" git-branch) 'face 'bold))
+                (t (format "(%s)" git-branch))))
+         (info
+          (if project-root
+              (format "%s%s\n%s"
+                      (jtk-project-name)
+                      git-info
+                      (replace-regexp-in-string project-root ":/" pwd))
+            (replace-regexp-in-string home "~" pwd))))
+    (format "\n%s\n↳ λ " info)))
+
+(defun jtk-shell-terminal ()
+  "Open zsh in a terminal."
+  (interactive)
+  (ansi-term "/bin/zsh" "zshell"))
+
+;; NOTE: A suggestion from the history shows greyed after point while
+;; typing, as in fish; TAB takes it.  The history comes first in this
+;; buffer's completion, so TAB completes from it too, and from files
+;; and commands where the history has nothing.  corfu does not pop up by
+;; itself here, so the two do not show at once.
+(defun jtk-shell-suggest-from-history ()
+  "Turn on suggestions from the history in the current eshell."
+  (setq-local completion-at-point-functions
+              (cons #'cape-history completion-at-point-functions)
+              corfu-auto nil)
+  (completion-preview-mode 1))
+
+(use-package
+  eshell
   :ensure nil
   :commands (eshell)
 
-  :init
-  (defvar eshell-mode-map* (make-sparse-keymap))
+  :hook
+  (eshell-mode . jtk-shell-suggest-from-history)
 
   :bind
   (:map jtk-run-map
         :prefix-map jtk-shell-map
         :prefix "s"
-        :prefix-docstring "Shells: eshell, and a single shell command."
-        ("s" . eshell-dwim)
+        :prefix-docstring "Shells: eshell, a terminal, a single command."
+        ("s" . jtk-shell-eshell)
         ("S" . eshell)
+        ("t" . jtk-shell-terminal)
         ("c" . shell-command)
 
-   :map eshell-mode-map*
-   ("<up>" . previous-line)
-   ("<down>" . next-line)
-   ("C-<up>" . eshell-previous-prompt)
-   ("C-<down>" . eshell-next-prompt)
-
+   ;; NOTE: <up>, <down>, M-p and M-n go through the history of the
+   ;; input typed so far; eshell's history mode binds them.
+   :map eshell-mode-map
    ("C-<return>" . end-of-buffer)
-
    ("C-o" . eshell-insert-buffer-name)
-
-   ("M-p" . eshell-previous-matching-input-from-input)
-   ("M-n" . eshell-next-matching-input-from-input)
-
    ("M-P" . consult-history))
 
   :config
   (require 'em-smart)
 
-  (defun eshell-dwim (arg)
-    (interactive "P")
-    (if (jtk-project-root)
-        (call-interactively #'project-eshell)
-      (eshell arg)))
-
-  ;; NOTE: eshell used to create its mode map only when the mode starts,
-  ;; so bindings are collected in `eshell-mode-map*' and copied over then.
-  (add-hook 'eshell-mode-hook
-            (lambda ()
-              (replace-keymap-bindings eshell-mode-map* eshell-mode-map)))
-
   (setq eshell-where-to-jump 'begin
         eshell-review-quick-commands nil
         eshell-smart-space-goes-to-end t
         eshell-hist-ignoredups t
-        eshell-history-size 1024)
-
-  (setq eshell-rc-script "~/.eshellrc")
-
-  (setq eshell-prompt-function
-        (lambda ()
-          (let* ((home
-                  (getenv "HOME"))
-
-                 (pwd
-                  (replace-regexp-in-string "~" home (concat (eshell/pwd) "/")))
-
-                 (remote?
-                  (string-match tramp-file-name-regexp pwd))
-
-                 (local?
-                  (not remote?))
-
-                 (home-based-path
-                  (replace-regexp-in-string home "~" pwd))
-
-                 (project?
-                  (when local?
-                    (jtk-project-root)))
-
-                 (project-root
-                  project?)
-
-                 (project-name
-                  (when project?
-                    (jtk-project-name)))
-
-                 (project-based-path
-                  (when project?
-                    (replace-regexp-in-string project-root ":/" pwd)))
-
-                 (git?
-                  (when (and project? (fboundp 'magit-get-current-branch))
-                    (magit-get-current-branch)))
-
-                 (git-branch
-                  (when git?
-                    (replace-regexp-in-string "master" "m" (magit-get-current-branch))))
-
-                 (git-modified?
-                  (and git? (magit-anything-modified-p)))
-
-                 (git-info
-                  (if git?
-                      (if git-modified?
-                          (propertize (format "(%s)" git-branch) 'face 'bold)
-                        (format "(%s)" git-branch))
-                    ""))
-
-                 (project-info
-                  (if project?
-                      (format "%s%s\n%s" project-name git-info project-based-path)
-                    ""))
-
-                 (info
-                  (if project?
-                      project-info
-                    home-based-path)))
-
-            (format "\n%s\n\u21b3 \u03bb " info)))
-
-        eshell-prompt-regexp
-        "^[^\u03bb]*\u03bb\s")
+        eshell-history-size 1024
+        eshell-rc-script "~/.eshellrc"
+        eshell-prompt-function #'jtk-shell-prompt
+        eshell-prompt-regexp "^[^λ]*λ\s")
 
   (defun eshell/repl (&rest profile)
+    "Start a Clojure REPL, with the Leiningen PROFILE if given."
     (if (seq-empty-p profile)
         (call-interactively 'jtk-clojure-jack-in-dwim)
       (jtk-clojure-jack-in-with-profile (apply 'concat profile))))
 
-  (defun eshell/nvm (version)
-    (nvm-use version))
-
   (defun eshell/open (file)
-    (browse-url-of-file file))
-
-  (add-hook
-   'eshell-mode-hook
-   '(lambda ()
-      (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point))))
+    "Open FILE with the program the system has for it."
+    (browse-url-of-file file)))
 
 (use-package eshell-up
   :commands
   (eshell-up eshell-up-peek))
-
-(use-package esh-autosuggest
-  :hook (eshell-mode . esh-autosuggest-mode))
-
-(defun zshell ()
-  (interactive)
-  (ansi-term "/bin/zsh" "zshell"))
-
-(defalias 'zsh 'zshell)
-
-(defun replace-keymap-bindings (from to)
-  (map-keymap
-   (lambda (k f)
-     (define-key to (vector k) f))
-   from))
 
 (provide 'init-shell)
 

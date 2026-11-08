@@ -85,15 +85,6 @@
                          :type git :protocol https :inherit t :depth
                          treeless :ref
                          "3c68569738f04a22d52f1ca28f593c2ee733bf04"))
- (company :source "elpaca-menu-lock-file" :recipe
-          (:package "company" :fetcher github :repo
-                    "company-mode/company-mode" :files
-                    (:defaults "icons"
-                               ("images/small"
-                                "doc/images/small/*.png"))
-                    :source "elpaca-menu-lock-file" :id company :type
-                    git :protocol https :inherit t :depth treeless
-                    :ref "e50ea7a3222020cef8e7f320f9870bb20c61e451"))
  (compat :source "elpaca-menu-lock-file" :recipe
          (:package "compat" :repo
                    ("https://github.com/emacs-compat/compat"
@@ -234,23 +225,6 @@
                   :source "elpaca-menu-lock-file" :id envrc :type git
                   :protocol https :inherit t :depth treeless :ref
                   "af7e0a699060c8128fdd8318d28a7401b82bb3fd"))
- (esh-autosuggest :source "elpaca-menu-lock-file" :recipe
-                  (:package "esh-autosuggest" :fetcher sourcehut :repo
-                            "dieggsy/esh-autosuggest" :old-names
-                            (company-eshell-autosuggest) :files
-                            ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                             "*.texinfo" "doc/dir" "doc/*.info"
-                             "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
-                             "docs/dir" "docs/*.info" "docs/*.texi"
-                             "docs/*.texinfo"
-                             (:exclude ".dir-locals.el" "test.el"
-                                       "tests.el" "*-test.el"
-                                       "*-tests.el" "LICENSE"
-                                       "README*" "*-pkg.el"))
-                            :source "elpaca-menu-lock-file" :id
-                            esh-autosuggest :type git :protocol https
-                            :inherit t :depth treeless :ref
-                            "40774022105ed16287fcf26553a16c4cdda5e1ab"))
  (eshell-up :source "elpaca-menu-lock-file" :recipe
             (:package "eshell-up" :fetcher github :repo
                       "peterwvj/eshell-up" :files
