@@ -1274,7 +1274,15 @@ mal im LAN, mal extern.
 
 **Geprüft im Batch:** mistty aus einem Server-Verzeichnis startet dort `/bin/sh` im richtigen Verzeichnis; `jtk-project-root` ist dort nil. `/remote:` öffnet und speichert, startet Programme direkt (0 Befehle), kopiert 6,8 MB per scp (3 Befehle), dired und `cd /remote:…` in eshell gehen.
 
-**Offen für die Sichtung:** echte Server im LAN und extern; ob die Anmeldung ohne Rückfrage geht (Schlüssel, ssh-agent), sonst scheitern Programmstarts über ssh direkt.
+**Gefunden: ein Fehler in Emacs 31.1.** Der direkte Programmstart fragt `tramp-ssh-controlmaster-options` als Funktion nach den ssh-Optionen; tramp-sh nennt sie inzwischen `tramp-ssh-or-plink-options`, und `tramp-compat-funcall` liefert still nil. So teilte der Programmstart TRAMPs Verbindung nicht, baute eine eigene auf und konnte nach keinem Passwort fragen. Ein Alias in `init-tramp` behebt das (WATCHOUT dort). Geprüft mit einem Schlüssel mit Passphrase gegen den Test-ssh-Server:
+
+| Fall | ohne Alias | mit Alias |
+|---|---|---|
+| erster Zugriff (Datei öffnen) | Passphrase im Minibuffer | Passphrase im Minibuffer |
+| Programm bei offener Verbindung | scheitert: ssh fragt selbst, Exit 9 | läuft ohne Rückfrage |
+| Programm nach geschlossener Verbindung | scheitert | TRAMP öffnet die Verbindung neu, fragt einmal im Minibuffer, dann läuft es |
+
+**Offen für die Sichtung:** echte Server im LAN und extern; unter macOS legt TRAMP den ControlMaster-Socket mit relativem Pfad an (`tramp.%C`), das Teilen der Verbindung dort ist nur am Mac zu sehen.
 
 #### ✅ 2.11 Shell mit Clojure (entschieden und umgesetzt 2026-11-08)
 

@@ -154,9 +154,11 @@ login shell, which is slower for large ones.
 - `M-! s s` in a buffer on a server opens eshell there; programs run on
   the server, `bbe` here (see above). `M-! s z` starts the server's own
   shell in mistty.
-- Programs start through ssh directly. That needs a login without a
-  password prompt: an ssh key with `ssh-agent`, or a connection TRAMP
-  already opened. Over several hops TRAMP uses its slower way by itself.
+- Programs start through ssh directly, over the connection TRAMP keeps
+  open. The first access to a server asks for a password or passphrase
+  in the minibuffer, if the login needs one; programs then start without
+  asking. Has the connection closed, TRAMP opens it again first and asks
+  once more. Over several hops TRAMP uses its slower way by itself.
 - Files on a server get no version control in the mode line and no
   lock files; magit works there all the same.
 
