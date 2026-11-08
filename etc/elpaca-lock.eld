@@ -598,23 +598,6 @@
                    :source "elpaca-menu-lock-file" :id sesman :type
                    git :protocol https :inherit t :depth treeless :ref
                    "7eb733acb33e610a53979fa7fc13393eeda3cc53"))
- (simple-bookmarks :source "elpaca-menu-lock-file" :recipe
-                   (:package "simple-bookmarks" :fetcher github :repo
-                             "jtkDvlp/simple-bookmarks" :files
-                             ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                              "*.texinfo" "doc/dir" "doc/*.info"
-                              "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
-                              "docs/dir" "docs/*.info" "docs/*.texi"
-                              "docs/*.texinfo"
-                              (:exclude ".dir-locals.el" "test.el"
-                                        "tests.el" "*-test.el"
-                                        "*-tests.el" "LICENSE"
-                                        "README*" "*-pkg.el"))
-                             :source "elpaca-menu-lock-file" :id
-                             simple-bookmarks :host github :type git
-                             :protocol https :inherit t :depth
-                             treeless :ref
-                             "54e8d771bcdb0eb235b31c0aa9642171369500e5"))
  (simple-httpd :source "elpaca-menu-lock-file" :recipe
                (:package "simple-httpd" :repo
                          "skeeto/emacs-web-server" :fetcher github

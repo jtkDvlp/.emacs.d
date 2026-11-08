@@ -167,8 +167,9 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   schreibt, hat zwei Stellen, die auseinanderlaufen.
 - **Mit `lexical-binding` erreicht ein `let` die Variable eines Pakets nur,
   wenn das Paket schon geladen ist.** Sonst bindet es lexikalisch, und das
-  Paket sieht den Wert nie. Vorher `require`n (so in `sql-mysql-for`) —
-  weder Byte-Compiler noch Schnappschuss bemerken den Fehler.
+  Paket sieht den Wert nie. Vorher `require`n (so in
+  `jtk-bookmarks-mysql-jump`) — weder Byte-Compiler noch Schnappschuss
+  bemerken den Fehler.
 - **Der Schnappschuss sieht nur, was geladen wird — und nur den
   Endzustand.** Ein Block, der an einem nie geladenen Paket hängt, fehlt
   vorher wie nachher (so einst `tide`, das auf das nie installierte
