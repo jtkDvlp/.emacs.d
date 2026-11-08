@@ -95,7 +95,8 @@ data comes through the pipe, or as file names after the form, which
 
 Inside the form, `TAB` completes Clojure's names, with Babashka's
 aliases (`str/`, `fs/`, `json/`, ...). `C-o` edits the form in a
-Clojure buffer, with highlighting and structural editing; `C-o` or
+Clojure buffer (on any other eshell input, `C-o` inserts a buffer's
+name, as eshell's `C-c M-b`), with highlighting and structural editing; `C-o` or
 `C-c C-c` puts it back quoted, `C-c C-k` drops it. In eshell's single
 quotes, `''` is one `'`.
 
@@ -136,10 +137,11 @@ line to the command without running it.
 ## Servers (TRAMP)
 
 Files, directories and shells on a server open like local ones, with
-`C-x C-f /scp:user@host:/path` (or `/-:user@host:/path`, the default
-method). Prefer `/scp:` to `/ssh:`: both log in with ssh, but `/scp:`
-copies files above 10 KB with scp, while `/ssh:` sends them through
-the login shell.
+`C-x C-f /remote:user@host:/path`, in dired, and in eshell with
+`cd /remote:user@host:/path`. `/remote:` is the preferred method under
+a name of its own, today scp: it logs in with ssh and copies files above
+10 KB with scp. `/ssh:` works as well, but sends files through the
+login shell, which is slower for large ones.
 
 - In dired with a local directory in one window and a server's in the
   other, `C` copies and `R` moves to the other window's directory, which

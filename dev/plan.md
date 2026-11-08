@@ -1246,8 +1246,8 @@ mal im LAN, mal extern.
 | Thema | Entschieden | Warum |
 |---|---|---|
 | Modul | `init-tramp`, nach `init-vc` | eigenes Thema |
-| Methode | bleibt `scp` (Vorgabe, sobald `scp` installiert ist); README rät zu `/scp:` statt `/ssh:` | `/scp:` kopiert Dateien über 10 KB per scp, `/ssh:` schickt alles durch die Login-Shell |
-| Programme | `tramp-direct-async-process` für `ssh` und `scp` (connection-local) | Programme starten per ssh direkt statt über TRAMPs Shell; gemessen 80 → 0 Befehle für fünf Starts |
+| Methode | `/remote:` als eigener Name der bevorzugten Methode, heute eine Kopie von `scp` (Wunsch 2026-11-08); `scp` bleibt Vorgabe | `scp` kopiert Dateien über 10 KB per scp, `ssh` schickt alles durch die Login-Shell; ein Wechsel der Methode ist eine Zeile in `init-tramp` |
+| Programme | `tramp-direct-async-process` für `ssh`, `scp` und `remote` (connection-local) | Programme starten per ssh direkt statt über TRAMPs Shell; gemessen 80 → 0 Befehle für fünf Starts |
 | Versionskontrolle | aus für Dateien auf Servern (`vc-ignore-dir-regexp`) | fragte git bei jeder geöffneten Datei; magit geht weiter. Nebenwirkung: Auf Servern gibt es kein Projekt mehr (`project-current` ist nil), die Shell-Befehle suchen dort also keins |
 | Sperrdateien | aus (`remote-file-name-inhibit-locks`) | keine zweite Emacs-Sitzung bearbeitet dieselbe Datei |
 | dired | `dired-check-symlinks` aus auf Servern; `dired-dwim-target` an | ein Hin und Zurück je Link gespart; Kopieren zwischen lokalem und Server-Fenster mit `C` ersetzt scp von Hand |
@@ -1272,7 +1272,7 @@ mal im LAN, mal extern.
 | 6,8-MB-Datei hinkopieren | 4 | 4 | 0,28 | 0,27 |
 | 6,8-MB-Datei öffnen | 10 | 1 | 0,41 | 0,18 |
 
-**Geprüft im Batch:** mistty aus einem Server-Verzeichnis startet dort `/bin/sh` im richtigen Verzeichnis; `jtk-project-root` ist dort nil.
+**Geprüft im Batch:** mistty aus einem Server-Verzeichnis startet dort `/bin/sh` im richtigen Verzeichnis; `jtk-project-root` ist dort nil. `/remote:` öffnet und speichert, startet Programme direkt (0 Befehle), kopiert 6,8 MB per scp (3 Befehle), dired und `cd /remote:…` in eshell gehen.
 
 **Offen für die Sichtung:** echte Server im LAN und extern; ob die Anmeldung ohne Rückfrage geht (Schlüssel, ssh-agent), sonst scheitern Programmstarts über ssh direkt.
 
@@ -1307,7 +1307,7 @@ eingerichteten zsh.
 | Ort | `lisp/jtk-babashka.el`, eingebunden in `init-shell` und `init-lang-clojure` | die Brücke ist mehr als ein paar Zeilen und gehört keinem Modul allein |
 | Dateien vom Server | Argumente nach dem Ausdruck, die im entfernten Verzeichnis eine Datei nennen, holt `file-local-copy` her; sie kommen als `*command-line-args*` an und werden nach dem Lauf gelöscht | Clojure-Code kann TRAMP-Pfade nicht lesen; so liest er die Datei wie eine lokale |
 | Vervollständigung | `TAB` im Ausdruck von `bbe`/`clje`: `clojure.core` und Babashkas Aliase (`str/`, `fs/`, `json/` …), einmal von bb erfragt | Namen von bb selbst, also stimmen sie mit der Version |
-| Hervorhebung | `C-o` bearbeitet den Ausdruck in einem Clojure-Buffer (Hervorhebung, strukturelles Editieren); `C-o`/`C-c C-c` setzt ihn gequotet zurück, `C-c C-k` verwirft | eshell färbt Eingaben nicht; so gilt alles aus clojure-mode. `C-o` wie im Minibuffer: etwas in einen eigenen Buffer holen (Wunsch 2026-11-08, statt `C-c '` wie in Org). `eshell-insert-buffer-name` bleibt auf eshells eigenem `C-c M-b` |
+| Hervorhebung | `C-o` bearbeitet den Ausdruck in einem Clojure-Buffer (Hervorhebung, strukturelles Editieren); `C-o`/`C-c C-c` setzt ihn gequotet zurück, `C-c C-k` verwirft | eshell färbt Eingaben nicht; so gilt alles aus clojure-mode. `C-o` wie im Minibuffer: etwas in einen eigenen Buffer holen (Wunsch 2026-11-08, statt `C-c '` wie in Org). Auf jeder anderen Eingabe fügt `C-o` weiter einen Buffernamen ein, wie zuvor (auch `C-c M-b`) |
 | Tasks aus `bb.edn` | Projektart „Babashka“, `t` unter `C-c M-j`/`j`; läuft über `compile` | wie npm; die Tasks liest bb selbst (`bb tasks`), denn `bb.edn` darf mehr als EDN |
 | REPL ohne Projekt | `M-! b`: Scratch-Buffer `var/babashka/scratch.clj` mit Babashka-REPL über CIDER | ein leeres `bb.edn` daneben macht das Verzeichnis zum Babashka-Projekt, so fragt CIDER nichts |
 
