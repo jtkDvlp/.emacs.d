@@ -4,7 +4,8 @@
 
 ;; eshell with a project-aware prompt, history and commands, and a
 ;; suggestion from the history while typing; aliases are in
-;; etc/eshell/aliases.  Also zsh in a terminal.
+;; etc/eshell/aliases.  eat is the terminal: zsh on its own, and the
+;; display of programs in eshell that need a terminal (top, less, ...).
 
 ;;; Code:
 
@@ -14,6 +15,7 @@
 (declare-function eshell/pwd "em-dirs")
 (declare-function magit-anything-modified-p "magit-git")
 (declare-function magit-get-current-branch "magit-git")
+(declare-function eat "eat")
 
 (defun jtk-shell-eshell (arg)
   "Open eshell in the current project's root, or as `eshell' outside one.
@@ -53,7 +55,7 @@ ARG is passed on as to `eshell'."
 (defun jtk-shell-terminal ()
   "Open zsh in a terminal."
   (interactive)
-  (ansi-term "/bin/zsh" "zshell"))
+  (eat "/bin/zsh"))
 
 ;; NOTE: A suggestion from the history shows greyed after point while
 ;; typing, as in fish; TAB takes it.  The history comes first in this
@@ -113,6 +115,16 @@ ARG is passed on as to `eshell'."
   (defun eshell/open (file)
     "Open FILE with the program the system has for it."
     (browse-url-of-file file)))
+
+;; NOTE: Only the programs in `eshell-visual-commands' and their kin run
+;; in eat; the rest of eshell's output stays plain text.
+;; `eat-eshell-mode' would put all of it through the terminal, which
+;; is slower.
+(use-package
+  eat
+  :commands (eat)
+  :hook
+  (eshell-load . eat-eshell-visual-command-mode))
 
 (use-package eshell-up
   :commands

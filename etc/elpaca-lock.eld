@@ -178,6 +178,13 @@
                         doom-themes :type git :protocol https :inherit
                         t :depth treeless :ref
                         "a59202912ad55014e53a685eee6cd94130bdd4fd"))
+ (eat :source "elpaca-menu-lock-file" :recipe
+      (:package "eat" :repo
+                ("https://codeberg.org/akib/emacs-eat" . "eat") :tar
+                nil :host nongnu :files ("*" (:exclude ".git"))
+                :source "NonGNU ELPA" :id eat :type git :protocol
+                https :inherit t :depth treeless :ref
+                "3a6f418f55d183b9d86f99c140caed4ba3d44f93"))
  (elpaca :source
    "elpaca-menu-lock-file" :recipe
    (:source "Init file" :package "elpaca" :id elpaca :repo
