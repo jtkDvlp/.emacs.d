@@ -149,6 +149,34 @@ on any other input this is `eshell-insert-buffer-name'."
     "Open FILE with the program the system has for it."
     (browse-url-of-file file)))
 
+;; WATCHOUT: eat runs a program of eshell on a server with its full
+;; remote name (/remote:host:/bin/htop), and a script with its remote
+;; name as argument; the server finds neither and needs the names as it
+;; sees them.  And TRAMP sets TERM=dumb for every program there, over
+;; eat's own type, which a server would not know anyway; htop then
+;; refuses the terminal.  So on a server the program starts through
+;; env with a type servers know.
+(defconst jtk-shell-eat-server-term "xterm-256color"
+  "Terminal type eat announces to programs on a server.")
+
+(defun jtk-shell--local-name (arg)
+  "Return ARG named as on its host, if it is a remote file name."
+  (if (and (stringp arg) (file-remote-p arg))
+      (file-local-name arg)
+    arg))
+
+(defun jtk-shell-eat-server-command (args)
+  "Return the ARGS of `eat-exec' fit for a program on a server.
+ARGS are BUFFER NAME COMMAND STARTFILE SWITCHES; locally they stay."
+  (pcase-let ((`(,buffer ,name ,command ,startfile ,switches) args))
+    (if (not (file-remote-p default-directory))
+        args
+      (list buffer name "env" startfile
+            (append (list "-u" "TERMINFO"
+                          (concat "TERM=" jtk-shell-eat-server-term)
+                          (jtk-shell--local-name command))
+                    (mapcar #'jtk-shell--local-name switches))))))
+
 ;; NOTE: Only the programs in `eshell-visual-commands' and their kin run
 ;; in eat; the rest of eshell's output stays plain text.
 ;; `eat-eshell-mode' would put all of it through the terminal, which
@@ -156,8 +184,12 @@ on any other input this is `eshell-insert-buffer-name'."
 (use-package
   eat
   :commands (eat)
+
   :hook
-  (eshell-load . eat-eshell-visual-command-mode))
+  (eshell-load . eat-eshell-visual-command-mode)
+
+  :config
+  (advice-add 'eat-exec :filter-args #'jtk-shell-eat-server-command))
 
 ;; NOTE: Without its module mistty uses Emacs' own terminal (eterm).
 ;; `M-x mistty-install' fetches the faster one (alacritty) into the
