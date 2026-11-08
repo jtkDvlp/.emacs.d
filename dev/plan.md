@@ -1271,7 +1271,7 @@ Bereits günstig in den Vorgaben: `auto-revert-remote-files` `nil`,
 
 **Messen statt raten:** Vor und nach den Einstellungen dieselben Abläufe gegen einen echten Rechner zeitlich messen (Datei öffnen, speichern, dired, magit-status, Shell starten). Die Cloud hat keinen entfernten Rechner; gemessen wird auf dem Mac, oder in der Cloud gegen einen lokalen sshd.
 
-#### 2.11 Shell mit Clojure (entschieden 2026-11-08, erster Teil umgesetzt)
+#### ✅ 2.11 Shell mit Clojure (entschieden und umgesetzt 2026-11-08)
 
 Wunsch: eine Shell in Emacs mit Emacs' Funktionen (Suche, Editieren),
 normalen Shell-Befehlen und Clojure wie mit Babashka, auch über TRAMP,
@@ -1283,7 +1283,7 @@ eingerichteten zsh.
 | Hauptshell | eshell | kommt mit der Konfiguration, auch auf entfernte Rechner (`cd /ssh:…`); Ausgabe ist Text mit allen Emacs-Funktionen; mit Abstand am schnellsten (Messung in 2.9) |
 | Vollbild-Programme | eat (`eat-eshell-visual-command-mode`); ghostel als schnellere Alternative später | eshell selbst emuliert kein Terminal |
 | Clojure | `bbe` in eshell: wertet mit einem **lokalen** Babashka aus, Eingabe aus einer Pipe als `*input*` (Zeilen), Folgen zeilenweise | Auf einem entfernten Verzeichnis laufen Programme dort, `bbe` aber hier (eshells `/local:`, `eshell-remote-command`); der Server braucht kein Babashka, die Daten kommen durch die Pipe |
-| Name | `bbe` statt `clj` | `clj` verdeckte in eshell das `clj` der Clojure-CLI |
+| Name | `bbe` (Babashka eval), dazu `clje` (Clojure eval) als zweiter Name; nicht `clj` | `clj` verdeckte in eshell das `clj` der Clojure-CLI |
 | zsh | mistty (`M-! s z`) bleibt für den Fall, dass doch eine echte zsh gebraucht wird | |
 
 **Geprüft im Batch** (Babashka 1.13.229; „entfernt“ über TRAMPs Testmethode `mock`, eine Shell auf demselben Rechner, die TRAMP als entfernt behandelt):
@@ -1295,11 +1295,18 @@ eingerichteten zsh.
 
 **Gefunden:** Der Befehl muss eshell den Prozess zurückgeben; mit bloß `t` verbindet eshell die Pipe nicht, und die Eingabe erscheint unverarbeitet auf dem Bildschirm (WATCHOUT im Code).
 
-**Offen, als nächste Teile:**
-- Tasks aus `bb.edn` als Projektart unter `C-c M-j`/`j`, wie npm.
-- Babashka-REPL ohne Projekt (`M-x cider-jack-in-universal`), ggf. eigene Taste.
-- Clojure-Code, der Dateien auf dem Server direkt liest (heute nur über die Pipe).
-- Vervollständigung und Hervorhebung für `bbe`-Ausdrücke.
+**Zweiter Teil (umgesetzt):**
+
+| Thema | Umgesetzt | Warum |
+|---|---|---|
+| Ort | `lisp/jtk-babashka.el`, eingebunden in `init-shell` und `init-lang-clojure` | die Brücke ist mehr als ein paar Zeilen und gehört keinem Modul allein |
+| Dateien vom Server | Argumente nach dem Ausdruck, die im entfernten Verzeichnis eine Datei nennen, holt `file-local-copy` her; sie kommen als `*command-line-args*` an und werden nach dem Lauf gelöscht | Clojure-Code kann TRAMP-Pfade nicht lesen; so liest er die Datei wie eine lokale |
+| Vervollständigung | `TAB` im Ausdruck von `bbe`/`clje`: `clojure.core` und Babashkas Aliase (`str/`, `fs/`, `json/` …), einmal von bb erfragt | Namen von bb selbst, also stimmen sie mit der Version |
+| Hervorhebung | `C-c '` bearbeitet den Ausdruck in einem Clojure-Buffer (Hervorhebung, strukturelles Editieren); `C-c '`/`C-c C-c` setzt ihn gequotet zurück, `C-c C-k` verwirft | eshell färbt Eingaben nicht; so gilt alles aus clojure-mode. `C-c '` wie in Org und Markdown für Code in einem eigenen Buffer |
+| Tasks aus `bb.edn` | Projektart „Babashka“, `t` unter `C-c M-j`/`j`; läuft über `compile` | wie npm; die Tasks liest bb selbst (`bb tasks`), denn `bb.edn` darf mehr als EDN |
+| REPL ohne Projekt | `M-! b`: Scratch-Buffer `var/babashka/scratch.clj` mit Babashka-REPL über CIDER | ein leeres `bb.edn` daneben macht das Verzeichnis zum Babashka-Projekt, so fragt CIDER nichts |
+
+**Geprüft im Batch:** `clje '(+ 1 2)'` → `3`; im entfernten Verzeichnis zählt `bbe '(count … (slurp (first *command-line-args*)))' clj-app.log` die 4 Zeilen der Datei dort, die Kopie ist danach weg; `str/joi` vervollständigt zu `str/join`, außerhalb von `bbe` bietet sich nichts an; `C-c '` zeigt `(+ 1 2)` in clojure-mode, zurück wird aus `(str 'it "'s")` die eshell-Eingabe `bbe '(str ''it "''s")'`, die `it's` ausgibt; ein Projekt mit `bb.edn` ist „Clojure“ und „Babashka“, `bb tasks` liefert `hello` und `build` (nicht das private `-private`), `t` führt `hello` aus; `M-! b` startet die REPL, `(+ 1 2)` ergibt dort `3` mit Babashka 1.13.229.
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 

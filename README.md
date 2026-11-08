@@ -33,7 +33,7 @@ serves is simply missing.
 | Leiningen, Clojure CLI | `brew install leiningen clojure` | CIDER's jack-in |
 | node, npm | via nvm or `brew install node` | the npm commands under `C-c M-j` |
 | multimarkdown | `brew install multimarkdown` | markdown-mode's preview |
-| babashka | `brew install borkdude/brew/babashka` | `bbe` in eshell: Clojure on the command line, also on data from remote hosts |
+| babashka | `brew install borkdude/brew/babashka` | `bbe`/`clje` in eshell: Clojure on the command line, also on data from remote hosts; tasks of `bb.edn` under `C-c M-j`; the scratch REPL on `M-! b` |
 
 ## Per-project environment (direnv)
 
@@ -69,9 +69,9 @@ the version the `.envrc` names.
 
 ## Clojure in eshell (Babashka)
 
-`bbe` evaluates Clojure with Babashka, on this machine. Input from a
-pipe is `*input*`, a sequence of lines; a sequence as result prints one
-element per line:
+`bbe` (Babashka eval), or `clje` (Clojure eval), evaluates Clojure with
+Babashka, on this machine. Input from a pipe is `*input*`, a sequence of
+lines; a sequence as result prints one element per line:
 
 ```
 λ bbe '(+ 1 2)'
@@ -84,16 +84,27 @@ element per line:
 ```
 
 On a remote directory (`cd /ssh:server:/var/log`), programs run on the
-server, but `bbe` still runs here, so the server needs no Babashka; its
-data comes through the pipe:
+server, but `bbe` still runs here, so the server needs no Babashka. Its
+data comes through the pipe, or as file names after the form, which
+`bbe` copies here first and passes as `*command-line-args*`:
 
 ```
 λ cat app.log | bbe '(filter #(str/includes? % "ERROR") *input*)'
+λ bbe '(count (str/split-lines (slurp (first *command-line-args*))))' app.log
 ```
 
-Relative file names inside the Clojure code are local, not on the
-server. Babashka with all its options is `bb` (on the server, if it has
-one) or `/local:bb` (here).
+Inside the form, `TAB` completes Clojure's names, with Babashka's
+aliases (`str/`, `fs/`, `json/`, ...). `C-c '` edits the form in a
+Clojure buffer, with highlighting and structural editing; `C-c '` or
+`C-c C-c` puts it back quoted, `C-c C-k` drops it. In eshell's single
+quotes, `''` is one `'`.
+
+Other file names inside the code are local. Babashka with all its
+options is `bb` (on the server, if it has one) or `/local:bb` (here).
+
+`M-! b` opens a scratch buffer with a Babashka REPL, outside any
+project; in a project with a `bb.edn`, `C-c M-j t` runs one of its
+tasks.
 
 ## zsh in Emacs (mistty)
 
@@ -145,7 +156,7 @@ line to the command without running it.
 - A list exported with `C-o` into a buffer of its own (projects, for
   instance) takes the same action keys directly on the entry under the
   cursor: `e` on a project opens eshell there; `M-a` turns that off.
-- Each kind of project (Clojure, npm) brings its commands, under
+- Each kind of project (Clojure, Babashka, npm) brings its commands, under
   `C-c M-j` in every buffer of the project and under `j` in the project
   commands.
 - `M-X` lists the commands that fit the current buffer, with their
@@ -162,7 +173,7 @@ Same purpose, same key, in every language that has it:
 | documentation at point | `C-h h` |
 | rename / code actions / organise imports / format | `M-r r` / `M-r a` / `M-r o` / `M-r =` |
 | evaluate the form at point / the last one / the buffer | `C-c C-c` / `C-M-x` / `C-c M-k` (Markdown: render) |
-| commands of the project's kind (REPL, npm) | `C-c M-j`, in every buffer of the project |
+| commands of the project's kind (REPL, bb tasks, npm) | `C-c M-j`, in every buffer of the project |
 | next / previous finding, list them | `C-c ! n` / `C-c ! p`, `C-c ! l` |
 | fold the block whose first line point is on / all blocks | `TAB` within the line's indentation / `S-TAB` |
 | narrow to the region or defun / widen | `C--` / `C-+` |
@@ -175,7 +186,7 @@ Same purpose, same key, in every language that has it:
 | `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`), in Clojure apropos (`s`); `M-J` goes back |
 | `M-r` where a language server runs | `eglot-mode-map` | `init-lsp` | renaming (`r`), code actions (`a`), organising imports (`o`), formatting (`=`) |
 | `M-m` | `jtk-highlight-symbol-map` | `init-editing` | next, previous, replace symbol (repeats); `C-m` marks it |
-| `M-!` | `jtk-run-map` | `init-keys` | `m` keyboard macros (`jtk-macro-map`), `s` shells (`jtk-shell-map`) |
+| `M-!` | `jtk-run-map` | `init-keys` | `m` keyboard macros (`jtk-macro-map`), `s` shells (`jtk-shell-map`), `b` a Babashka REPL with a scratch buffer |
 | `M-+` | `jtk-view-map` | `init-keys` | `f` font size (`jtk-zoom-map`), `w` frame size (`jtk-frame-map`); both repeat |
 | `M-'` | `jtk-tab-map` | `init-windows` | tabs: Emacs' `C-x t`, plus a tab for the current project (`c`), switching (`n`, `p`, repeat), closing with its buffers (`K`) |
 | `C-M-'` | `jtk-buffer-move-map` | `init-windows` | moving the buffer to a neighbouring window |
@@ -183,6 +194,6 @@ Same purpose, same key, in every language that has it:
 | `C-M--` | `jtk-org-map` | `init-org` | capturing, agenda |
 | `C-x x` | `ctl-x-x-map` (Emacs) | `init-project`, `init-treemacs` | switching projects (`f`), file tree (`d`) |
 | `C-x x p` | `jtk-project-map` | `init-project`, languages | project commands: Emacs' `C-x p` with consult for buffers (`b`) and grep (`g`), Magit (`v`, `m`), commands of the project's kinds (`j`) |
-| `C-c M-j` in a project of a known kind | `jtk-project-run-kind-command`, in Clojure buffers `jtk-clojure-project-map` | `init-project`, languages | starting or connecting a REPL; npm install, run, update |
+| `C-c M-j` in a project of a known kind | `jtk-project-run-kind-command`, in Clojure buffers `jtk-clojure-project-map` | `init-project`, languages | starting or connecting a REPL; a task of `bb.edn` (`t`); npm install, run, update |
 | `C-a` in HTML | `jtk-html-attribute-map` | `init-lang-html` | editing attributes (repeats) |
 
