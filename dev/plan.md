@@ -562,6 +562,7 @@ Je Block ein PR. Für jedes Paket dieselben Fragen, in dieser Reihenfolge:
 | 2.8 Sprachen | nach Gewicht: Clojure (cider, clj-refactor, parseedn, flycheck-clj-kondo, Einrückungsregeln, Leiningen-Helfer), Elisp, JS/TS (js2-mode, js2-refactor, xref-js2, indium, tide, npm-mode), HTML/CSS (web-mode, web-mode-edit-element, scss-/sass-mode), Python (elpy), C++ (platformio-mode), PHP, BASIC | Setzt 2.5–2.7 voraus. Clojure zuerst, weil es am meisten benutzt wird. | Clojure: clojure-lsp über eglot **neben** CIDER, ggf. clojure-ts-mode, `deps.edn` neben Leiningen. Übrige: meist eglot + `*-ts-mode` |
 | 2.9 Werkzeuge | magit (Gerrit), git-auto-commit-mode, ediff, ztree, eshell, eshell-up, esh-autosuggest, restclient, sql, simple-httpd, logview, csv-mode, markdown-mode, simple-bookmarks | Weitgehend unabhängig; nach den Grundlagen, weil Vervollständigung und Projekte hineinspielen. | magit bleibt; restclient ist meines Wissens archiviert → `verb` prüfen; **eshell und eat** gemeinsam prüfen (gewünscht 2026-10-29): eshell bleibt die Shell in Emacs, eat als Terminal für Programme, die eins brauchen, und als Anzeige in eshell (`eat-eshell-mode`) |
 | 2.10 TRAMP | — (heute nichts eingestellt, Emacs' Vorgaben) | Gewünscht 2026-11-08: entfernte Rechner schnell und effizient nutzen. Nach 2.9, weil die Shells hineinspielen. | Kandidaten und offene Fragen im Abschnitt 2.10 |
+| 2.11 Shell mit Clojure | eshell, eat, mistty, babashka | Gewünscht 2026-11-08: eine Shell mit Emacs' Funktionen, normalen Shell-Befehlen und Clojure wie mit Babashka, auch über TRAMP, die mit der Konfiguration kommt | eshell als Hauptshell, eat für Vollbild-Programme (ghostel später), `bbe` als Brücke zu Babashka |
 | 2.10 Organisation | org (GTD), dashboard | Unabhängig, aber persönlich — braucht dein Urteil mehr als Technik. | — |
 | 2.11 Aussehen | doom-themes, spaceline, linum, rainbow-mode, rainbow-delimiters, Hervorhebung von `TODO`/`WATCHOUT`, Fenstertitel | Zuletzt: die Modeline zeigt Segmente aus 2.3, 2.4 und 2.6 (Projekt, IDE-Fenster, Prüfergebnisse) — erst wenn die feststehen, lohnt ihr Umbau. | doom-modeline oder eingebaute Modeline, `display-line-numbers-mode`, hl-todo |
 
@@ -1269,6 +1270,36 @@ Bereits günstig in den Vorgaben: `auto-revert-remote-files` `nil`,
 - `global-auto-revert-non-file-buffers` (init-core) lässt dired-Buffer neu einlesen, auch entfernte; prüfen, ob das über TRAMP Zugriffe kostet.
 
 **Messen statt raten:** Vor und nach den Einstellungen dieselben Abläufe gegen einen echten Rechner zeitlich messen (Datei öffnen, speichern, dired, magit-status, Shell starten). Die Cloud hat keinen entfernten Rechner; gemessen wird auf dem Mac, oder in der Cloud gegen einen lokalen sshd.
+
+#### 2.11 Shell mit Clojure (entschieden 2026-11-08, erster Teil umgesetzt)
+
+Wunsch: eine Shell in Emacs mit Emacs' Funktionen (Suche, Editieren),
+normalen Shell-Befehlen und Clojure wie mit Babashka, auch über TRAMP,
+und mit der Konfiguration ausgeliefert statt einer eigens
+eingerichteten zsh.
+
+| Thema | Entschieden | Warum |
+|---|---|---|
+| Hauptshell | eshell | kommt mit der Konfiguration, auch auf entfernte Rechner (`cd /ssh:…`); Ausgabe ist Text mit allen Emacs-Funktionen; mit Abstand am schnellsten (Messung in 2.9) |
+| Vollbild-Programme | eat (`eat-eshell-visual-command-mode`); ghostel als schnellere Alternative später | eshell selbst emuliert kein Terminal |
+| Clojure | `bbe` in eshell: wertet mit einem **lokalen** Babashka aus, Eingabe aus einer Pipe als `*input*` (Zeilen), Folgen zeilenweise | Auf einem entfernten Verzeichnis laufen Programme dort, `bbe` aber hier (eshells `/local:`, `eshell-remote-command`); der Server braucht kein Babashka, die Daten kommen durch die Pipe |
+| Name | `bbe` statt `clj` | `clj` verdeckte in eshell das `clj` der Clojure-CLI |
+| zsh | mistty (`M-! s z`) bleibt für den Fall, dass doch eine echte zsh gebraucht wird | |
+
+**Geprüft im Batch** (Babashka 1.13.229; „entfernt“ über TRAMPs Testmethode `mock`, eine Shell auf demselben Rechner, die TRAMP als entfernt behandelt):
+- `bbe '(+ 1 2)'` → `3`; eine Folge zeilenweise.
+- `seq 1 4 | bbe '(map … *input*)'` → `2 4 6 8`.
+- Im entfernten Verzeichnis läuft `bbe` lokal (`user.dir` ist das lokale Home); `cat app.log | bbe '(filter …)'` liest die Datei dort und filtert hier, mit eshells eigenem `cat` wie mit dem externen.
+- 100 000 Zeilen durch die Pipe in `bbe` lokal wie über TRAMP unter 0,25 s netto; eine Auswertung ebenso.
+- Ein Fehler in Clojure zeigt Babashkas Meldung.
+
+**Gefunden:** Der Befehl muss eshell den Prozess zurückgeben; mit bloß `t` verbindet eshell die Pipe nicht, und die Eingabe erscheint unverarbeitet auf dem Bildschirm (WATCHOUT im Code).
+
+**Offen, als nächste Teile:**
+- Tasks aus `bb.edn` als Projektart unter `C-c M-j`/`j`, wie npm.
+- Babashka-REPL ohne Projekt (`M-x cider-jack-in-universal`), ggf. eigene Taste.
+- Clojure-Code, der Dateien auf dem Server direkt liest (heute nur über die Pipe).
+- Vervollständigung und Hervorhebung für `bbe`-Ausdrücke.
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 

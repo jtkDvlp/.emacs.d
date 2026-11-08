@@ -33,6 +33,7 @@ serves is simply missing.
 | Leiningen, Clojure CLI | `brew install leiningen clojure` | CIDER's jack-in |
 | node, npm | via nvm or `brew install node` | the npm commands under `C-c M-j` |
 | multimarkdown | `brew install multimarkdown` | markdown-mode's preview |
+| babashka | `brew install borkdude/brew/babashka` | `bbe` in eshell: Clojure on the command line, also on data from remote hosts |
 
 ## Per-project environment (direnv)
 
@@ -65,6 +66,34 @@ layout node   # ./node_modules/.bin on the PATH
 then `direnv allow` in that directory, again after every change to it.
 `node --version` in eshell (`M-! s s`) in a file of the project shows
 the version the `.envrc` names.
+
+## Clojure in eshell (Babashka)
+
+`bbe` evaluates Clojure with Babashka, on this machine. Input from a
+pipe is `*input*`, a sequence of lines; a sequence as result prints one
+element per line:
+
+```
+λ bbe '(+ 1 2)'
+3
+λ seq 1 4 | bbe '(map #(* 2 (parse-long %)) *input*)'
+2
+4
+6
+8
+```
+
+On a remote directory (`cd /ssh:server:/var/log`), programs run on the
+server, but `bbe` still runs here, so the server needs no Babashka; its
+data comes through the pipe:
+
+```
+λ cat app.log | bbe '(filter #(str/includes? % "ERROR") *input*)'
+```
+
+Relative file names inside the Clojure code are local, not on the
+server. Babashka with all its options is `bb` (on the server, if it has
+one) or `/local:bb` (here).
 
 ## zsh in Emacs (mistty)
 
