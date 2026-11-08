@@ -96,18 +96,85 @@ directory becomes a local copy.  For `eshell-named-command-hook'."
               (process-lines (jtk-babashka-executable)
                              "-e" jtk-babashka--symbols-form)))))
 
+(defun jtk-babashka--quoted-p (position input-start)
+  "Return non-nil if POSITION lies within quotes of the eshell input.
+INPUT-START is where the input begins.  In single quotes, two quotes in
+a row are a quote; in double quotes, a backslash escapes the next
+character."
+  (let ((quote nil))
+    (save-excursion
+      (goto-char input-start)
+      (while (< (point) position)
+        (let ((char (char-after)))
+          (cond ((and (eq quote ?\") (eq char ?\\)) (forward-char))
+                ((eq char quote) (setq quote nil))
+                ((and (null quote) (memq char '(?' ?\"))) (setq quote char))))
+        (forward-char)))
+    quote))
+
+(defun jtk-babashka--command-position-p (position input-start)
+  "Return non-nil if a command can start at POSITION.
+That is at INPUT-START, the start of the eshell input, or after a pipe,
+`;' or `&', with only blanks in between, and not within quotes."
+  (and (not (jtk-babashka--quoted-p position input-start))
+       (save-excursion
+         (goto-char position)
+         (skip-chars-backward " \t" input-start)
+         (or (= (point) input-start)
+             (memq (char-before) '(?| ?\; ?&))))))
+
+(defun jtk-babashka--form-end (start)
+  "Return where the form starting at START ends.
+A single-quoted form ends at its closing quote; an unquoted or open one
+at the next pipe, `;' or `&', or at the end of the line."
+  (save-excursion
+    (goto-char start)
+    (if (looking-at "'\\(?:[^']\\|''\\)*'")
+        (match-end 0)
+      (skip-chars-forward "^|;&\n")
+      (skip-chars-backward " \t" start)
+      (point))))
+
+(defun jtk-babashka--commands-on-line ()
+  "Return our commands on the eshell input at point, from left to right.
+Each is (COMMAND-START FORM-START FORM-END), wherever a command can
+start: at the beginning, or after a pipe, `;' or `&'."
+  (save-excursion
+    (let ((input-start (progn (beginning-of-line) (point)))
+          (regexp (concat (regexp-opt jtk-babashka-eshell-commands 'symbols)
+                          "[ \t]*"))
+          commands)
+      (while (re-search-forward regexp (line-end-position) t)
+        (when (jtk-babashka--command-position-p (match-beginning 0)
+                                                input-start)
+          (push (list (match-beginning 0) (match-end 0)
+                      (jtk-babashka--form-end (match-end 0)))
+                commands)))
+      (nreverse commands))))
+
+(defun jtk-babashka--command-at-point ()
+  "Return the command of `jtk-babashka--commands-on-line' point is in.
+That is the one whose text holds point, else the last one before point,
+else the first; nil if the input runs none of ours."
+  (let ((point (point))
+        (commands (jtk-babashka--commands-on-line)))
+    (or (seq-find (pcase-lambda (`(,start ,_ ,end))
+                    (<= start point end))
+                  commands)
+        (car (last (seq-filter (pcase-lambda (`(,start . ,_))
+                                 (<= start point))
+                               commands)))
+        (car commands))))
+
 (defun jtk-babashka-eshell-command-line-p ()
   "Return non-nil if the eshell input at point runs one of our commands.
-The match data then hold the command's name."
-  (save-excursion
-    (beginning-of-line)
-    (looking-at (regexp-opt jtk-babashka-eshell-commands 'words))))
+Also inside a pipe or after `;', as in `cat file | bbe ...'."
+  (and (jtk-babashka--command-at-point) t))
 
 (defun jtk-babashka--in-eshell-command-p ()
-  "Return non-nil if point is in the input of one of our eshell commands."
-  (let ((point (point)))
-    (and (jtk-babashka-eshell-command-line-p)
-         (<= (match-end 0) point))))
+  "Return non-nil if point is in the form of one of our eshell commands."
+  (pcase (jtk-babashka--command-at-point)
+    (`(,_ ,form-start ,form-end) (<= form-start (point) form-end))))
 
 (defun jtk-babashka-completion-at-point ()
   "Complete a Clojure name in the form of `bbe' or `clje' in eshell."
@@ -134,21 +201,13 @@ The match data then hold the command's name."
     text))
 
 (defun jtk-babashka--form-bounds ()
-  "Return the bounds of the form after our command on this input line.
-The form is the first argument: a single-quoted string, or the rest of
-the line when there is none yet."
-  (save-excursion
-    (beginning-of-line)
-    (unless (looking-at (concat (regexp-opt jtk-babashka-eshell-commands
-                                            'words)
-                                " *"))
-      (user-error "Not a %s command"
-                  (string-join jtk-babashka-eshell-commands " or ")))
-    (goto-char (match-end 0))
-    (let ((start (point)))
-      (if (looking-at "'\\(?:[^']\\|''\\)*'")
-          (cons start (match-end 0))
-        (cons start (line-end-position))))))
+  "Return the bounds of the form of our command at point, as (START . END).
+The form is the command's first argument: a single-quoted string, or
+the rest up to a pipe or the end of the line when there is none yet."
+  (pcase (jtk-babashka--command-at-point)
+    (`(,_ ,start ,end) (cons start end))
+    (_ (user-error "No %s command here"
+                   (string-join jtk-babashka-eshell-commands " or ")))))
 
 (defun jtk-babashka-edit-form ()
   "Edit the form of the `bbe' command at point in a Clojure buffer.
