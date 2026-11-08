@@ -1210,12 +1210,14 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 | simple-bookmarks | **ersetzt** durch Emacs' eigene Lesezeichen und `consult-bookmark` unter `M--` (`l`, `c`, `m`, `k`, `e`); MySQL-Verbindungen als Lesezeichen mit eigenem Handler, Passwort aus auth-source | eingebaut; das Passwort stand bisher im Klartext in der Lesezeichendatei |
 | restclient, logview, eshell-up | bleiben | gepflegt (restclient: letzter Commit 2026-06) |
 | Terminal | eat statt `ansi-term` (`M-! s t`), dazu `eat-eshell-visual-command-mode`: Vollbild-Programme aus eshell laufen in eat; ghostel sieht sich der Nutzer an | eat ist reines Elisp und braucht kein Modul; ghostel wäre schneller (libghostty), ist aber jung |
+| Echte Shell mit Emacs-Editieren | mistty mit zsh auf `M-! s z`, im Projekt in dessen Wurzel; das schnellere Terminal-Modul (alacritty) holt `M-x mistty-install` bei Bedarf | eshell ist keine echte Shell (kein `nvm use`, keine `~/.zshrc`); `M-x shell` verlöre den Zeileneditor der zsh. mistty gepflegt (letzter Commit 2026-11-07, Version 2.2.1) |
 
 **Umzug der Lesezeichen (einmal):** `M-x jtk-bookmarks-import-simple-bookmarks` liest `var/simple-bookmarks.el`. Die Passwörter der MySQL-Einträge landen nicht in den Lesezeichen, sondern als Zeilen für `~/.authinfo.gpg` in einem eigenen Buffer.
 
 **Geprüft im Batch:**
 - **Lesezeichen:** `M--`-Tasten; der Import legt Dateien, Verzeichnisse und MySQL-Verbindungen an, übergeht Unbekanntes mit Meldung und listet nur nicht leere Passwörter; der Sprung ruft `sql-mysql` mit Benutzer, Server, Datenbank und dem Passwort aus auth-source, ohne Passwort fragt `sql-mysql` danach.
 - **eat:** `M-! s t` öffnet eat, die Shell antwortet; eshell schaltet `eat-eshell-visual-command-mode` beim Laden ein.
+- **mistty:** `M-! s z` öffnet die Shell, aus einer Projektdatei in der Projektwurzel, sonst im aktuellen Verzeichnis; Befehle laufen und antworten (geprüft mit bash, die Cloud hat keine zsh).
 - **eshell:** der Verlauf schlägt „git st“ zu „git status --short“ vor; Prompt mit Projekt, Zweig und Pfad.
 - **Schnappschuss-Diff:** neben den erwarteten Tasten fehlen company, esh-autosuggest, git-auto-commit und simple-bookmarks. Außerdem fehlen die Optionen von `em-prompt` und `desktop`: Die entfernten Pakete hatten beide Bibliotheken beim Laden mitgeladen. Der Schnappschuss führt eine Option erst, wenn ihre Bibliothek geladen ist; `eshell-prompt-function` setzt die Konfiguration trotzdem, und den Prompt zeigt die Probe.
 
@@ -1312,6 +1314,7 @@ Noch nicht in der Konfiguration; aufgenommen auf deinen Wunsch
 | basedpyright bzw. pyright, dazu ruff | Language-Server | 2.8 Python | Python | ersetzt elpy |
 | vscode-langservers-extracted | Language-Server (npm) | 2.8 HTML/CSS | HTML, CSS/SCSS, JSON | scss ist als benutzt markiert |
 | eat | Emacs-Paket, NonGNU ELPA | 2.9 Werkzeuge | Terminal-Emulator in Emacs; kann in eshell Programme mit Vollbild-Ausgabe zeigen (`eat-eshell-mode`) | **aufgenommen** (2.9) als Terminal und für Vollbild-Programme in eshell |
+| mistty | Emacs-Paket, MELPA, Modul optional | 2.9 Werkzeuge | zsh mit Emacs-Editieren an der Eingabezeile | **aufgenommen** (2.9) auf `M-! s z` |
 | ghostel | Emacs-Paket, MELPA, mit Modul (libghostty) | später | schnelleres Terminal, ebenfalls mit eshell-Anbindung | Kandidat; der Nutzer sieht es sich an |
 | lemminx | Language-Server | 2.8 XML | XML Schema, DTD, Formatieren | **aufgenommen** (2.8), startet nur, wo installiert |
 | envrc | Emacs-Paket, MELPA | 2.8 | direnv je Buffer | **aufgenommen** (2.8) |

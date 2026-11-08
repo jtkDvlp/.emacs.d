@@ -66,6 +66,33 @@ then `direnv allow` in that directory, again after every change to it.
 `node --version` in eshell (`M-! s s`) in a file of the project shows
 the version the `.envrc` names.
 
+## zsh in Emacs (mistty)
+
+`M-! s z` opens zsh in mistty, in the project's root when there is one.
+It is the real zsh with your `~/.zshrc` (nvm, direnv, plugins), but its
+command line is edited with Emacs' keys, and earlier output is ordinary
+text. Programs that need the full screen (`top`, `less`) take over the
+terminal while they run. `M-! s t` is zsh in a plain terminal (eat),
+`M-! s s` eshell.
+
+Optional, once per mistty version: `M-x mistty-install` and "Download"
+fetch the faster terminal (alacritty) for mistty; without it, mistty
+uses Emacs' own. After an update of mistty, it falls back until fetched
+again.
+
+So that Emacs follows `cd` (for `C-x C-f` from the shell's directory),
+add to `~/.zshrc`:
+
+```zsh
+function osc7_precmd() {
+  printf "\e]7;file://%s%s\e\\\\" "$HOSTNAME" "$PWD"
+}
+precmd_functions+=(osc7_precmd)
+```
+
+In mistty, `C-e` takes a zsh autosuggestion, and `S-<return>` adds a
+line to the command without running it.
+
 ## Keys
 
 - Global keys are for global tasks: files, buffers, windows, search,
