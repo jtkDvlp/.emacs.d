@@ -13,6 +13,7 @@
 (defvar corfu-auto)
 (declare-function eshell/pwd "em-dirs")
 (declare-function magit-anything-modified-p "magit-git")
+(declare-function magit-get-current-branch "magit-git")
 
 (defun jtk-shell-eshell (arg)
   "Open eshell in the current project's root, or as `eshell' outside one.
