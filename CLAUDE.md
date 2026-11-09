@@ -260,6 +260,7 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 | nach 2.9, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 71 Einträgen reproduziert | 0 | 12 |
 | nach 2.10–2.12, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 71 Einträgen reproduziert | 0 | 5 |
 | nach 2.13, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 75 Einträgen reproduziert | 0 | 3 |
+| nach dem Aufräumen der Warnungen, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 75 Einträgen reproduziert | 0 | 0 |
 
 Der Unterschied von 3 Warnungen bis 2.1: Die `ns-*`- und `mac-*`-Variablen
 gibt es nur unter macOS; in der Cloud meldete der Byte-Compiler sie als
