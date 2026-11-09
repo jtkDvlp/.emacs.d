@@ -85,15 +85,6 @@
                          :type git :protocol https :inherit t :depth
                          treeless :ref
                          "3c68569738f04a22d52f1ca28f593c2ee733bf04"))
- (company :source "elpaca-menu-lock-file" :recipe
-          (:package "company" :fetcher github :repo
-                    "company-mode/company-mode" :files
-                    (:defaults "icons"
-                               ("images/small"
-                                "doc/images/small/*.png"))
-                    :source "elpaca-menu-lock-file" :id company :type
-                    git :protocol https :inherit t :depth treeless
-                    :ref "e50ea7a3222020cef8e7f320f9870bb20c61e451"))
  (compat :source "elpaca-menu-lock-file" :recipe
          (:package "compat" :repo
                    ("https://github.com/emacs-compat/compat"
@@ -187,6 +178,13 @@
                         doom-themes :type git :protocol https :inherit
                         t :depth treeless :ref
                         "a59202912ad55014e53a685eee6cd94130bdd4fd"))
+ (eat :source "elpaca-menu-lock-file" :recipe
+      (:package "eat" :repo
+                ("https://codeberg.org/akib/emacs-eat" . "eat") :tar
+                nil :host nongnu :files ("*" (:exclude ".git"))
+                :source "elpaca-menu-lock-file" :id eat :type git
+                :protocol https :inherit t :depth treeless :ref
+                "3a6f418f55d183b9d86f99c140caed4ba3d44f93"))
  (elpaca :source
    "elpaca-menu-lock-file" :recipe
    (:source "Init file" :package "elpaca" :id elpaca :repo
@@ -234,23 +232,29 @@
                   :source "elpaca-menu-lock-file" :id envrc :type git
                   :protocol https :inherit t :depth treeless :ref
                   "af7e0a699060c8128fdd8318d28a7401b82bb3fd"))
- (esh-autosuggest :source "elpaca-menu-lock-file" :recipe
-                  (:package "esh-autosuggest" :fetcher sourcehut :repo
-                            "dieggsy/esh-autosuggest" :old-names
-                            (company-eshell-autosuggest) :files
-                            ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                             "*.texinfo" "doc/dir" "doc/*.info"
-                             "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
-                             "docs/dir" "docs/*.info" "docs/*.texi"
-                             "docs/*.texinfo"
-                             (:exclude ".dir-locals.el" "test.el"
-                                       "tests.el" "*-test.el"
-                                       "*-tests.el" "LICENSE"
-                                       "README*" "*-pkg.el"))
-                            :source "elpaca-menu-lock-file" :id
-                            esh-autosuggest :type git :protocol https
-                            :inherit t :depth treeless :ref
-                            "40774022105ed16287fcf26553a16c4cdda5e1ab"))
+ (eshell-syntax-highlighting :source "elpaca-menu-lock-file" :recipe
+                             (:package "eshell-syntax-highlighting"
+                                       :fetcher github :repo
+                                       "akreisher/eshell-syntax-highlighting"
+                                       :files
+                                       ("*.el" "*.el.in" "dir"
+                                        "*.info" "*.texi" "*.texinfo"
+                                        "doc/dir" "doc/*.info"
+                                        "doc/*.texi" "doc/*.texinfo"
+                                        "lisp/*.el" "docs/dir"
+                                        "docs/*.info" "docs/*.texi"
+                                        "docs/*.texinfo"
+                                        (:exclude ".dir-locals.el"
+                                                  "test.el" "tests.el"
+                                                  "*-test.el"
+                                                  "*-tests.el"
+                                                  "LICENSE" "README*"
+                                                  "*-pkg.el"))
+                                       :source "elpaca-menu-lock-file"
+                                       :id eshell-syntax-highlighting
+                                       :type git :protocol https
+                                       :inherit t :depth treeless :ref
+                                       "62418fd8b2380114a3f6dad699c1ba45329db1d2"))
  (eshell-up :source "elpaca-menu-lock-file" :recipe
             (:package "eshell-up" :fetcher github :repo
                       "peterwvj/eshell-up" :files
@@ -304,26 +308,6 @@
                    :source "elpaca-menu-lock-file" :id extmap :type
                    git :protocol https :inherit t :depth treeless :ref
                    "bb4867e13ec7480d4dbc1d99888627e4cc8ef2f6"))
- (git-auto-commit-mode :source "elpaca-menu-lock-file" :recipe
-                       (:package "git-auto-commit-mode" :fetcher
-                                 github :repo
-                                 "ryuslash/git-auto-commit-mode"
-                                 :files
-                                 ("*.el" "*.el.in" "dir" "*.info"
-                                  "*.texi" "*.texinfo" "doc/dir"
-                                  "doc/*.info" "doc/*.texi"
-                                  "doc/*.texinfo" "lisp/*.el"
-                                  "docs/dir" "docs/*.info"
-                                  "docs/*.texi" "docs/*.texinfo"
-                                  (:exclude ".dir-locals.el" "test.el"
-                                            "tests.el" "*-test.el"
-                                            "*-tests.el" "LICENSE"
-                                            "README*" "*-pkg.el"))
-                                 :source "elpaca-menu-lock-file" :id
-                                 git-auto-commit-mode :type git
-                                 :protocol https :inherit t :depth
-                                 treeless :ref
-                                 "a7b59acea622a737d23c783ce7d212fefb29f7e6"))
  (groovy-mode :source "elpaca-menu-lock-file" :recipe
               (:package "groovy-mode" :fetcher github :repo
                         "Groovy-Emacs-Modes/groovy-emacs-modes" :files
@@ -460,6 +444,19 @@
                    md-mode :host github :repo "yibie/md-mode" :type
                    git :protocol https :inherit t :depth treeless :ref
                    "d9e7e1d83a8601a9bda2fd604f6a0881a4f9a838"))
+ (mistty :source "elpaca-menu-lock-file" :recipe
+         (:package "mistty" :fetcher github :repo "szermatt/mistty"
+                   :files
+                   ("*.el" "*.el.in" "dir" "*.info" "*.texi"
+                    "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
+                    "doc/*.texinfo" "lisp/*.el" "docs/dir"
+                    "docs/*.info" "docs/*.texi" "docs/*.texinfo"
+                    (:exclude ".dir-locals.el" "test.el" "tests.el"
+                              "*-test.el" "*-tests.el" "LICENSE"
+                              "README*" "*-pkg.el"))
+                   :source "elpaca-menu-lock-file" :id mistty :type
+                   git :protocol https :inherit t :depth treeless :ref
+                   "0ddc08da299be84a6b28f0cebeaccd950856dd42"))
  (multiple-cursors :source "elpaca-menu-lock-file" :recipe
                    (:package "multiple-cursors" :fetcher github :repo
                              "magnars/multiple-cursors.el" :files
@@ -644,23 +641,6 @@
                    :source "elpaca-menu-lock-file" :id sesman :type
                    git :protocol https :inherit t :depth treeless :ref
                    "7eb733acb33e610a53979fa7fc13393eeda3cc53"))
- (simple-bookmarks :source "elpaca-menu-lock-file" :recipe
-                   (:package "simple-bookmarks" :fetcher github :repo
-                             "jtkDvlp/simple-bookmarks" :files
-                             ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                              "*.texinfo" "doc/dir" "doc/*.info"
-                              "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
-                              "docs/dir" "docs/*.info" "docs/*.texi"
-                              "docs/*.texinfo"
-                              (:exclude ".dir-locals.el" "test.el"
-                                        "tests.el" "*-test.el"
-                                        "*-tests.el" "LICENSE"
-                                        "README*" "*-pkg.el"))
-                             :source "elpaca-menu-lock-file" :id
-                             simple-bookmarks :host github :type git
-                             :protocol https :inherit t :depth
-                             treeless :ref
-                             "54e8d771bcdb0eb235b31c0aa9642171369500e5"))
  (simple-httpd :source "elpaca-menu-lock-file" :recipe
                (:package "simple-httpd" :repo
                          "skeeto/emacs-web-server" :fetcher github

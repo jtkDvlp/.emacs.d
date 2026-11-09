@@ -2,12 +2,23 @@
 
 ;;; Commentary:
 
-;; web-mode for HTML, and web-mode-edit-element for editing by
-;; elements.  XML is in init-lang-xml.
+;; web-mode for HTML, showing the page in the browser (C-c M-k), and
+;; web-mode-edit-element for editing by elements.  XML is in
+;; init-lang-xml.
 
 ;;; Code:
 
-(require 'jtk-project)
+(declare-function jtk-httpd-url "init-httpd")
+
+;; NOTE: Showing the page is to HTML what evaluating the buffer is to
+;; code, hence C-c M-k.
+(defun jtk-html-browse-file ()
+  "Show the current file in the browser.
+Through the local server if it serves the file (init-httpd)."
+  (interactive)
+  (let ((file (or (buffer-file-name)
+                  (user-error "No file based buffer"))))
+    (browse-url (or (jtk-httpd-url file) file))))
 
 (use-package
   web-mode
@@ -19,30 +30,9 @@
         web-mode-attr-indent-offset 2
         web-mode-attr-value-indent-offset 2)
 
-  (defun browse-current-file ()
-    (interactive)
-    (if (buffer-file-name)
-        (browse-url
-         (if (fboundp 'httpd-running-p)
-             (let ((project-root-dir
-                    (jtk-project-root))
-
-                   (buffer-file-path
-                    (buffer-file-name)))
-               (if (and project-root-dir
-                        (httpd-running-p))
-                   (replace-regexp-in-string
-                    (format "^%s" project-root-dir)
-                    (format "http://%s:%d/"
-                            (cl-case httpd-host
-                              ((nil) "0.0.0.0")
-                              ((local) "localhost")
-                              (otherwise httpd-host))
-                            httpd-port)
-                    buffer-file-path)
-                 (buffer-file-name)))
-           (buffer-file-name)))
-      (message "No file based buffer"))))
+  :bind
+  (:map web-mode-map
+        ("C-c M-k" . jtk-html-browse-file)))
 
 (use-package
   web-mode-edit-element

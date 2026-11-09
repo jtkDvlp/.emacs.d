@@ -2,58 +2,122 @@
 
 ;;; Commentary:
 
-;; simple-bookmarks for files, directories and MySQL connections.  The
-;; bookmark file lives under var/: database bookmarks hold passwords.
+;; Emacs' own bookmarks for files and directories, chosen with consult,
+;; and bookmarks of MySQL connections, whose passwords come from
+;; auth-source (~/.authinfo.gpg) instead of the bookmark file.  The
+;; bookmark file lives under var/.  Bookmarks of simple-bookmarks, used
+;; before, can be imported once.
 
 ;;; Code:
 
+(require 'auth-source)
+(require 'bookmark)
+
+(declare-function sql-mysql "sql")
+(defvar sql-user)
+(defvar sql-database)
+(defvar sql-server)
+(defvar sql-password)
+(defvar sql-mysql-login-params)
+
+(defun jtk-bookmarks--mysql-record (user database server)
+  "Return a bookmark record for USER's connection to DATABASE on SERVER."
+  `((filename . ,(format "mysql://%s@%s/%s" user server database))
+    (handler . jtk-bookmarks-mysql-jump)
+    (sql-user . ,user)
+    (sql-database . ,database)
+    (sql-server . ,server)))
+
+(defun jtk-bookmarks-set-mysql (name user database server)
+  "Bookmark USER's MySQL connection to DATABASE on SERVER as NAME.
+The password is looked up in auth-source when connecting, by SERVER and
+USER, or asked for."
+  (interactive
+   (list (read-string "Bookmark name: ")
+         (read-string "User: ")
+         (read-string "Database: ")
+         (read-string "Server: " "localhost")))
+  (bookmark-store name (jtk-bookmarks--mysql-record user database server)
+                  nil)
+  (bookmark-save))
+
+(defun jtk-bookmarks-mysql-jump (bookmark)
+  "Connect to the MySQL database of BOOKMARK."
+  ;; WATCHOUT: sql has to be loaded before the `let'.  Its variables are
+  ;; only special once sql.el has defined them; bound earlier, the
+  ;; bindings are lexical and `sql-mysql' never sees them.
+  (require 'sql)
+  (let* ((user (bookmark-prop-get bookmark 'sql-user))
+         (server (bookmark-prop-get bookmark 'sql-server))
+         (password (auth-source-pick-first-password :host server :user user))
+         (sql-user user)
+         (sql-server server)
+         (sql-database (bookmark-prop-get bookmark 'sql-database))
+         (sql-password (or password ""))
+         (sql-mysql-login-params (unless password '(password))))
+    (set-buffer (sql-mysql (bookmark-name-from-full-record bookmark)))))
+
+(defun jtk-bookmarks--import-one (entry)
+  "Store the simple-bookmarks ENTRY as a bookmark.
+Return an auth-source line for its password, or nil."
+  (let ((name (format "%s" (car (alist-get 'name entry))))
+        (func (car (alist-get 'func entry)))
+        (args (car (alist-get 'args entry))))
+    (pcase func
+      ((or 'find-file 'dired)
+       (bookmark-store name `((filename . ,(expand-file-name (car args))))
+                       nil)
+       nil)
+      ('sql-mysql-for
+       (pcase-let ((`(,user ,password ,database ,server . ,_) args))
+         (bookmark-store name
+                         (jtk-bookmarks--mysql-record user database server)
+                         nil)
+         (unless (string-empty-p password)
+           (format "machine %s login %s password %s" server user password))))
+      (_ (message "Not imported: %s (%s)" name func) nil))))
+
+(defun jtk-bookmarks-import-simple-bookmarks (file)
+  "Import the bookmarks of simple-bookmarks from FILE.
+Passwords of MySQL bookmarks are not stored; a buffer lists them as
+lines for ~/.authinfo.gpg."
+  (interactive
+   (list (read-file-name "simple-bookmarks file: " nil
+                         (no-littering-expand-var-file-name
+                          "simple-bookmarks.el")
+                         t)))
+  (let* ((entries (with-temp-buffer
+                    (insert-file-contents file)
+                    (read (current-buffer))))
+         (secrets (delq nil (mapcar #'jtk-bookmarks--import-one entries))))
+    (bookmark-save)
+    (message "Read %d simple-bookmarks entries" (length entries))
+    (when secrets
+      (with-current-buffer (get-buffer-create "*authinfo lines*")
+        (erase-buffer)
+        (insert ";; Add these lines to ~/.authinfo.gpg, then kill this "
+                "buffer.\n"
+                (string-join secrets "\n") "\n")
+        (pop-to-buffer (current-buffer))))))
+
 (use-package
-  simple-bookmarks
-  :ensure (:host github :repo "jtkDvlp/simple-bookmarks")
+  bookmark
+  :ensure nil
 
-  :init
-  ;; NOTE: Unversioned under var/: database bookmarks hold passwords.
-  (setq simple-bookmarks-file
-        (no-littering-expand-var-file-name "simple-bookmarks.el"))
-
-  :config
-  (defun sql-mysql-for (user password database server &optional buffername)
-    ;; WATCHOUT: sql has to be loaded before the `let'.  Its variables are
-    ;; only special once sql.el has defined them; bound earlier, the
-    ;; bindings are lexical and `sql-mysql' never sees them.
-    (require 'sql)
-    (let ((sql-mysql-login-params (when (string-empty-p password) '(password)))
-          (sql-user user)
-          (sql-password password)
-          (sql-database database)
-          (sql-server server))
-      (sql-mysql buffername)))
-
-  (defun simple-bookmarks-interactive-add-mysql (&optional name user password database server more)
-    (interactive "Smysql-bookmark name: \nsmysql-bookmark user : \nsmysql-bookmark password : \nsmysql-bookmark database : \nsmysql-bookmark server : \ni")
-    (simple-bookmarks-interactive-add name 'sql-mysql-for (list user password database server (symbol-name name)) more))
-
-  (defun simple-bookmarks-interactive-execute-mysql ()
-    (interactive)
-    (simple-bookmarks-interactive-execute (lambda (bookmark) (simple-bookmarks-funcs-type-p 'sql-mysql-for bookmark))))
-
-  (simple-bookmarks-init)
+  :custom
+  ;; NOTE: Saved with every change, not only when Emacs exits.
+  (bookmark-save-flag 1)
 
   :bind
   (:prefix-map jtk-bookmarks-map
    :prefix "M--"
-   :prefix-docstring "Bookmarks of files (f), directories (d), MySQL (m)."
-   ("f l" . simple-bookmarks-interactive-execute-file)
-   ("f c" . simple-bookmarks-interactive-add-file)
-   ("f k" . simple-bookmarks-interactive-remove-file)
-
-   ("d l" . simple-bookmarks-interactive-execute-directory)
-   ("d c" . simple-bookmarks-interactive-add-directory)
-   ("d k" . simple-bookmarks-interactive-remove-directory)
-
-   ("m l" . simple-bookmarks-interactive-execute-mysql)
-   ("m c" . simple-bookmarks-interactive-add-mysql)
-   ("m k" . simple-bookmarks-interactive-remove-from-all)))
+   :prefix-docstring
+   "Bookmarks: jump (l), set (c), MySQL (m), delete (k), list (e)."
+   ("l" . consult-bookmark)
+   ("c" . bookmark-set)
+   ("m" . jtk-bookmarks-set-mysql)
+   ("k" . bookmark-delete)
+   ("e" . bookmark-bmenu-list)))
 
 (provide 'init-bookmarks)
 

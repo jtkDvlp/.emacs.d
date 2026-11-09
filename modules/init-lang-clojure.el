@@ -5,10 +5,12 @@
 ;; clojure-mode with structural editing keys, clojure-lsp and CIDER:
 ;; jack-in with Leiningen profiles, figwheel-main builds, starting and
 ;; stopping the user system, and indentation rules for common macros.
+;; Babashka: the tasks of bb.edn and a scratch REPL without a project.
 
 ;;; Code:
 
 (require 'jtk-project)
+(require 'jtk-babashka)
 
 ;; NOTE: The same keys under C-c M-j in Clojure buffers and under j in
 ;; the project commands (C-x x p, and M-x on a project in the project
@@ -27,6 +29,36 @@
              '("Clojure" ("project.clj" "deps.edn" "shadow-cljs.edn" "bb.edn")
                jtk-clojure-project-map)
              t)
+
+;; NOTE: bb runs a task in the project's root through `compile', as npm
+;; runs its scripts, so the output gets a buffer with links to errors.
+(defun jtk-clojure-run-task (task)
+  "Run TASK of the bb.edn in the root of the current project."
+  (interactive
+   (let ((default-directory (or (jtk-project-root) default-directory)))
+     (list (completing-read "bb task: " (jtk-babashka-tasks) nil t))))
+  (let ((default-directory (or (jtk-project-root) default-directory)))
+    (compile (concat "bb run " (shell-quote-argument task)))))
+
+(defvar-keymap jtk-babashka-project-map
+  :doc "Babashka: running a task of bb.edn (t)."
+  "t" #'jtk-clojure-run-task)
+
+(add-to-list 'jtk-project-kinds
+             '("Babashka" ("bb.edn") jtk-babashka-project-map)
+             t)
+
+(use-package
+  jtk-babashka
+  :ensure nil
+
+  :init
+  (setq jtk-babashka-scratch-file
+        (no-littering-expand-var-file-name "babashka/scratch.clj"))
+
+  :bind
+  (:map jtk-run-map
+        ("b" . jtk-babashka-scratch)))
 
 (use-package
   clojure-mode

@@ -561,6 +561,8 @@ Je Block ein PR. Für jedes Paket dieselben Fragen, in dieser Reihenfolge:
 | 2.7 Sprach-Infrastruktur (LSP) | — (heute je Sprache eigene Lösung: tide, elpy, xref-js2, company-php) | Grundsatzentscheidung einmal treffen statt je Sprache. Nach 2.1 und 2.6, weil ein LSP-Client Vervollständigung und Prüfung beliefert. | **Neu aufgenommen (2026-10-25):** LSP-Client plus Language-Server je Sprache, dazu tree-sitter-Modi (`*-ts-mode`); Kandidaten im Inventar unter „Neue Pakete“ |
 | 2.8 Sprachen | nach Gewicht: Clojure (cider, clj-refactor, parseedn, flycheck-clj-kondo, Einrückungsregeln, Leiningen-Helfer), Elisp, JS/TS (js2-mode, js2-refactor, xref-js2, indium, tide, npm-mode), HTML/CSS (web-mode, web-mode-edit-element, scss-/sass-mode), Python (elpy), C++ (platformio-mode), PHP, BASIC | Setzt 2.5–2.7 voraus. Clojure zuerst, weil es am meisten benutzt wird. | Clojure: clojure-lsp über eglot **neben** CIDER, ggf. clojure-ts-mode, `deps.edn` neben Leiningen. Übrige: meist eglot + `*-ts-mode` |
 | 2.9 Werkzeuge | magit (Gerrit), git-auto-commit-mode, ediff, ztree, eshell, eshell-up, esh-autosuggest, restclient, sql, simple-httpd, logview, csv-mode, markdown-mode, simple-bookmarks | Weitgehend unabhängig; nach den Grundlagen, weil Vervollständigung und Projekte hineinspielen. | magit bleibt; restclient ist meines Wissens archiviert → `verb` prüfen; **eshell und eat** gemeinsam prüfen (gewünscht 2026-10-29): eshell bleibt die Shell in Emacs, eat als Terminal für Programme, die eins brauchen, und als Anzeige in eshell (`eat-eshell-mode`) |
+| 2.10 TRAMP | — (vorher nichts eingestellt, Emacs' Vorgaben) | Gewünscht 2026-11-08: entfernte Rechner schnell und effizient nutzen. Nach 2.9, weil die Shells hineinspielen. | Kandidaten und offene Fragen im Abschnitt 2.10 |
+| 2.11 Shell mit Clojure | eshell, eat, mistty, babashka | Gewünscht 2026-11-08: eine Shell mit Emacs' Funktionen, normalen Shell-Befehlen und Clojure wie mit Babashka, auch über TRAMP, die mit der Konfiguration kommt | eshell als Hauptshell, eat für Vollbild-Programme (ghostel später), `bbe` als Brücke zu Babashka |
 | 2.10 Organisation | org (GTD), dashboard | Unabhängig, aber persönlich — braucht dein Urteil mehr als Technik. | — |
 | 2.11 Aussehen | doom-themes, spaceline, linum, rainbow-mode, rainbow-delimiters, Hervorhebung von `TODO`/`WATCHOUT`, Fenstertitel | Zuletzt: die Modeline zeigt Segmente aus 2.3, 2.4 und 2.6 (Projekt, IDE-Fenster, Prüfergebnisse) — erst wenn die feststehen, lohnt ihr Umbau. | doom-modeline oder eingebaute Modeline, `display-line-numbers-mode`, hl-todo |
 
@@ -1177,6 +1179,7 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 | Doku | README: Abschnitt „External tools“ | Server und Programme außerhalb Emacs |
 
 **Gefunden beim Umbau:**
+- md-mode setzt `truncate-lines` bei jedem Einfärben selbst (breite Tabellenzeilen bleiben seitlich scrollbar); `toggle-truncate-lines` hielt nur bis zum Neuzeichnen. In md-mode schaltet der Befehl deshalb `visual-line-mode` (nachgezogen 2026-11-09), über eine Advice statt eines Remaps: Ein Remap gilt nur für Tasten, `M-x toggle-truncate-lines` lief daran vorbei.
 - Emacs 31 hat `hs-special-modes-alist` abgekündigt; nxml bekommt seine hideshow-Einstellungen buffer-lokal.
 - clojure-ts-modes eigener Grammatik-Installer legt unter `tree-sitter/` im Konfigurationsverzeichnis ab, nicht unter `var/`. Nur beim Messen aufgetreten, weil clojure-ts-mode nicht eingebunden ist.
 - `eshell/nvm` (init-shell) ruft `nvm-use` aus dem nie installierten nvm.el. Bleibt für 2.9; mit envrc ist es überflüssig.
@@ -1196,6 +1199,141 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 - lemminx und Formatieren in XML;
 - md-mode im Alltag;
 - direnv mit `.envrc` in einem Node-Projekt.
+
+#### ✅ 2.9 Werkzeuge (entschieden und umgesetzt 2026-11-08)
+
+| Thema | Entschieden | Warum |
+|---|---|---|
+| Gerrit | bleibt; Befehle als `jtk-vc-gerrit-push…` unter `P`/`U`/`A` im magit-Push | wird benutzt |
+| git-auto-commit-mode | **entfernt** | nicht benutzt |
+| eshell | Prompt, `eshell/repl` und `eshell/open` bleiben; `eshell/nvm`, `zshell` und die Umbelegung über `eshell-mode-map*` fallen weg | nvm.el nie installiert, envrc liefert die Node-Version; `<up>`, `<down>`, `M-p` waren immer eshells eigene Verlaufstasten |
+| Vorschlag aus dem Verlauf | eingebautes `completion-preview-mode` mit `cape-history` statt esh-autosuggest | gleicher Vorschlag, ohne company; `TAB` nimmt ihn |
+| sql | eingebaut, nur noch `sql-mysql`; Windows-Optionen weg | nur macOS |
+| simple-httpd | bleibt; Befehle `jtk-httpd-start`/`-stop`/`-start-project`; HTML zeigt `C-c M-k` über den Server, wenn er die Datei ausliefert | wie Auswerten in den anderen Sprachen |
+| simple-bookmarks | **ersetzt** durch Emacs' eigene Lesezeichen und `consult-bookmark` unter `M--` (`l`, `c`, `m`, `k`, `e`); MySQL-Verbindungen als Lesezeichen mit eigenem Handler, Passwort aus auth-source | eingebaut; das Passwort stand bisher im Klartext in der Lesezeichendatei |
+| restclient, logview, eshell-up | bleiben | gepflegt (restclient: letzter Commit 2026-06) |
+| Terminal | eat statt `ansi-term` (`M-! s t`), dazu `eat-eshell-visual-command-mode`: Vollbild-Programme aus eshell laufen in eat; ghostel sieht sich der Nutzer an | eat ist reines Elisp und braucht kein Modul; ghostel wäre schneller (libghostty), ist aber jung |
+| Echte Shell mit Emacs-Editieren | mistty mit zsh auf `M-! s z`, im Projekt in dessen Wurzel; das schnellere Terminal-Modul (alacritty) holt `M-x mistty-install` bei Bedarf | eshell ist keine echte Shell (kein `nvm use`, keine `~/.zshrc`); `M-x shell` verlöre den Zeileneditor der zsh. mistty gepflegt (letzter Commit 2026-11-07, Version 2.2.1) |
+
+**Gemessen: Durchsatz der Shells** (2026-11-08; Batch, Emacs 31.1, Cloud, bash ohne rc; Zeit vom Absenden bis zur letzten Zeile im Buffer, ohne Bildschirmaufbau, denn den gibt es im Batch nicht):
+
+| Shell | 100 000 Zeilen, 590 KB (s) | 20 000 rot gefärbte Zeilen (s) |
+|---|---:|---:|
+| eshell | 0,04 | 0,30 |
+| `M-x shell` | 0,05–0,07 | 0,54 |
+| ansi-term | 1,28–1,38 | 0,43 |
+| eat | 1,25–1,36 | 0,46 |
+| mistty mit Emacs' Terminal (eterm) | 3,75–4,66 | 1,02–1,25 |
+| mistty mit Modul (alacritty) | 2,77–3,00 | 0,71 |
+
+Spannen aus zwei bis drei Läufen. ghostel und vterm sind nicht gemessen (nicht installiert). Die Shells im Buffer (eshell, `M-x shell`) sind um gut eine Größenordnung schneller als jede Terminal-Emulation; mistty ist die langsamste, mit Modul etwa doppelt so langsam wie eat.
+
+**Umzug der Lesezeichen (einmal):** `M-x jtk-bookmarks-import-simple-bookmarks` liest `var/simple-bookmarks.el`. Die Passwörter der MySQL-Einträge landen nicht in den Lesezeichen, sondern als Zeilen für `~/.authinfo.gpg` in einem eigenen Buffer.
+
+**Geprüft im Batch:**
+- **Lesezeichen:** `M--`-Tasten; der Import legt Dateien, Verzeichnisse und MySQL-Verbindungen an, übergeht Unbekanntes mit Meldung und listet nur nicht leere Passwörter; der Sprung ruft `sql-mysql` mit Benutzer, Server, Datenbank und dem Passwort aus auth-source, ohne Passwort fragt `sql-mysql` danach.
+- **eat:** `M-! s t` öffnet eat, die Shell antwortet; eshell schaltet `eat-eshell-visual-command-mode` beim Laden ein.
+- **mistty:** `M-! s z` öffnet die Shell, aus einer Projektdatei in der Projektwurzel, sonst im aktuellen Verzeichnis; Befehle laufen und antworten (geprüft mit bash, die Cloud hat keine zsh).
+- **eshell:** der Verlauf schlägt „git st“ zu „git status --short“ vor; Prompt mit Projekt, Zweig und Pfad.
+- **Schnappschuss-Diff:** neben den erwarteten Tasten fehlen company, esh-autosuggest, git-auto-commit und simple-bookmarks. Außerdem fehlen die Optionen von `em-prompt` und `desktop`: Die entfernten Pakete hatten beide Bibliotheken beim Laden mitgeladen. Der Schnappschuss führt eine Option erst, wenn ihre Bibliothek geladen ist; `eshell-prompt-function` setzt die Konfiguration trotzdem, und den Prompt zeigt die Probe.
+
+#### ✅ 2.10 TRAMP (entschieden und umgesetzt 2026-11-08)
+
+Ziel: Server schnell und effizient nutzen. **Antworten des Nutzers:**
+Verbindung meist über ssh, Dateien oft auch per scp; auf den Servern
+navigieren, Dateien lesen und schreiben, Programme ausführen; Server
+mal im LAN, mal extern.
+
+| Thema | Entschieden | Warum |
+|---|---|---|
+| Modul | `init-tramp`, nach `init-vc` | eigenes Thema |
+| Methode | `/remote:` als eigener Name der bevorzugten Methode, heute eine Kopie von `scp` (Wunsch 2026-11-08); `scp` bleibt Vorgabe | `scp` kopiert Dateien über 10 KB per scp, `ssh` schickt alles durch die Login-Shell; ein Wechsel der Methode ist eine Zeile in `init-tramp` |
+| Programme | `tramp-direct-async-process` für `ssh`, `scp` und `remote` (connection-local) | Programme starten per ssh direkt statt über TRAMPs Shell; gemessen 80 → 0 Befehle für fünf Starts |
+| Versionskontrolle | aus für Dateien auf Servern (`vc-ignore-dir-regexp`) | fragte git bei jeder geöffneten Datei; magit geht weiter. Nebenwirkung: Auf Servern gibt es kein Projekt mehr (`project-current` ist nil), die Shell-Befehle suchen dort also keins |
+| Sperrdateien | aus (`remote-file-name-inhibit-locks`) | keine zweite Emacs-Sitzung bearbeitet dieselbe Datei |
+| dired | `dired-check-symlinks` aus auf Servern; `dired-dwim-target` an | ein Hin und Zurück je Link gespart; Kopieren zwischen lokalem und Server-Fenster mit `C` ersetzt scp von Hand |
+| Kopieren zwischen Servern | direkt (`tramp-use-scp-direct-remote-copying`) | nicht über den Mac |
+| mistty auf einem Server | startet die Shell des Servers (connection-local `mistty-shell-command` nil) | `/bin/zsh` gibt es dort nicht unbedingt |
+| Nicht übernommen | `remote-file-name-inhibit-cache` nil, tramp-hlo | der Cache sähe Änderungen anderer an Logdateien zu spät; tramp-hlo erst, wenn eine Messung Bedarf zeigt |
+
+**Gemessen** (Batch, Emacs 31.1, Cloud, ssh-Server auf localhost, Methode `scp`; „Befehle“ zählt, was TRAMP an den Server schickt, jeder ist ein Hin und Zurück. Auf localhost dauert das kaum etwas, bei einem externen Server mit 30 ms je Hin und Zurück kosten 30 Befehle rund 0,9 s):
+
+| Ablauf | Befehle vorher (Anzahl) | Befehle nachher (Anzahl) | Zeit vorher (s) | Zeit nachher (s) |
+|---|---:|---:|---:|---:|
+| Verbinden | 35 | 35 | 0,90 | 0,85 |
+| kleine Datei öffnen | 28 | 15 | 0,59 | 0,31 |
+| speichern | 10 | 5 | 0,19 | 0,09 |
+| zweite Datei öffnen | 15 | 5 | 0,32 | 0,12 |
+| dired mit 52 Einträgen | 23 | 21 | 0,48 | 0,39 |
+| ein Programm synchron (`process-file`) | 1 | 1 | 0,02 | 0,02 |
+| fünf Programme asynchron | 80 | 0 | 1,71 | 1,00 |
+| eshell im Server-Verzeichnis öffnen | 4 | 2 | 0,21 | 0,17 |
+| `*ls` in dieser eshell | 23 | 7 | 0,51 | 0,33 |
+| 6,8-MB-Datei herkopieren | 2 | 3 | 0,14 | 0,18 |
+| 6,8-MB-Datei hinkopieren | 4 | 4 | 0,28 | 0,27 |
+| 6,8-MB-Datei öffnen | 10 | 1 | 0,41 | 0,18 |
+
+**Geprüft im Batch:** mistty aus einem Server-Verzeichnis startet dort `/bin/sh` im richtigen Verzeichnis; `jtk-project-root` ist dort nil. `/remote:` öffnet und speichert, startet Programme direkt (0 Befehle), kopiert 6,8 MB per scp (3 Befehle), dired und `cd /remote:…` in eshell gehen.
+
+**Gefunden: ein Fehler in Emacs 31.1.** Der direkte Programmstart fragt `tramp-ssh-controlmaster-options` als Funktion nach den ssh-Optionen; tramp-sh nennt sie inzwischen `tramp-ssh-or-plink-options`, und `tramp-compat-funcall` liefert still nil. So teilte der Programmstart TRAMPs Verbindung nicht, baute eine eigene auf und konnte nach keinem Passwort fragen. Ein Alias in `init-tramp` behebt das (WATCHOUT dort). Geprüft mit einem Schlüssel mit Passphrase gegen den Test-ssh-Server:
+
+| Fall | ohne Alias | mit Alias |
+|---|---|---|
+| erster Zugriff (Datei öffnen) | Passphrase im Minibuffer | Passphrase im Minibuffer |
+| Programm bei offener Verbindung | scheitert: ssh fragt selbst, Exit 9 | läuft ohne Rückfrage |
+| Programm nach geschlossener Verbindung | scheitert | TRAMP öffnet die Verbindung neu, fragt einmal im Minibuffer, dann läuft es |
+
+**Nachgezogen (2026-11-08, nach Rückmeldung):**
+
+| Thema | Umgesetzt | Warum |
+|---|---|---|
+| `cd` auf dem Server | absolute Verzeichnisse, `~` und `cd` allein bleiben auf dem Server; `cd /local:DIR` bzw. `cd /local:` geht auf den Mac | eshell nahm sie als lokal; so verhält es sich wie eine Shell auf dem Server, und `/local:` heißt dasselbe wie beim Programmstart. eshell ersetzt `~` vor `cd` durch das lokale Home; der Code dreht das zurück (WATCHOUT) |
+| Vollbild-Programme auf dem Server | eat startet sie dort als `env -u TERMINFO TERM=xterm-256color PROGRAMM`, mit Namen, wie der Server sie sieht | eat reichte den vollen TRAMP-Namen (`/remote:host:/bin/top`) weiter, den der Server nicht findet („not found“); und TRAMP setzt `TERM=dumb` über eats Typ, den ein Server ohnehin nicht kennt. Geprüft mit `top` interaktiv und im Batch |
+
+Nicht geändert: Lisp-Befehle wie `ls` oder `cat` mit absolutem Pfad meinen in eshell weiterhin den Mac.
+
+**Offen für die Sichtung:** echte Server im LAN und extern; unter macOS legt TRAMP den ControlMaster-Socket mit relativem Pfad an (`tramp.%C`), das Teilen der Verbindung dort ist nur am Mac zu sehen.
+
+#### ✅ 2.11 Shell mit Clojure (entschieden und umgesetzt 2026-11-08)
+
+Wunsch: eine Shell in Emacs mit Emacs' Funktionen (Suche, Editieren),
+normalen Shell-Befehlen und Clojure wie mit Babashka, auch über TRAMP,
+und mit der Konfiguration ausgeliefert statt einer eigens
+eingerichteten zsh.
+
+| Thema | Entschieden | Warum |
+|---|---|---|
+| Hauptshell | eshell | kommt mit der Konfiguration, auch auf entfernte Rechner (`cd /ssh:…`); Ausgabe ist Text mit allen Emacs-Funktionen; mit Abstand am schnellsten (Messung in 2.9) |
+| Vollbild-Programme | eat (`eat-eshell-visual-command-mode`); ghostel als schnellere Alternative später | eshell selbst emuliert kein Terminal |
+| Clojure | `bbe` in eshell: wertet mit einem **lokalen** Babashka aus, Eingabe aus einer Pipe als `*input*` (Zeilen), Folgen zeilenweise | Auf einem entfernten Verzeichnis laufen Programme dort, `bbe` aber hier (eshells `/local:`, `eshell-remote-command`); der Server braucht kein Babashka, die Daten kommen durch die Pipe |
+| Name | `bbe` (Babashka eval), dazu `clje` (Clojure eval) als zweiter Name; nicht `clj` | `clj` verdeckte in eshell das `clj` der Clojure-CLI |
+| zsh | mistty (`M-! s z`) bleibt für den Fall, dass doch eine echte zsh gebraucht wird | |
+
+**Geprüft im Batch** (Babashka 1.13.229; „entfernt“ über TRAMPs Testmethode `mock`, eine Shell auf demselben Rechner, die TRAMP als entfernt behandelt):
+- `bbe '(+ 1 2)'` → `3`; eine Folge zeilenweise.
+- `seq 1 4 | bbe '(map … *input*)'` → `2 4 6 8`.
+- Im entfernten Verzeichnis läuft `bbe` lokal (`user.dir` ist das lokale Home); `cat app.log | bbe '(filter …)'` liest die Datei dort und filtert hier, mit eshells eigenem `cat` wie mit dem externen.
+- 100 000 Zeilen durch die Pipe in `bbe` lokal wie über TRAMP unter 0,25 s netto; eine Auswertung ebenso.
+- Ein Fehler in Clojure zeigt Babashkas Meldung.
+
+**Gefunden:** Der Befehl muss eshell den Prozess zurückgeben; mit bloß `t` verbindet eshell die Pipe nicht, und die Eingabe erscheint unverarbeitet auf dem Bildschirm (WATCHOUT im Code).
+
+**Zweiter Teil (umgesetzt):**
+
+| Thema | Umgesetzt | Warum |
+|---|---|---|
+| Ort | `lisp/jtk-babashka.el`, eingebunden in `init-shell` und `init-lang-clojure` | die Brücke ist mehr als ein paar Zeilen und gehört keinem Modul allein |
+| Dateien vom Server | Argumente nach dem Ausdruck, die im entfernten Verzeichnis eine Datei nennen, holt `file-local-copy` her; sie kommen als `*command-line-args*` an und werden nach dem Lauf gelöscht | Clojure-Code kann TRAMP-Pfade nicht lesen; so liest er die Datei wie eine lokale |
+| Vervollständigung | `TAB` im Ausdruck von `bbe`/`clje`: `clojure.core` und Babashkas Aliase (`str/`, `fs/`, `json/` …), einmal von bb erfragt | Namen von bb selbst, also stimmen sie mit der Version |
+| Hervorhebung | `C-o` bearbeitet den Ausdruck in einem Clojure-Buffer (Hervorhebung, strukturelles Editieren); `C-o`/`C-c C-c` setzt ihn gequotet zurück, `C-c C-k` verwirft | eshell färbt Eingaben nicht; so gilt alles aus clojure-mode. `C-o` wie im Minibuffer: etwas in einen eigenen Buffer holen (Wunsch 2026-11-08, statt `C-c '` wie in Org). Auf jeder anderen Eingabe fügt `C-o` weiter einen Buffernamen ein, wie zuvor (auch `C-c M-b`). `bbe`/`clje` werden überall erkannt, wo ein Befehl beginnen kann (Anfang, nach `|`, `;`, `&`), nicht in Anführungszeichen; so auch in `seq 1 3 \| clje '…' \| sort` |
+| Tasks aus `bb.edn` | Projektart „Babashka“, `t` unter `C-c M-j`/`j`; läuft über `compile` | wie npm; die Tasks liest bb selbst (`bb tasks`), denn `bb.edn` darf mehr als EDN |
+| REPL ohne Projekt | `M-! b`: Scratch-Buffer `var/babashka/scratch.clj` mit Babashka-REPL über CIDER | ein leeres `bb.edn` daneben macht das Verzeichnis zum Babashka-Projekt, so fragt CIDER nichts |
+
+**Nachgezogen (2026-11-08, nach Rückmeldung):** `C-o` und die Vervollständigung finden `bbe`/`clje` auch nach `|`, `;`, `&` und über mehrere Zeilen der Eingabe; nach einem Verzeichnis hängt die Vervollständigung kein Leerzeichen mehr an (pcomplete tat das, sobald die Vorschau oder corfu übernahm); auf einem Pfad bleibt der Verlauf aus dem Weg, `TAB` vervollständigt Dateien (Pfad heißt: mit `/`, beginnt mit `~` oder `.`, oder Anfang eines lokalen Dateinamens).
+
+**Farben in eshell (2026-11-08, Wunsch):** Die Eingabe hebt eshell-syntax-highlighting (MELPA, letzter Commit 2024-12) beim Tippen hervor; auf Servern nicht, das wäre ein Weg über die Leitung je Prüfung (Vorgabe des Pakets). Programme sehen `TERM=dumb-emacs-ansi` (Farben, keine Cursorsteuerung, so von Emacs für comint empfohlen); unter `TERM=dumb` oder ohne `TERM`, wie aus der GUI, ließen git und grep ihre Farben weg. Der Wert steht in `eshell-variable-aliases-list`, nicht im `process-environment` des Buffers: envrc setzt das in jeder eshell zurück, mit oder ohne `.envrc` (am Mac zeigte `$TERM` deshalb `dumb`; in der Cloud fiel es erst mit installiertem direnv auf). Geprüft mit direnv: `TERM` bleibt beim Öffnen und bei `cd` in und aus einem Verzeichnis mit `.envrc`, dessen Variablen kommen und gehen. Geprüft im Batch, ausgehend von `TERM=dumb`: `TERM=dumb-emacs-ansi` kommt an, git färbt; Eingabe: Befehl, Option, String, Variable, Datei je eigene Farbe, `notacommand` als ungültig, `bbe` als bekannt (dafür je ein Platzhalter `eshell/bbe`, `eshell/clje`, den eshell nie aufruft, weil der Hook vorher greift). `eshell-prompt-regexp` entfällt: seit Emacs 30 veraltet und ohne Wirkung, eshell erkennt den Prompt an Feldern. Nicht umgesetzt: `ls` nach Dateiart färben (Punkt 3 des Vorschlags).
+
+**Geprüft im Batch:** `clje '(+ 1 2)'` → `3`; im entfernten Verzeichnis zählt `bbe '(count … (slurp (first *command-line-args*)))' clj-app.log` die 4 Zeilen der Datei dort, die Kopie ist danach weg; `str/joi` vervollständigt zu `str/join`, außerhalb von `bbe` bietet sich nichts an; `C-o` zeigt `(+ 1 2)` in clojure-mode, zurück wird aus `(str 'it "'s")` die eshell-Eingabe `bbe '(str ''it "''s")'`, die `it's` ausgibt; ein Projekt mit `bb.edn` ist „Clojure“ und „Babashka“, `bb tasks` liefert `hello` und `build` (nicht das private `-private`), `t` führt `hello` aus; `M-! b` startet die REPL, `(+ 1 2)` ergibt dort `3` mit Babashka 1.13.229.
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
@@ -1237,24 +1375,24 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | undo-tree | M | interface | Undo-Baum | **ersetzt** (2.5) durch `undo-redo` und vundo | Ja |
 | multiple-cursors | M | interface | Mehrfach-Cursor | bleibt (2.5), gepflegt | Ja |
 | counsel-projectile / projectile | M | filemanagement | Projekte | counsel-projectile **entfernt** (2.1); projectile **ersetzt** (2.3) durch project.el, bleibt aber als Abhängigkeit von platformio-mode installiert | Ja |
-| git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | prüfen | |
+| git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | **entfernt** (2.9), nicht benutzt | |
 | treemacs (+ -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt; treemacs-projectile **entfernt** (2.3), treemacs fragt project.el | Ja |
-| simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | eigenes Paket (eigenes Repo), womöglich veraltet — Review wie ein Fremdpaket | Ja |
+| simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | **ersetzt** (2.9) durch bookmark.el und `consult-bookmark`; Passwörter aus auth-source | Ja |
 | org | e | organisation | GTD | bleibt | |
 | dashboard (+ page-break-lines) | M | startup | Startbildschirm | gepflegt | |
 | smartparens | M | development | Klammern, sexp-Editieren | bleibt (2.5), gepflegt; Sprachregeln über `smartparens-config` | Ja |
 | aggressive-indent | M | development | Einrücken beim Tippen | bleibt (2.5), global ab dem Start | Ja |
-| company / company-quickhelp | M | development | Vervollständigung im Buffer | **ersetzt** (2.6) durch corfu und cape; company bleibt als Abhängigkeit installiert | Ja |
+| company / company-quickhelp | M | development | Vervollständigung im Buffer | **ersetzt** (2.6) durch corfu und cape; als Abhängigkeit mit esh-autosuggest **entfernt** (2.9) | Ja |
 | magit | M | development | Git | bleibt | Ja |
 | flycheck | M | development | Syntaxprüfung | **ersetzt** (2.7) durch flymake; bleibt als Abhängigkeit von tide installiert | Ja |
 | yasnippet / yasnippet-snippets | M | development | Snippets | yasnippet bleibt (2.6); yasnippet-snippets **entfernt**, nicht benutzt | Ja |
 | highlight-symbol | M | development | Symbol hervorheben | **ersetzt** (2.5) durch symbol-overlay | Ja |
-| restclient | M | development | HTTP-Anfragen | meines Wissens archiviert → verb | Ja |
-| sql | e | development | MySQL | ok | Ja |
-| simple-httpd | M | development | lokaler HTTP-Server | prüfen | |
+| restclient | M | development | HTTP-Anfragen | bleibt (2.9), gepflegt (letzter Commit 2026-06); die frühere Einschätzung „archiviert“ war falsch | Ja |
+| sql | e | development | MySQL | bleibt (2.9); Verbindungen als Lesezeichen | Ja |
+| simple-httpd | M | development | lokaler HTTP-Server | bleibt (2.9) | |
 | markdown-mode | M | development | Markdown | bleibt installiert (2.8); `.md` öffnet zum Ausprobieren md-mode | |
 | logview | M | development | Logdateien | gepflegt | Ja |
-| eshell / eshell-up / esh-autosuggest | e/M/M | shell | Shell | ok | Ja |
+| eshell / eshell-up / esh-autosuggest | e/M/M | shell | Shell | eshell und eshell-up bleiben (2.9); esh-autosuggest **ersetzt** durch `completion-preview-mode` | Ja |
 | csv-mode | M | csv | CSV | bleibt (2.8), gepflegt | |
 | clojure-mode | M | clojure | Clojure | bleibt (2.8); clojure-ts-mode gemessen und verworfen | Ja |
 | cider | M | clojure | REPL | bleibt | Ja |
@@ -1289,7 +1427,9 @@ Noch nicht in der Konfiguration; aufgenommen auf deinen Wunsch
 | typescript-language-server | Language-Server (npm) | 2.8 JS | JavaScript | **verworfen** (2.8): kann TypeScript 7 nicht nutzen; dessen `tsc --lsp --stdio` ersetzt ihn |
 | basedpyright bzw. pyright, dazu ruff | Language-Server | 2.8 Python | Python | ersetzt elpy |
 | vscode-langservers-extracted | Language-Server (npm) | 2.8 HTML/CSS | HTML, CSS/SCSS, JSON | scss ist als benutzt markiert |
-| eat | Emacs-Paket, NonGNU ELPA | 2.9 Werkzeuge | Terminal-Emulator in Emacs; kann in eshell Programme mit Vollbild-Ausgabe zeigen (`eat-eshell-mode`) | aufgenommen auf Wunsch (2026-10-29); Pflegestand im Review nachsehen |
+| eat | Emacs-Paket, NonGNU ELPA | 2.9 Werkzeuge | Terminal-Emulator in Emacs; kann in eshell Programme mit Vollbild-Ausgabe zeigen (`eat-eshell-mode`) | **aufgenommen** (2.9) als Terminal und für Vollbild-Programme in eshell |
+| mistty | Emacs-Paket, MELPA, Modul optional | 2.9 Werkzeuge | zsh mit Emacs-Editieren an der Eingabezeile | **aufgenommen** (2.9) auf `M-! s z` |
+| ghostel | Emacs-Paket, MELPA, mit Modul (libghostty) | später | schnelleres Terminal, ebenfalls mit eshell-Anbindung | Kandidat; der Nutzer sieht es sich an |
 | lemminx | Language-Server | 2.8 XML | XML Schema, DTD, Formatieren | **aufgenommen** (2.8), startet nur, wo installiert |
 | envrc | Emacs-Paket, MELPA | 2.8 | direnv je Buffer | **aufgenommen** (2.8) |
 | md-mode | Emacs-Paket (GitHub) | 2.8 Markdown | gerenderte Ansicht mit Tabellen | **zum Ausprobieren** (2.8) |
