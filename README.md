@@ -33,6 +33,7 @@ serves is simply missing.
 | Leiningen, Clojure CLI | `brew install leiningen clojure` | CIDER's jack-in |
 | node, npm | via nvm or `brew install node` | the npm commands under `C-c M-j` |
 | multimarkdown | `brew install multimarkdown` | markdown-mode's preview |
+| a Nerd Font | `M-x nerd-icons-install-fonts`, once | the icons of the mode line (doom-modeline) |
 | babashka | `brew install borkdude/brew/babashka` | `bbe`/`clje` in eshell: Clojure on the command line, also on data from remote hosts; tasks of `bb.edn` under `C-c M-j`; the scratch REPL on `M-! b` |
 
 ## Per-project environment (direnv)
@@ -229,7 +230,7 @@ Same purpose, same key, in every language that has it:
 |---|---|---|---|
 | `M--` | `jtk-bookmarks-map` | `init-bookmarks` | bookmarks of files, directories, MySQL connections |
 | `M-c` | `jtk-multiple-cursors-map` | `init-editing` | multiple cursors |
-| `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`), in Clojure apropos (`s`); `M-J` goes back |
+| `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`), keywords like `TODO` or `WATCHOUT` (`t` next, `T` previous; both repeat), in Clojure apropos (`s`); `M-J` goes back |
 | `M-r` where a language server runs | `eglot-mode-map` | `init-lsp` | renaming (`r`), code actions (`a`), organising imports (`o`), formatting (`=`) |
 | `M-m` | `jtk-highlight-symbol-map` | `init-editing` | next, previous, replace symbol (repeats); `C-m` marks it |
 | `M-!` | `jtk-run-map` | `init-keys` | `m` keyboard macros (`jtk-macro-map`), `s` shells (`jtk-shell-map`), `b` a Babashka REPL with a scratch buffer |
