@@ -81,12 +81,12 @@ ARG is passed on as to `eshell'."
 ;; keeps inserting a buffer's name, as before.  eshell's own key for
 ;; that, C-c M-b, works too.
 (defun jtk-shell-edit-form-or-insert-buffer-name ()
-  "Edit the form of a `bbe' or `clje' command, else insert a buffer name.
+  "Edit the form of the `bbe' or `clje' at point, else insert a buffer name.
 The form opens in a Clojure buffer of its own (`jtk-babashka-edit-form');
 on any other input this is `eshell-insert-buffer-name'."
   (interactive)
   (call-interactively
-   (if (jtk-babashka-eshell-command-line-p)
+   (if (jtk-babashka-eshell-command-at-point-p)
        #'jtk-babashka-edit-form
      #'eshell-insert-buffer-name)))
 

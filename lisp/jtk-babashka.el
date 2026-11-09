@@ -187,10 +187,12 @@ else the first; nil if the input runs none of ours."
                                commands)))
         (car commands))))
 
-(defun jtk-babashka-eshell-command-line-p ()
-  "Return non-nil if the eshell input at point runs one of our commands.
-Also inside a pipe or after `;', as in `cat file | bbe ...'."
-  (and (jtk-babashka--command-at-point) t))
+(defun jtk-babashka-eshell-command-at-point-p ()
+  "Return non-nil if point is on one of our commands or in its form.
+Also inside a pipe or after `;', as in `cat file | bbe ...'; elsewhere
+on the same input it is nil."
+  (pcase (jtk-babashka--command-at-point)
+    (`(,start ,_ ,end) (<= start (point) end))))
 
 (defun jtk-babashka--in-eshell-command-p ()
   "Return non-nil if point is in the form of one of our eshell commands."
