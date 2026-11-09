@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 
-;; The theme, the spaceline mode line, line numbers, highlighting of
+;; The theme, the doom-modeline mode line, line numbers, highlighting of
 ;; parens, the current line, colours, delimiters and keywords like
 ;; `WATCHOUT', prettified symbols, font size steps and the frame
 ;; title.
@@ -11,66 +11,45 @@
 
 (require 'jtk-project)
 
+(defvar nerd-icons-font-family)
+(declare-function nerd-icons-install-fonts "nerd-icons")
+
+;; NOTE: The icons of the mode line need a Nerd Font.  On a machine
+;; without it, the first start in the GUI fetches it from nerd-icons'
+;; repository into ~/Library/Fonts, without asking; then it is found and
+;; nothing more happens.  Not in batch or a terminal, which have no use
+;; for it.
+;; WATCHOUT: Asked through `font-family-list', the families actually
+;; installed.  With `find-font' the font was never fetched on the Mac,
+;; most likely because it answers for a missing family with a stand-in.
+(defun jtk-appearance-ensure-icon-font ()
+  "Install the font of `nerd-icons' if a graphical display lacks it."
+  (require 'nerd-icons)
+  (when (and (display-graphic-p)
+             (not (member nerd-icons-font-family (font-family-list))))
+    (nerd-icons-install-fonts t)
+    (message "Installed %s; restart Emacs if icons still show as boxes"
+             nerd-icons-font-family)))
+
+;; NOTE: Knows flymake, eglot, the project and the branch by itself.
 (use-package
-  spaceline
+  doom-modeline
   :demand t
+  :custom
+  (doom-modeline-buffer-file-name-style 'relative-to-project)
   :config
-  (require 'spaceline-segments)
-  (setq powerline-default-separator 'arrow)
+  (jtk-appearance-ensure-icon-font)
+  (doom-modeline-mode 1))
 
-  ;; NOTE: spaceline has segments for flycheck only.
-  (spaceline-define-segment checking
-    "Counts of flymake's findings: errors, warnings, notes."
-    (when (bound-and-true-p flymake-mode)
-      (format-mode-line flymake-mode-line-counters)))
+;; NOTE: Marks the side windows of the IDE-like layout (init-windows).
+;; While a mode line is drawn, `selected-window' is the window it
+;; belongs to.
+(defvar jtk-appearance-side-window-marker
+  '(:eval (when (window-parameter (selected-window) 'window-side) "IDE "))
+  "Mode line construct that marks a side window.")
 
-  (spaceline-define-segment ide-window
-    "Marks the side windows of the IDE-like layout."
-    (when (window-parameter (selected-window) 'window-side)
-      "IDE"))
-
-  (spaceline-compile
-    '((buffer-id
-       :priority 99
-       :when (and active buffer-file-name (buffer-modified-p))
-       :face highlight-face)
-      ((buffer-id "~")
-       :priority 99
-       :when (and (not active) buffer-file-name (buffer-modified-p))
-       :face highlight-face)
-      ((buffer-id)
-       :priority 99
-       :when (not (and buffer-file-name (buffer-modified-p))))
-      (buffer-size
-       :priority 60
-       :when active)
-      (major-mode
-       :priority 70)
-      (checking
-       :priority 80
-       :when active)
-      (version-control
-       :priority 60)
-      (buffer-encoding
-       :when (and active vc-mode)
-       :priority 50))
-
-    '((minor-modes
-       :when active
-       :priority 70)
-      (ide-window
-       :priority 60)
-      (line-column
-       :separator " | "
-       :priority 50
-       :when active)
-      (buffer-position
-       :priority 40
-       :when active)))
-
-  (setq-default
-   mode-line-format
-   '("%e" (:eval (spaceline-ml-main)))))
+(add-to-list 'mode-line-misc-info 'jtk-appearance-side-window-marker)
+(put 'jtk-appearance-side-window-marker 'risky-local-variable t)
 
 ;; NOTE: Drawn by the display engine, so nearly free: a key press in a
 ;; Clojure file of 7,700 lines takes 3.5 ms with it and 560 ms with the
@@ -81,25 +60,20 @@
   :hook (prog-mode . display-line-numbers-mode)
   :custom (display-line-numbers-width 3))
 
+;; NOTE: Only where colors are written down; elsewhere it took any word
+;; that names a color, or a hex number, for one.
 (use-package
   rainbow-mode
   :diminish rainbow-mode
 
   :hook
-  ((prog-mode . rainbow-mode)
-   (cider-repl-mode . rainbow-mode)))
+  ((css-base-mode web-mode emacs-lisp-mode) . rainbow-mode))
 
 (use-package
   rainbow-delimiters
   :hook
   ((prog-mode . rainbow-delimiters-mode)
    (cider-repl-mode . rainbow-delimiters-mode)))
-
-(defface error-face
-  '((t (:foreground "#CC5353"))) "Red Highlight")
-
-(defface success-face
-  '((t (:foreground "yellow" :background "#555577"))) "Green Highlight")
 
 (show-paren-mode 1)
 
@@ -115,13 +89,38 @@
 
 (global-hl-line-mode 1)
 
-(add-hook
- 'prog-mode-hook
- (lambda ()
-   (font-lock-add-keywords
-    nil
-    '(("\\<\\(HACK\\|NOTE\\|FIXME\\|TODO\\|BUG\\|INFO\\|IDEA\\|WATCHOUT\\|WTF\\)"
-       1 font-lock-warning-face t)))))
+;; NOTE: The keywords of comments by what they mean: a fault in the
+;; theme's error color, a warning (WATCHOUT, HACK) in its warning color,
+;; what is still to do as a keyword, an explanation (NOTE) calmly.
+;; M-j t jumps to the next one, then n and p go on, as between flymake's
+;; findings.
+(use-package
+  hl-todo
+  :custom
+  (hl-todo-keyword-faces
+   '(("FIXME" . error)
+     ("BUG" . error)
+     ("WTF" . error)
+     ("WATCHOUT" . warning)
+     ("HACK" . warning)
+     ("TODO" . font-lock-keyword-face)
+     ("NOTE" . success)
+     ("INFO" . success)
+     ("IDEA" . success)))
+
+  :hook
+  (prog-mode . hl-todo-mode)
+
+  :bind
+  (:map jtk-jump-map
+        ("t" . hl-todo-next))
+
+  :config
+  (defvar-keymap jtk-appearance-todo-repeat-map
+    :doc "Moving between keywords like TODO and WATCHOUT; the keys repeat."
+    :repeat t
+    "n" #'hl-todo-next
+    "p" #'hl-todo-previous))
 
 (use-package
   doom-themes
@@ -134,17 +133,16 @@
   :ensure nil
 
   :config
-  (defun enable-prettify-symbols ()
-    (interactive)
-    (setq prettify-symbols-alist
-          '(("lambda" . 955) ; λ
-            ("fn" . 955) ; λ
-            ("sum" . 8721))) ; ∑
-    (prettify-symbols-mode))
+  (defun jtk-appearance-prettify-symbols ()
+    "Show lambda and fn as λ and sum as ∑ in the current buffer."
+    (setq-local prettify-symbols-alist
+                (append '(("lambda" . ?λ) ("fn" . ?λ) ("sum" . ?∑))
+                        prettify-symbols-alist))
+    (prettify-symbols-mode 1))
 
   :hook
-  ((prog-mode . enable-prettify-symbols)
-   (cider-repl-mode . enable-prettify-symbols)))
+  ((prog-mode . jtk-appearance-prettify-symbols)
+   (cider-repl-mode . jtk-appearance-prettify-symbols)))
 
 (use-package
   jtk-zoom

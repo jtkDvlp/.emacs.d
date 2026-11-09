@@ -253,7 +253,7 @@ fallen dort ganz weg, und der Fehler mit ihnen.
 | B4 ✅ (2.2) | `lang--javascript.el:83` | `"M-J "` (mit Leerzeichen) auf `xref-pop-maker-stack` — die Funktion heißt `xref-pop-marker-stack`, seit Emacs 29 `xref-go-back`. |
 | B5 ✅ (2.2) | `lang--typescript.el:57` | `"C-C M-j"` — großes C, also `C-S-c`; gemeint war wohl `C-c`. |
 | B6 | `lang--basic.el:3` | `basic-mode` mit `:ensure nil`, ist aber ein MELPA-Paket — auf einem frischen Rechner fehlt es. Außerdem: `.inc`-Dateien als BASIC? |
-| B7 | `base--development.el:153` | `prettify-symbols-alist` per `setq` statt `setq-local` — die Liste gilt für alle Buffer, auch für Modi mit eigener Liste. |
+| B7 ✅ (2.13) | `base--development.el:153` | `prettify-symbols-alist` per `setq` statt `setq-local` — die Liste gilt für alle Buffer, auch für Modi mit eigener Liste. |
 
 ---
 
@@ -1335,6 +1335,23 @@ eingerichteten zsh.
 
 **Geprüft im Batch:** `clje '(+ 1 2)'` → `3`; im entfernten Verzeichnis zählt `bbe '(count … (slurp (first *command-line-args*)))' clj-app.log` die 4 Zeilen der Datei dort, die Kopie ist danach weg; `str/joi` vervollständigt zu `str/join`, außerhalb von `bbe` bietet sich nichts an; `C-o` zeigt `(+ 1 2)` in clojure-mode, zurück wird aus `(str 'it "'s")` die eshell-Eingabe `bbe '(str ''it "''s")'`, die `it's` ausgibt; ein Projekt mit `bb.edn` ist „Clojure“ und „Babashka“, `bb tasks` liefert `hello` und `build` (nicht das private `-private`), `t` führt `hello` aus; `M-! b` startet die REPL, `(+ 1 2)` ergibt dort `3` mit Babashka 1.13.229.
 
+#### ✅ 2.13 Aussehen (entschieden und umgesetzt 2026-11-09)
+
+| Thema | Entschieden | Warum |
+|---|---|---|
+| Modeline | doom-modeline statt spaceline und powerline; die Markierung „IDE“ der Seitenfenster in `mode-line-misc-info` | spaceline (letzter Commit 2023-09) und powerline (2022-11) stehen still, spaceline kannte nur flycheck; doom-modeline (2026-11) zeigt flymake, eglot, Projekt und Zweig von sich aus. Symbole brauchen eine Nerd Font; fehlt sie, holt der erste Start in der GUI sie selbst (`nerd-icons-install-fonts`, nach `~/Library/Fonts`; Wunsch 2026-11-09) |
+| B7 | `prettify-symbols-alist` buffer-lokal und an die Liste des Modus angehängt; `jtk-appearance-prettify-symbols` | die Liste galt in allen Buffern und überschrieb die der Modi |
+| Eigene Faces | `success-face` gestrichen (unbenutzt), CIDER nimmt für Fehler Emacs' `error` | 2 Warnungen weniger |
+| Schlüsselwörter | hl-todo statt eigenem Lambda; Fehler (`FIXME`, `BUG`, `WTF`) in `error`, Warnungen (`WATCHOUT`, `HACK`) in `warning`, `TODO` als Schlüsselwort, Erklärungen (`NOTE`, `INFO`, `IDEA`) in `success`; `M-j t`/`M-j T` springen, `t`/`T` wiederholen | vorher alles in einer Farbe; NOTE erklärt, WATCHOUT warnt |
+| rainbow-mode | nur in CSS/SCSS (`css-base-mode`), web-mode und Elisp | in jedem Programmiermodus hielt es Farbwörter und Hex-Zahlen für Farben |
+| Theme | bleibt `doom-one`; Alternativen zum Ausprobieren im Bericht | Wunsch |
+| Startseite | dashboard wieder, aufgehübscht (Clojure-Logo, beim ersten GUI-Start nach `var/` geholt, weil es nicht ins öffentliche Repository gehört, sonst Emacs' Logo; nerd-icons, zentriert; Projekte, letzte Dateien, Lesezeichen; `p`/`r`/`m`); kein `*empty*` mehr | Wunsch 2026-11-09 nach Vergleich mit enlight und einer eigenen Seite |
+| Nachgezogen | `M-j t`, dann `n`/`p` statt `t`/`T`; die Nerd Font wird über `font-family-list` erkannt | `t`/`T` war untypisch; mit `find-font` wurde die Schrift am Mac nie geholt, vermutlich weil `find-font` für eine fehlende Familie eine Ersatzschrift liefert |
+
+**Geprüft im Batch:** doom-modeline an; die IDE-Markierung ergibt im Seitenfenster `"IDE "` (die Form; `format-mode-line` liefert im Batch für jede `:eval`-Form leer); in Elisp `prettify-symbols-alist` buffer-lokal mit `lambda`, global weiter `nil`; Faces von `NOTE`, `WATCHOUT`, `FIXME`, `TODO` wie oben; `M-j t` springt zur nächsten Stelle, `t` weiter, `T` zurück, Wiederhol-Map gesetzt; rainbow-mode an in Elisp und `css-mode`, aus in Clojure; CIDERs Fehler-Face `error`. Schnappschuss: nur die erwarteten Hooks.
+
+**Offen für die Sichtung in der GUI:** die Modeline selbst (nur dort sichtbar), das selbsttätige Holen der Nerd Font (im Batch geprüft: ohne GUI nichts, in der GUI ohne Schrift einmal, mit Schrift nichts), rainbow-mode in `css-ts-mode` (in der Cloud fehlt die Grammatik).
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -1352,13 +1369,13 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | Paket | Quelle | heute in | wofür | Einschätzung | benutzt? |
 |---|---|---|---|---|---|
 | use-package | e | configuration | Deklaration | bleibt | Ja |
-| diminish | M | Bootstrap | Modeline-Lichter ausblenden | hängt an 2.11 | Ja |
+| diminish | M | Bootstrap | Modeline-Lichter ausblenden | bleibt (2.13); doom-modeline zeigt Nebenmodi von sich aus nicht | Ja |
 | smartrep | M | Bootstrap | Wiederholtasten | **ersetzt** (2.2) durch `repeat-mode` | Ja |
 | exec-path-from-shell | M | Bootstrap | PATH aus Login-Shell | installiert, **nie benutzt** — einsetzen | |
-| doom-themes | M | apperance | Theme `doom-one` | gepflegt | |
-| spaceline | M | apperance | Modeline | kaum noch gepflegt | |
+| doom-themes | M | apperance | Theme `doom-one` | bleibt (2.13), gepflegt (2026-08) | |
+| spaceline | M | apperance | Modeline | **ersetzt** (2.13) durch doom-modeline; spaceline (2023) und powerline (2022) stehen still | |
 | linum | e | apperance | Zeilennummern | **ersetzt** (2.8) durch `display-line-numbers-mode`: linum machte große Dateien unbenutzbar | Ja |
-| rainbow-mode | M | apperance | Farbwerte einfärben | ok; in jedem `prog-mode` fraglich | Ja |
+| rainbow-mode | M | apperance | Farbwerte einfärben | bleibt (2.13), nur noch in CSS/SCSS, web-mode und Elisp | Ja |
 | rainbow-delimiters | M | apperance | Klammern einfärben | ok | Ja |
 | kmacro | e | interface | Makros | ok | |
 | ivy / counsel / swiper | M | interface | Vervollständigung, Suche | **ersetzt** (2.1) durch vertico, orderless, marginalia, consult, embark, embark-consult | Ja |
@@ -1379,7 +1396,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | treemacs (+ -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt; treemacs-projectile **entfernt** (2.3), treemacs fragt project.el | Ja |
 | simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | **ersetzt** (2.9) durch bookmark.el und `consult-bookmark`; Passwörter aus auth-source | Ja |
 | org | e | organisation | GTD | eigene Konfiguration **entfernt** (2.12), nicht mehr benutzt; Org selbst bleibt mit Emacs' Vorgaben | |
-| dashboard (+ page-break-lines) | M | startup | Startbildschirm | **entfernt** (2.12); Emacs startet mit dem leeren Buffer `*empty*` (`initial-buffer-choice`) | |
+| dashboard (+ page-break-lines) | M | startup | Startbildschirm | **entfernt** (2.12), dann **wieder aufgenommen** (2.13): aufgehübscht mit Logo, nerd-icons, zentriert, Projekte, letzte Dateien, Lesezeichen; `*empty*` als Start-Buffer entfällt | |
 | smartparens | M | development | Klammern, sexp-Editieren | bleibt (2.5), gepflegt; Sprachregeln über `smartparens-config` | Ja |
 | aggressive-indent | M | development | Einrücken beim Tippen | bleibt (2.5), global ab dem Start | Ja |
 | company / company-quickhelp | M | development | Vervollständigung im Buffer | **ersetzt** (2.6) durch corfu und cape; als Abhängigkeit mit esh-autosuggest **entfernt** (2.9) | Ja |

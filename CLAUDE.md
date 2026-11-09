@@ -37,8 +37,8 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 (Tastatur-Infrastruktur), 2.3 (Projekte), 2.4 (Fenster und Tabs), 2.5
 (Editieren), 2.6 (Vervollständigen im Buffer, Snippets), 2.7
 (Language-Server, flymake, tree-sitter), 2.8 (Sprachen), 2.9
-(Werkzeuge), 2.10 (TRAMP), 2.11 (Shell mit Clojure) und 2.12
-(Organisation).
+(Werkzeuge), 2.10 (TRAMP), 2.11 (Shell mit Clojure), 2.12
+(Organisation) und 2.13 (Aussehen) — damit ist Phase 2 durch.
 
 | Pfad | Inhalt | versioniert |
 |---|---|---|
@@ -46,10 +46,10 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 | `init.el` | Nimmt `lisp/` und `modules/` in den `load-path` und lädt die Module in fester Reihenfolge — sonst nichts. | ja |
 | `modules/init-packages.el` | elpaca-Installer (gepinnt über die Lockdatei), `elpaca-use-package`, no-littering, diminish. | ja |
 | `modules/init-core.el` | Grundverhalten ohne eigenes Thema: `local.el`, PATH, Sicherungen, Kodierung, Auto-Revert, Scrollen, Rückfragen. | ja |
-| `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `structural-editing`, `completion`, `checking`, `lsp`, `tree-sitter`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`, `tramp`. Jede Datei sagt im Kopf, was hineingehört. | ja |
+| `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `startup`, `structural-editing`, `completion`, `checking`, `lsp`, `tree-sitter`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`, `tramp`. Jede Datei sagt im Kopf, was hineingehört. | ja |
 | `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. | ja |
 | `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`babashka`, `lsp-lens`, `narrow`, `project`, `zoom`), Symbole mit Präfix `jtk-`. | ja |
-| `etc/elpaca-lock.eld` | Commit jedes Pakets (71, mit Abhängigkeiten und elpaca selbst). | ja |
+| `etc/elpaca-lock.eld` | Commit jedes Pakets (75, mit Abhängigkeiten und elpaca selbst). | ja |
 | `etc/yasnippet/snippets/` | Handgeschriebene yasnippet-Vorlagen. | ja |
 | `etc/eshell/aliases` | Handgeschriebene eshell-Aliase. | ja |
 | `etc/mc-list.el` | Von multiple-cursors **erzeugt**, aber inhaltlich gepflegt — deshalb versioniert. | ja |
@@ -259,6 +259,7 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 | nach 2.8, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 73 Einträgen reproduziert | 0 | 17 |
 | nach 2.9, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 71 Einträgen reproduziert | 0 | 12 |
 | nach 2.10–2.12, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 71 Einträgen reproduziert | 0 | 5 |
+| nach 2.13, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 75 Einträgen reproduziert | 0 | 3 |
 
 Der Unterschied von 3 Warnungen bis 2.1: Die `ns-*`- und `mac-*`-Variablen
 gibt es nur unter macOS; in der Cloud meldete der Byte-Compiler sie als
