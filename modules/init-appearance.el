@@ -93,17 +93,16 @@
   :ensure nil
 
   :config
-  (defun enable-prettify-symbols ()
-    (interactive)
-    (setq prettify-symbols-alist
-          '(("lambda" . 955) ; λ
-            ("fn" . 955) ; λ
-            ("sum" . 8721))) ; ∑
-    (prettify-symbols-mode))
+  (defun jtk-appearance-prettify-symbols ()
+    "Show lambda and fn as λ and sum as ∑ in the current buffer."
+    (setq-local prettify-symbols-alist
+                (append '(("lambda" . ?λ) ("fn" . ?λ) ("sum" . ?∑))
+                        prettify-symbols-alist))
+    (prettify-symbols-mode 1))
 
   :hook
-  ((prog-mode . enable-prettify-symbols)
-   (cider-repl-mode . enable-prettify-symbols)))
+  ((prog-mode . jtk-appearance-prettify-symbols)
+   (cider-repl-mode . jtk-appearance-prettify-symbols)))
 
 (use-package
   jtk-zoom
