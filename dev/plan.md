@@ -1339,7 +1339,7 @@ eingerichteten zsh.
 
 | Thema | Entschieden | Warum |
 |---|---|---|
-| Modeline | doom-modeline statt spaceline und powerline; die Markierung „IDE“ der Seitenfenster in `mode-line-misc-info` | spaceline (letzter Commit 2023-09) und powerline (2022-11) stehen still, spaceline kannte nur flycheck; doom-modeline (2026-11) zeigt flymake, eglot, Projekt und Zweig von sich aus. Symbole brauchen eine Nerd Font (`M-x nerd-icons-install-fonts`, README) |
+| Modeline | doom-modeline statt spaceline und powerline; die Markierung „IDE“ der Seitenfenster in `mode-line-misc-info` | spaceline (letzter Commit 2023-09) und powerline (2022-11) stehen still, spaceline kannte nur flycheck; doom-modeline (2026-11) zeigt flymake, eglot, Projekt und Zweig von sich aus. Symbole brauchen eine Nerd Font; fehlt sie, holt der erste Start in der GUI sie selbst (`nerd-icons-install-fonts`, nach `~/Library/Fonts`; Wunsch 2026-11-09) |
 | B7 | `prettify-symbols-alist` buffer-lokal und an die Liste des Modus angehängt; `jtk-appearance-prettify-symbols` | die Liste galt in allen Buffern und überschrieb die der Modi |
 | Eigene Faces | `success-face` gestrichen (unbenutzt), CIDER nimmt für Fehler Emacs' `error` | 2 Warnungen weniger |
 | Schlüsselwörter | hl-todo statt eigenem Lambda; Fehler (`FIXME`, `BUG`, `WTF`) in `error`, Warnungen (`WATCHOUT`, `HACK`) in `warning`, `TODO` als Schlüsselwort, Erklärungen (`NOTE`, `INFO`, `IDEA`) in `success`; `M-j t`/`M-j T` springen, `t`/`T` wiederholen | vorher alles in einer Farbe; NOTE erklärt, WATCHOUT warnt |
@@ -1348,7 +1348,7 @@ eingerichteten zsh.
 
 **Geprüft im Batch:** doom-modeline an; die IDE-Markierung ergibt im Seitenfenster `"IDE "` (die Form; `format-mode-line` liefert im Batch für jede `:eval`-Form leer); in Elisp `prettify-symbols-alist` buffer-lokal mit `lambda`, global weiter `nil`; Faces von `NOTE`, `WATCHOUT`, `FIXME`, `TODO` wie oben; `M-j t` springt zur nächsten Stelle, `t` weiter, `T` zurück, Wiederhol-Map gesetzt; rainbow-mode an in Elisp und `css-mode`, aus in Clojure; CIDERs Fehler-Face `error`. Schnappschuss: nur die erwarteten Hooks.
 
-**Offen für die Sichtung in der GUI:** die Modeline selbst (nur dort sichtbar), die Nerd Font, rainbow-mode in `css-ts-mode` (in der Cloud fehlt die Grammatik).
+**Offen für die Sichtung in der GUI:** die Modeline selbst (nur dort sichtbar), das selbsttätige Holen der Nerd Font (im Batch geprüft: ohne GUI nichts, in der GUI ohne Schrift einmal, mit Schrift nichts), rainbow-mode in `css-ts-mode` (in der Cloud fehlt die Grammatik).
 
 ### Phase 3 – Startzeit (nur bei Bedarf)
 

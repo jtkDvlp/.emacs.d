@@ -11,14 +11,31 @@
 
 (require 'jtk-project)
 
+(defvar nerd-icons-font-family)
+(declare-function nerd-icons-install-fonts "nerd-icons")
+
+;; NOTE: The icons of the mode line need a Nerd Font.  On a machine
+;; without it, the first start in the GUI fetches it from nerd-icons'
+;; repository into ~/Library/Fonts, without asking; then it is found and
+;; nothing more happens.  Not in batch or a terminal, which have no use
+;; for it.
+(defun jtk-appearance-ensure-icon-font ()
+  "Install the font of `nerd-icons' if a graphical display lacks it."
+  (require 'nerd-icons)
+  (when (and (display-graphic-p)
+             (not (find-font (font-spec :family nerd-icons-font-family))))
+    (nerd-icons-install-fonts t)
+    (message "Installed %s; restart Emacs if icons still show as boxes"
+             nerd-icons-font-family)))
+
 ;; NOTE: Knows flymake, eglot, the project and the branch by itself.
-;; Its icons need a Nerd Font, once: M-x nerd-icons-install-fonts.
 (use-package
   doom-modeline
   :demand t
   :custom
   (doom-modeline-buffer-file-name-style 'relative-to-project)
   :config
+  (jtk-appearance-ensure-icon-font)
   (doom-modeline-mode 1))
 
 ;; NOTE: Marks the side windows of the IDE-like layout (init-windows).
