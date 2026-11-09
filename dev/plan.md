@@ -1345,6 +1345,8 @@ eingerichteten zsh.
 | Schlüsselwörter | hl-todo statt eigenem Lambda; Fehler (`FIXME`, `BUG`, `WTF`) in `error`, Warnungen (`WATCHOUT`, `HACK`) in `warning`, `TODO` als Schlüsselwort, Erklärungen (`NOTE`, `INFO`, `IDEA`) in `success`; `M-j t`/`M-j T` springen, `t`/`T` wiederholen | vorher alles in einer Farbe; NOTE erklärt, WATCHOUT warnt |
 | rainbow-mode | nur in CSS/SCSS (`css-base-mode`), web-mode und Elisp | in jedem Programmiermodus hielt es Farbwörter und Hex-Zahlen für Farben |
 | Theme | bleibt `doom-one`; Alternativen zum Ausprobieren im Bericht | Wunsch |
+| Startseite | dashboard wieder, aufgehübscht (Logo, nerd-icons, zentriert; Projekte, letzte Dateien, Lesezeichen; `p`/`r`/`m`); kein `*empty*` mehr | Wunsch 2026-11-09 nach Vergleich mit enlight und einer eigenen Seite |
+| Nachgezogen | `M-j t`, dann `n`/`p` statt `t`/`T`; die Nerd Font wird über `font-family-list` erkannt | `t`/`T` war untypisch; mit `find-font` wurde die Schrift am Mac nie geholt, vermutlich weil `find-font` für eine fehlende Familie eine Ersatzschrift liefert |
 
 **Geprüft im Batch:** doom-modeline an; die IDE-Markierung ergibt im Seitenfenster `"IDE "` (die Form; `format-mode-line` liefert im Batch für jede `:eval`-Form leer); in Elisp `prettify-symbols-alist` buffer-lokal mit `lambda`, global weiter `nil`; Faces von `NOTE`, `WATCHOUT`, `FIXME`, `TODO` wie oben; `M-j t` springt zur nächsten Stelle, `t` weiter, `T` zurück, Wiederhol-Map gesetzt; rainbow-mode an in Elisp und `css-mode`, aus in Clojure; CIDERs Fehler-Face `error`. Schnappschuss: nur die erwarteten Hooks.
 
@@ -1394,7 +1396,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | treemacs (+ -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt; treemacs-projectile **entfernt** (2.3), treemacs fragt project.el | Ja |
 | simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | **ersetzt** (2.9) durch bookmark.el und `consult-bookmark`; Passwörter aus auth-source | Ja |
 | org | e | organisation | GTD | eigene Konfiguration **entfernt** (2.12), nicht mehr benutzt; Org selbst bleibt mit Emacs' Vorgaben | |
-| dashboard (+ page-break-lines) | M | startup | Startbildschirm | **entfernt** (2.12); Emacs startet mit dem leeren Buffer `*empty*` (`initial-buffer-choice`) | |
+| dashboard (+ page-break-lines) | M | startup | Startbildschirm | **entfernt** (2.12), dann **wieder aufgenommen** (2.13): aufgehübscht mit Logo, nerd-icons, zentriert, Projekte, letzte Dateien, Lesezeichen; `*empty*` als Start-Buffer entfällt | |
 | smartparens | M | development | Klammern, sexp-Editieren | bleibt (2.5), gepflegt; Sprachregeln über `smartparens-config` | Ja |
 | aggressive-indent | M | development | Einrücken beim Tippen | bleibt (2.5), global ab dem Start | Ja |
 | company / company-quickhelp | M | development | Vervollständigung im Buffer | **ersetzt** (2.6) durch corfu und cape; als Abhängigkeit mit esh-autosuggest **entfernt** (2.9) | Ja |
