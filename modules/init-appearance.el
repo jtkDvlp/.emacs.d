@@ -40,13 +40,14 @@
   :hook (prog-mode . display-line-numbers-mode)
   :custom (display-line-numbers-width 3))
 
+;; NOTE: Only where colors are written down; elsewhere it took any word
+;; that names a color, or a hex number, for one.
 (use-package
   rainbow-mode
   :diminish rainbow-mode
 
   :hook
-  ((prog-mode . rainbow-mode)
-   (cider-repl-mode . rainbow-mode)))
+  ((css-base-mode web-mode emacs-lisp-mode) . rainbow-mode))
 
 (use-package
   rainbow-delimiters
@@ -68,13 +69,38 @@
 
 (global-hl-line-mode 1)
 
-(add-hook
- 'prog-mode-hook
- (lambda ()
-   (font-lock-add-keywords
-    nil
-    '(("\\<\\(HACK\\|NOTE\\|FIXME\\|TODO\\|BUG\\|INFO\\|IDEA\\|WATCHOUT\\|WTF\\)"
-       1 font-lock-warning-face t)))))
+;; NOTE: The keywords of comments by what they mean: a fault in the
+;; theme's error color, a warning (WATCHOUT, HACK) in its warning color,
+;; what is still to do as a keyword, an explanation (NOTE) calmly.
+;; M-j t and M-j T jump between them, then t and T again.
+(use-package
+  hl-todo
+  :custom
+  (hl-todo-keyword-faces
+   '(("FIXME" . error)
+     ("BUG" . error)
+     ("WTF" . error)
+     ("WATCHOUT" . warning)
+     ("HACK" . warning)
+     ("TODO" . font-lock-keyword-face)
+     ("NOTE" . success)
+     ("INFO" . success)
+     ("IDEA" . success)))
+
+  :hook
+  (prog-mode . hl-todo-mode)
+
+  :bind
+  (:map jtk-jump-map
+        ("t" . hl-todo-next)
+        ("T" . hl-todo-previous))
+
+  :config
+  (defvar-keymap jtk-appearance-todo-repeat-map
+    :doc "Moving between keywords like TODO and WATCHOUT; the keys repeat."
+    :repeat t
+    "t" #'hl-todo-next
+    "T" #'hl-todo-previous))
 
 (use-package
   doom-themes
