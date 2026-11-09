@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 
-;; The theme, the spaceline mode line, line numbers, highlighting of
+;; The theme, the doom-modeline mode line, line numbers, highlighting of
 ;; parens, the current line, colours, delimiters and keywords like
 ;; `WATCHOUT', prettified symbols, font size steps and the frame
 ;; title.
@@ -11,66 +11,25 @@
 
 (require 'jtk-project)
 
+;; NOTE: Knows flymake, eglot, the project and the branch by itself.
+;; Its icons need a Nerd Font, once: M-x nerd-icons-install-fonts.
 (use-package
-  spaceline
+  doom-modeline
   :demand t
+  :custom
+  (doom-modeline-buffer-file-name-style 'relative-to-project)
   :config
-  (require 'spaceline-segments)
-  (setq powerline-default-separator 'arrow)
+  (doom-modeline-mode 1))
 
-  ;; NOTE: spaceline has segments for flycheck only.
-  (spaceline-define-segment checking
-    "Counts of flymake's findings: errors, warnings, notes."
-    (when (bound-and-true-p flymake-mode)
-      (format-mode-line flymake-mode-line-counters)))
+;; NOTE: Marks the side windows of the IDE-like layout (init-windows).
+;; While a mode line is drawn, `selected-window' is the window it
+;; belongs to.
+(defvar jtk-appearance-side-window-marker
+  '(:eval (when (window-parameter (selected-window) 'window-side) "IDE "))
+  "Mode line construct that marks a side window.")
 
-  (spaceline-define-segment ide-window
-    "Marks the side windows of the IDE-like layout."
-    (when (window-parameter (selected-window) 'window-side)
-      "IDE"))
-
-  (spaceline-compile
-    '((buffer-id
-       :priority 99
-       :when (and active buffer-file-name (buffer-modified-p))
-       :face highlight-face)
-      ((buffer-id "~")
-       :priority 99
-       :when (and (not active) buffer-file-name (buffer-modified-p))
-       :face highlight-face)
-      ((buffer-id)
-       :priority 99
-       :when (not (and buffer-file-name (buffer-modified-p))))
-      (buffer-size
-       :priority 60
-       :when active)
-      (major-mode
-       :priority 70)
-      (checking
-       :priority 80
-       :when active)
-      (version-control
-       :priority 60)
-      (buffer-encoding
-       :when (and active vc-mode)
-       :priority 50))
-
-    '((minor-modes
-       :when active
-       :priority 70)
-      (ide-window
-       :priority 60)
-      (line-column
-       :separator " | "
-       :priority 50
-       :when active)
-      (buffer-position
-       :priority 40
-       :when active)))
-
-  (setq-default
-   mode-line-format
-   '("%e" (:eval (spaceline-ml-main)))))
+(add-to-list 'mode-line-misc-info 'jtk-appearance-side-window-marker)
+(put 'jtk-appearance-side-window-marker 'risky-local-variable t)
 
 ;; NOTE: Drawn by the display engine, so nearly free: a key press in a
 ;; Clojure file of 7,700 lines takes 3.5 ms with it and 560 ms with the

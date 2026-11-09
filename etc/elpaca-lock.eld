@@ -162,6 +162,23 @@
                      :wait t :type git :protocol https :inherit t
                      :depth treeless :ref
                      "43d0b9e0d18e4d124e3f7dad9d73275fb678fa50"))
+ (doom-modeline :source "elpaca-menu-lock-file" :recipe
+                (:package "doom-modeline" :repo
+                          "seagle0128/doom-modeline" :fetcher github
+                          :files
+                          ("*.el" "*.el.in" "dir" "*.info" "*.texi"
+                           "*.texinfo" "doc/dir" "doc/*.info"
+                           "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
+                           "docs/dir" "docs/*.info" "docs/*.texi"
+                           "docs/*.texinfo"
+                           (:exclude ".dir-locals.el" "test.el"
+                                     "tests.el" "*-test.el"
+                                     "*-tests.el" "LICENSE" "README*"
+                                     "*-pkg.el"))
+                          :source "MELPA" :id doom-modeline :type git
+                          :protocol https :inherit t :depth treeless
+                          :ref
+                          "d41f69ab160c6fd516e3489e3a8a116ade7168bc"))
  (doom-themes :source "elpaca-menu-lock-file" :recipe
               (:package "doom-themes" :fetcher github :repo
                         "doomemacs/themes" :files
@@ -301,6 +318,18 @@
                    :source "elpaca-menu-lock-file" :id extmap :type
                    git :protocol https :inherit t :depth treeless :ref
                    "bb4867e13ec7480d4dbc1d99888627e4cc8ef2f6"))
+ (f :source "elpaca-menu-lock-file" :recipe
+    (:package "f" :fetcher github :repo "rejeep/f.el" :files
+              ("*.el" "*.el.in" "dir" "*.info" "*.texi" "*.texinfo"
+               "doc/dir" "doc/*.info" "doc/*.texi" "doc/*.texinfo"
+               "lisp/*.el" "docs/dir" "docs/*.info" "docs/*.texi"
+               "docs/*.texinfo"
+               (:exclude ".dir-locals.el" "test.el" "tests.el"
+                         "*-test.el" "*-tests.el" "LICENSE" "README*"
+                         "*-pkg.el"))
+              :source "MELPA" :id f :type git :protocol https :inherit
+              t :depth treeless :ref
+              "931b6d0667fe03e7bf1c6c282d6d8d7006143c52"))
  (groovy-mode :source "elpaca-menu-lock-file" :recipe
               (:package "groovy-mode" :fetcher github :repo
                         "Groovy-Emacs-Modes/groovy-emacs-modes" :files
@@ -466,6 +495,13 @@
                              multiple-cursors :type git :protocol
                              https :inherit t :depth treeless :ref
                              "6086e34e86cc9c305c693f440e648588335669c9"))
+ (nerd-icons :source "elpaca-menu-lock-file" :recipe
+             (:package "nerd-icons" :repo
+                       "rainstormstudio/nerd-icons.el" :fetcher github
+                       :files (:defaults "data") :source "MELPA" :id
+                       nerd-icons :type git :protocol https :inherit t
+                       :depth treeless :ref
+                       "87ae84981ddeb4446586ba65cb30cec6e6ccfdb0"))
  (no-littering :source "elpaca-menu-lock-file" :recipe
                (:package "no-littering" :fetcher github :repo
                          "emacscollective/no-littering" :files
@@ -551,20 +587,6 @@
                      :type git :protocol https :inherit t :depth
                      treeless :ref
                      "1a6a25c58559ef43821a071c43b23de5cbc3cc3a"))
- (powerline :source "elpaca-menu-lock-file" :recipe
-            (:package "powerline" :fetcher github :repo
-                      "milkypostman/powerline" :files
-                      ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                       "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
-                       "doc/*.texinfo" "lisp/*.el" "docs/dir"
-                       "docs/*.info" "docs/*.texi" "docs/*.texinfo"
-                       (:exclude ".dir-locals.el" "test.el" "tests.el"
-                                 "*-test.el" "*-tests.el" "LICENSE"
-                                 "README*" "*-pkg.el"))
-                      :source "elpaca-menu-lock-file" :id powerline
-                      :type git :protocol https :inherit t :depth
-                      treeless :ref
-                      "c35c35bdf5ce2d992882c1f06f0f078058870d4a"))
  (queue :source "elpaca-menu-lock-file" :recipe
         (:package "queue" :repo
                   ("https://github.com/emacsmirror/gnu_elpa" . "queue")
@@ -634,6 +656,21 @@
                    :source "elpaca-menu-lock-file" :id sesman :type
                    git :protocol https :inherit t :depth treeless :ref
                    "7eb733acb33e610a53979fa7fc13393eeda3cc53"))
+ (shrink-path :source "elpaca-menu-lock-file" :recipe
+              (:package "shrink-path" :fetcher gitlab :repo
+                        "bennya/shrink-path.el" :files
+                        ("*.el" "*.el.in" "dir" "*.info" "*.texi"
+                         "*.texinfo" "doc/dir" "doc/*.info"
+                         "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
+                         "docs/dir" "docs/*.info" "docs/*.texi"
+                         "docs/*.texinfo"
+                         (:exclude ".dir-locals.el" "test.el"
+                                   "tests.el" "*-test.el" "*-tests.el"
+                                   "LICENSE" "README*" "*-pkg.el"))
+                        :source "MELPA" :id shrink-path :type git
+                        :protocol https :inherit t :depth treeless
+                        :ref
+                        "c14882c8599aec79a6e8ef2d06454254bb3e1e41"))
  (simple-httpd :source "elpaca-menu-lock-file" :recipe
                (:package "simple-httpd" :repo
                          "skeeto/emacs-web-server" :fetcher github
@@ -666,20 +703,6 @@
                         smartparens :type git :protocol https :inherit
                         t :depth treeless :ref
                         "82d2cf084a19b0c2c3812e0550721f8a61996056"))
- (spaceline :source "elpaca-menu-lock-file" :recipe
-            (:package "spaceline" :fetcher github :repo
-                      "TheBB/spaceline" :files
-                      ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-                       "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
-                       "doc/*.texinfo" "lisp/*.el" "docs/dir"
-                       "docs/*.info" "docs/*.texi" "docs/*.texinfo"
-                       (:exclude ".dir-locals.el" "test.el" "tests.el"
-                                 "*-test.el" "*-tests.el" "LICENSE"
-                                 "README*" "*-pkg.el"))
-                      :source "elpaca-menu-lock-file" :id spaceline
-                      :type git :protocol https :inherit t :depth
-                      treeless :ref
-                      "086420d16e526c79b67fc1edec4c2ae1e699f372"))
  (spinner :source "elpaca-menu-lock-file" :recipe
           (:package "spinner" :repo
                     ("https://github.com/Malabarba/spinner.el"
