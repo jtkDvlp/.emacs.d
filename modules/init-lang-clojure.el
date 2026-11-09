@@ -340,7 +340,7 @@ A test definition is run as a test as well."
    cider-font-lock-dynamically '(macro core function var)
    cider-repl-use-clojure-font-lock t
 
-   cider-error-highlight-face 'error-face)
+   cider-error-highlight-face 'error)
 
   (define-clojure-indent
    (defroutes 'defun)
