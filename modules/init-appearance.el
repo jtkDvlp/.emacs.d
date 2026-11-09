@@ -19,11 +19,14 @@
 ;; repository into ~/Library/Fonts, without asking; then it is found and
 ;; nothing more happens.  Not in batch or a terminal, which have no use
 ;; for it.
+;; WATCHOUT: Asked through `font-family-list', the families actually
+;; installed.  With `find-font' the font was never fetched on the Mac,
+;; most likely because it answers for a missing family with a stand-in.
 (defun jtk-appearance-ensure-icon-font ()
   "Install the font of `nerd-icons' if a graphical display lacks it."
   (require 'nerd-icons)
   (when (and (display-graphic-p)
-             (not (find-font (font-spec :family nerd-icons-font-family))))
+             (not (member nerd-icons-font-family (font-family-list))))
     (nerd-icons-install-fonts t)
     (message "Installed %s; restart Emacs if icons still show as boxes"
              nerd-icons-font-family)))
