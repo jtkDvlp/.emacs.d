@@ -141,13 +141,6 @@
                  "elpaca-menu-lock-file" :id dash :type git :protocol
                  https :inherit t :depth treeless :ref
                  "d746dd9edcb67a108818beb0cdc78dc1cb466832"))
- (dashboard :source "elpaca-menu-lock-file" :recipe
-            (:package "dashboard" :fetcher github :repo
-                      "emacs-dashboard/dashboard" :files
-                      (:defaults "banners") :source
-                      "elpaca-menu-lock-file" :id dashboard :type git
-                      :protocol https :inherit t :depth treeless :ref
-                      "a2c49ba27f3a906fd8b059da55104c1ec562b8b6"))
  (datetime :source "elpaca-menu-lock-file" :recipe
            (:package "datetime" :fetcher github :repo
                      "doublep/datetime" :files (:defaults "*.extmap")

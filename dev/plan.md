@@ -563,8 +563,8 @@ Je Block ein PR. Für jedes Paket dieselben Fragen, in dieser Reihenfolge:
 | 2.9 Werkzeuge | magit (Gerrit), git-auto-commit-mode, ediff, ztree, eshell, eshell-up, esh-autosuggest, restclient, sql, simple-httpd, logview, csv-mode, markdown-mode, simple-bookmarks | Weitgehend unabhängig; nach den Grundlagen, weil Vervollständigung und Projekte hineinspielen. | magit bleibt; restclient ist meines Wissens archiviert → `verb` prüfen; **eshell und eat** gemeinsam prüfen (gewünscht 2026-10-29): eshell bleibt die Shell in Emacs, eat als Terminal für Programme, die eins brauchen, und als Anzeige in eshell (`eat-eshell-mode`) |
 | 2.10 TRAMP | — (vorher nichts eingestellt, Emacs' Vorgaben) | Gewünscht 2026-11-08: entfernte Rechner schnell und effizient nutzen. Nach 2.9, weil die Shells hineinspielen. | Kandidaten und offene Fragen im Abschnitt 2.10 |
 | 2.11 Shell mit Clojure | eshell, eat, mistty, babashka | Gewünscht 2026-11-08: eine Shell mit Emacs' Funktionen, normalen Shell-Befehlen und Clojure wie mit Babashka, auch über TRAMP, die mit der Konfiguration kommt | eshell als Hauptshell, eat für Vollbild-Programme (ghostel später), `bbe` als Brücke zu Babashka |
-| 2.10 Organisation | org (GTD), dashboard | Unabhängig, aber persönlich — braucht dein Urteil mehr als Technik. | — |
-| 2.11 Aussehen | doom-themes, spaceline, linum, rainbow-mode, rainbow-delimiters, Hervorhebung von `TODO`/`WATCHOUT`, Fenstertitel | Zuletzt: die Modeline zeigt Segmente aus 2.3, 2.4 und 2.6 (Projekt, IDE-Fenster, Prüfergebnisse) — erst wenn die feststehen, lohnt ihr Umbau. | doom-modeline oder eingebaute Modeline, `display-line-numbers-mode`, hl-todo |
+| 2.12 Organisation | org (GTD), dashboard | Unabhängig, aber persönlich — braucht dein Urteil mehr als Technik. | org: eigene Konfiguration entfernt, dashboard entfernt (2026-11-09, beides nicht mehr gebraucht) |
+| 2.13 Aussehen | doom-themes, spaceline, linum, rainbow-mode, rainbow-delimiters, Hervorhebung von `TODO`/`WATCHOUT`, Fenstertitel | Zuletzt: die Modeline zeigt Segmente aus 2.3, 2.4 und 2.6 (Projekt, IDE-Fenster, Prüfergebnisse) — erst wenn die feststehen, lohnt ihr Umbau. | doom-modeline oder eingebaute Modeline, `display-line-numbers-mode`, hl-todo |
 
 #### ✅ 2.1 Vervollständigung (entschieden und umgesetzt 2026-10-25)
 
@@ -1378,8 +1378,8 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | **entfernt** (2.9), nicht benutzt | |
 | treemacs (+ -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt; treemacs-projectile **entfernt** (2.3), treemacs fragt project.el | Ja |
 | simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | **ersetzt** (2.9) durch bookmark.el und `consult-bookmark`; Passwörter aus auth-source | Ja |
-| org | e | organisation | GTD | bleibt | |
-| dashboard (+ page-break-lines) | M | startup | Startbildschirm | gepflegt | |
+| org | e | organisation | GTD | eigene Konfiguration **entfernt** (2.12), nicht mehr benutzt; Org selbst bleibt mit Emacs' Vorgaben | |
+| dashboard (+ page-break-lines) | M | startup | Startbildschirm | **entfernt** (2.12); Emacs startet mit dem leeren Buffer `*empty*` (`initial-buffer-choice`) | |
 | smartparens | M | development | Klammern, sexp-Editieren | bleibt (2.5), gepflegt; Sprachregeln über `smartparens-config` | Ja |
 | aggressive-indent | M | development | Einrücken beim Tippen | bleibt (2.5), global ab dem Start | Ja |
 | company / company-quickhelp | M | development | Vervollständigung im Buffer | **ersetzt** (2.6) durch corfu und cape; als Abhängigkeit mit esh-autosuggest **entfernt** (2.9) | Ja |

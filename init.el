@@ -28,8 +28,6 @@
 (require 'init-bookmarks)
 (require 'init-vc)
 (require 'init-tramp)
-(require 'init-org)
-(require 'init-startup)
 (require 'init-structural-editing)
 (require 'init-completion)
 (require 'init-checking)
