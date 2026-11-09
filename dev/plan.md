@@ -1179,7 +1179,7 @@ Ohne den Zusatz „mit linum“ ist linum durch `display-line-numbers-mode` erse
 | Doku | README: Abschnitt „External tools“ | Server und Programme außerhalb Emacs |
 
 **Gefunden beim Umbau:**
-- md-mode setzt `truncate-lines` bei jedem Einfärben selbst (breite Tabellenzeilen bleiben seitlich scrollbar); `toggle-truncate-lines` hielt nur bis zum Neuzeichnen. In md-mode schaltet der Befehl deshalb `visual-line-mode` (nachgezogen 2026-11-09).
+- md-mode setzt `truncate-lines` bei jedem Einfärben selbst (breite Tabellenzeilen bleiben seitlich scrollbar); `toggle-truncate-lines` hielt nur bis zum Neuzeichnen. In md-mode schaltet der Befehl deshalb `visual-line-mode` (nachgezogen 2026-11-09), über eine Advice statt eines Remaps: Ein Remap gilt nur für Tasten, `M-x toggle-truncate-lines` lief daran vorbei.
 - Emacs 31 hat `hs-special-modes-alist` abgekündigt; nxml bekommt seine hideshow-Einstellungen buffer-lokal.
 - clojure-ts-modes eigener Grammatik-Installer legt unter `tree-sitter/` im Konfigurationsverzeichnis ab, nicht unter `var/`. Nur beim Messen aufgetreten, weil clojure-ts-mode nicht eingebunden ist.
 - `eshell/nvm` (init-shell) ruft `nvm-use` aus dem nie installierten nvm.el. Bleibt für 2.9; mit envrc ist es überflüssig.

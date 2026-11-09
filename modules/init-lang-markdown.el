@@ -15,11 +15,16 @@
 ;; WATCHOUT: md-mode sets `truncate-lines' itself on every
 ;; fontification, so that wide table rows stay reachable by scrolling
 ;; sideways; `toggle-truncate-lines' lasts only until the next redisplay.
-;; md-mode lets lines wrap only under `visual-line-mode'.
-(defun jtk-markdown-toggle-wrapping ()
-  "Toggle wrapping long lines, at word boundaries, in md-mode."
-  (interactive)
-  (visual-line-mode 'toggle))
+;; md-mode lets lines wrap only under `visual-line-mode'.  An advice
+;; rather than a remap, which keys follow but M-x does not.
+(defun jtk-markdown-toggle-wrapping (toggle &rest args)
+  "In md-mode toggle `visual-line-mode', elsewhere call TOGGLE with ARGS.
+Meant as advice around `toggle-truncate-lines'."
+  (if (derived-mode-p 'md-mode)
+      (visual-line-mode 'toggle)
+    (apply toggle args)))
+
+(advice-add 'toggle-truncate-lines :around #'jtk-markdown-toggle-wrapping)
 
 (use-package
   md-mode
@@ -31,8 +36,7 @@
   ;; code, so it takes that key as well as md-mode's own C-c C-v.
   :bind
   (:map md-mode-map
-        ("C-c M-k" . md-mode-toggle-markup)
-        ([remap toggle-truncate-lines] . jtk-markdown-toggle-wrapping)))
+        ("C-c M-k" . md-mode-toggle-markup)))
 
 (use-package
   markdown-mode
