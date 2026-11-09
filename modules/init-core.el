@@ -61,7 +61,6 @@
         shift-select-mode t
         select-enable-clipboard t
         initial-major-mode 'fundamental-mode
-        initial-buffer-choice "*empty*"
         ring-bell-function 'ignore)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
