@@ -144,9 +144,9 @@
  (dashboard :source "elpaca-menu-lock-file" :recipe
             (:package "dashboard" :fetcher github :repo
                       "emacs-dashboard/dashboard" :files
-                      (:defaults "banners") :source "MELPA" :id
-                      dashboard :type git :protocol https :inherit t
-                      :depth treeless :ref
+                      (:defaults "banners") :source
+                      "elpaca-menu-lock-file" :id dashboard :type git
+                      :protocol https :inherit t :depth treeless :ref
                       "a2c49ba27f3a906fd8b059da55104c1ec562b8b6"))
  (datetime :source "elpaca-menu-lock-file" :recipe
            (:package "datetime" :fetcher github :repo
