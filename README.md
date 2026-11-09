@@ -230,7 +230,7 @@ Same purpose, same key, in every language that has it:
 |---|---|---|---|
 | `M--` | `jtk-bookmarks-map` | `init-bookmarks` | bookmarks of files, directories, MySQL connections |
 | `M-c` | `jtk-multiple-cursors-map` | `init-editing` | multiple cursors |
-| `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`), keywords like `TODO` or `WATCHOUT` (`t` next, `T` previous; both repeat), in Clojure apropos (`s`); `M-J` goes back |
+| `M-j` | `jtk-jump-map` | `init-editing`, languages | definitions (`d`), references (`r`), lines (`l`), keywords like `TODO` or `WATCHOUT` (`t`, then `n` and `p` go on), in Clojure apropos (`s`); `M-J` goes back |
 | `M-r` where a language server runs | `eglot-mode-map` | `init-lsp` | renaming (`r`), code actions (`a`), organising imports (`o`), formatting (`=`) |
 | `M-m` | `jtk-highlight-symbol-map` | `init-editing` | next, previous, replace symbol (repeats); `C-m` marks it |
 | `M-!` | `jtk-run-map` | `init-keys` | `m` keyboard macros (`jtk-macro-map`), `s` shells (`jtk-shell-map`), `b` a Babashka REPL with a scratch buffer |

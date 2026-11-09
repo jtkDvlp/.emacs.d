@@ -92,7 +92,8 @@
 ;; NOTE: The keywords of comments by what they mean: a fault in the
 ;; theme's error color, a warning (WATCHOUT, HACK) in its warning color,
 ;; what is still to do as a keyword, an explanation (NOTE) calmly.
-;; M-j t and M-j T jump between them, then t and T again.
+;; M-j t jumps to the next one, then n and p go on, as between flymake's
+;; findings.
 (use-package
   hl-todo
   :custom
@@ -112,15 +113,14 @@
 
   :bind
   (:map jtk-jump-map
-        ("t" . hl-todo-next)
-        ("T" . hl-todo-previous))
+        ("t" . hl-todo-next))
 
   :config
   (defvar-keymap jtk-appearance-todo-repeat-map
     :doc "Moving between keywords like TODO and WATCHOUT; the keys repeat."
     :repeat t
-    "t" #'hl-todo-next
-    "T" #'hl-todo-previous))
+    "n" #'hl-todo-next
+    "p" #'hl-todo-previous))
 
 (use-package
   doom-themes
