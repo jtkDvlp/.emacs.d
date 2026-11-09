@@ -94,8 +94,8 @@ data comes through the pipe, or as file names after the form, which
 ```
 
 Inside the form, `TAB` completes Clojure's names, with Babashka's
-aliases (`str/`, `fs/`, `json/`, ...). With point on `bbe` or `clje` or in its form, `C-o` edits the form in
-a Clojure buffer, with highlighting and structural editing, also where
+aliases (`str/`, `fs/`, `json/`, ...). With point on `bbe` or `clje`
+or in its form, `C-o` edits the form in a Clojure buffer, with highlighting and structural editing, also where
 `bbe` stands in a pipe (`seq 1 3 | clje '...' | sort`); `C-o` or
 `C-c C-c` puts it back quoted, `C-c C-k` drops it. With point
 anywhere else, `C-o` inserts a buffer's name, as eshell's `C-c M-b`.
