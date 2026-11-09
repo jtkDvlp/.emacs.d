@@ -44,7 +44,7 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 | `init.el` | Nimmt `lisp/` und `modules/` in den `load-path` und lädt die Module in fester Reihenfolge — sonst nichts. | ja |
 | `modules/init-packages.el` | elpaca-Installer (gepinnt über die Lockdatei), `elpaca-use-package`, no-littering, diminish. | ja |
 | `modules/init-core.el` | Grundverhalten ohne eigenes Thema: `local.el`, PATH, Sicherungen, Kodierung, Auto-Revert, Scrollen, Rückfragen. | ja |
-| `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `org`, `startup`, `structural-editing`, `completion`, `checking`, `lsp`, `tree-sitter`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`, `tramp`. Jede Datei sagt im Kopf, was hineingehört. | ja |
+| `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `startup`, `structural-editing`, `completion`, `checking`, `lsp`, `tree-sitter`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`, `tramp`. Jede Datei sagt im Kopf, was hineingehört. | ja |
 | `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. | ja |
 | `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`babashka`, `lsp-lens`, `narrow`, `project`, `zoom`), Symbole mit Präfix `jtk-`. | ja |
 | `etc/elpaca-lock.eld` | Commit jedes Pakets (72, mit Abhängigkeiten und elpaca selbst). | ja |
@@ -53,7 +53,7 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 | `etc/mc-list.el` | Von multiple-cursors **erzeugt**, aber inhaltlich gepflegt — deshalb versioniert. | ja |
 | `var/` | Zustand und Caches (no-littering), `custom.el`, native Kompilate. Löschbar; verloren gehen nur Verläufe. | nein |
 | `elpaca/` | Paket-Klone und Builds. Löschbar; die Lockdatei stellt sie wieder her. | nein |
-| `local.el` | Maschinenspezifisches, etwa `env-jira-host-url`. | nein |
+| `local.el` | Maschinenspezifisches. | nein |
 | `scripts/check`, `scripts/check.el` | Prüfskript, siehe unten. | ja |
 | `dev/plan.md` | Befund und Plan des Umbaus. | ja |
 | `dev/cloud/` | Nur für die Cloud-Umgebung: Emacs-Aufruf mit Umgehung der gesperrten Hosts. | ja |
