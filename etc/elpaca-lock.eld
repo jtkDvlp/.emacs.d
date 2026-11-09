@@ -348,9 +348,9 @@
                      (:exclude ".dir-locals.el" "test.el" "tests.el"
                                "*-test.el" "*-tests.el" "LICENSE"
                                "README*" "*-pkg.el"))
-                    :source "MELPA" :id hl-todo :type git :protocol
-                    https :inherit t :depth treeless :ref
-                    "d25aa5a2e78f70331de2b3455d8ef85bd945356b"))
+                    :source "elpaca-menu-lock-file" :id hl-todo :type
+                    git :protocol https :inherit t :depth treeless
+                    :ref "d25aa5a2e78f70331de2b3455d8ef85bd945356b"))
  (ht :source "elpaca-menu-lock-file" :recipe
      (:package "ht" :fetcher github :repo "Wilfred/ht.el" :files
                ("*.el" "*.el.in" "dir" "*.info" "*.texi" "*.texinfo"
