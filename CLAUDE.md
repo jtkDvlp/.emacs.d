@@ -27,8 +27,9 @@ Conventional Commits trotzdem, damit die Historie lesbar bleibt.
   fallen beim jeweiligen Umbau weg.
 - Schwerpunkt: Clojure/ClojureScript mit CIDER; daneben SCSS, etwas CSS,
   HTML und JS, XML/XSLT, JSON, Jenkinsfile, Shell, Markdown, Elisp.
-  Weitere Sprachen sind bewusst entfernt (2.6, 2.8); Org nicht mehr
-  eigens eingerichtet (2.12).
+  Weitere Sprachen sind bewusst entfernt (2.6, 2.8). Org nur für
+  strukturierte Notizen und To-do-Listen (`init-lang-org`), ohne
+  Agenda, Erfassen oder GTD.
 
 ## Aufbau (Ist-Stand)
 

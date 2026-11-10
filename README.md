@@ -219,6 +219,12 @@ login shell, which is slower for large ones.
 - Each kind of project (Clojure, Babashka, npm) brings its commands, under
   `C-c M-j` in every buffer of the project and under `j` in the project
   commands.
+- Org is set up for structured notes and to-do lists: headings and
+  list items move, indent and outdent with the keys above (`M-<arrows>`
+  for one, `C-M-<left>`/`C-M-<right>` for the whole subtree,
+  `C-M-<up>`/`C-M-<down>` drags it), `C-S-k` cuts the subtree,
+  `S-<right>` cycles TODO, STARTED, BLOCKED, DONE, DELEGATED and
+  CANCELED, and `M-j j` follows a link.  No agenda or capturing.
 - `M-X` lists the commands that fit the current buffer, with their
   keys; `C-h b` lists all keys of the buffer to search (with `C-u` the
   global ones too).
@@ -235,8 +241,8 @@ Same purpose, same key, in every language that has it:
 | evaluate the form at point / the last one / the buffer | `C-c C-c` / `C-M-x` / `C-c M-k` (Markdown: render) |
 | commands of the project's kind (REPL, bb tasks, npm) | `C-c M-j`, in every buffer of the project |
 | next / previous finding, list them | `C-c ! n` / `C-c ! p`, `C-c ! l` |
-| fold the block whose first line point is on / all blocks | `TAB` within the line's indentation / `S-TAB` |
-| narrow to the region or defun / widen | `C--` / `C-+` |
+| fold the block whose first line point is on / all blocks | `TAB` within the line's indentation (Org: on a heading or list item) / `S-TAB` |
+| narrow to the region or defun (Org: subtree) / widen | `C--` / `C-+` |
 | comment | `C-;` |
 
 | Prefix | Keymap | Module | For |
