@@ -50,7 +50,7 @@
 
 ;; NOTE: Replacing across a project: search (C-S-s), export the matches
 ;; with C-o into a grep buffer, e to edit it, change the matches there
-;; (M-% as anywhere), C-c C-c to finish; every change goes straight to
+;; (M-%, then ! for all), C-c C-c to finish; every change goes straight to
 ;; its file, which is then saved with C-x s.
 ;; WATCHOUT: Emacs reads a grep buffer's matches only as it shows them,
 ;; and `e' marks as editable only what it has read; a change further
