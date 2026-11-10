@@ -33,6 +33,7 @@ serves is simply missing.
 | Leiningen, Clojure CLI | `brew install leiningen clojure` | CIDER's jack-in |
 | node, npm | via nvm or `brew install node` | the npm commands under `C-c M-j` |
 | multimarkdown | `brew install multimarkdown` | markdown-mode's preview |
+| enchant, pkgconf, aspell | `brew install enchant pkgconf aspell` | spelling: jinx underlines misspelled words (it compiles a small module on first use, with the Xcode command line tools), aspell's German and English dictionaries give the words the completion offers |
 | a Nerd Font | installed by itself on the first start in the GUI (by hand: `M-x nerd-icons-install-fonts`) | the icons of the mode line and the start page |
 | babashka | `brew install borkdude/brew/babashka` | `bbe`/`clje` in eshell: Clojure on the command line, also on data from remote hosts; tasks of `bb.edn` under `C-c M-j`; the scratch REPL on `M-! b` |
 
@@ -203,6 +204,10 @@ login shell, which is slower for large ones.
 - A list exported with `C-o` into a buffer of its own (projects, for
   instance) takes the same action keys directly on the entry under the
   cursor: `e` on a project opens eshell there; `M-a` turns that off.
+- Where text is written (text modes, comments and strings of code),
+  misspelled words are underlined, German and English at once; `M-$`
+  offers corrections, `C-M-$` the languages, and the completion pop-up
+  offers words of both dictionaries.
 - In a search, a space separates terms that match in any order; two
   spaces stand for one space within a term (`hello  world`).
 - Replacing across the project: `C-S-s` searches it (with the region,
