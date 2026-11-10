@@ -14,6 +14,7 @@
 (declare-function cape-dict "cape")
 (declare-function cape-dabbrev "cape")
 (declare-function cape-wrap-super "cape")
+(declare-function jinx--load-module "jinx")
 
 (defconst jtk-spelling-languages '("de" "en")
   "aspell dictionaries whose words the completion offers.")
@@ -68,6 +69,20 @@ answers."
 ;; strings.
 (add-hook 'completion-at-point-functions #'jtk-spelling-complete-word 85)
 
+;; WATCHOUT: jinx compiles a module against enchant when first used.
+;; Without enchant that fails, and switched on regardless, the error
+;; broke off the start and the switching on of other modes, highlighting
+;; among them.  So jinx comes on only once its module loads.
+(defun jtk-spelling-enable-checking ()
+  "Turn on `global-jinx-mode' if jinx's module loads, else say why not."
+  (condition-case err
+      (progn
+        (jinx--load-module)
+        (global-jinx-mode 1))
+    (error
+     (message "Spelling not checked (%s); brew install enchant pkgconf"
+              (error-message-string err)))))
+
 ;; NOTE: In code jinx checks comments and strings only (its
 ;; `jinx-include-faces'), never the names of the code itself.
 (use-package
@@ -75,7 +90,7 @@ answers."
   :custom
   (jinx-languages "de_DE en_US")
   :hook
-  (elpaca-after-init . global-jinx-mode)
+  (elpaca-after-init . jtk-spelling-enable-checking)
   :bind
   (("M-$" . jinx-correct)
    ("C-M-$" . jinx-languages)))
