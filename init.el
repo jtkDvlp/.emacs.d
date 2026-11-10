@@ -40,6 +40,7 @@
 (require 'init-sql)
 (require 'init-httpd)
 (require 'init-lang-markdown)
+(require 'init-lang-org)
 (require 'init-logview)
 (require 'init-shell)
 (require 'init-lang-csv)
