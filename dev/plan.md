@@ -1352,6 +1352,15 @@ eingerichteten zsh.
 
 **Offen für die Sichtung in der GUI:** die Modeline selbst (nur dort sichtbar), das selbsttätige Holen der Nerd Font (im Batch geprüft: ohne GUI nichts, in der GUI ohne Schrift einmal, mit Schrift nichts), rainbow-mode in `css-ts-mode` (in der Cloud fehlt die Grammatik).
 
+### Offene Punkte nach Phase 2 (aufgenommen 2026-11-10)
+
+| Punkt | Worum es geht | Zu klären |
+|---|---|---|
+| Org wieder einrichten | 2.12 hat die eigene Org-Konfiguration entfernt (GTD, Agenda, Erfassen auf `C-M--`); sie wird doch gebraucht | Welcher Teil: Notizen, Aufgaben, Agenda, Erfassen? Die alte GTD-Konfiguration zurück oder schlanker neu, nach den Konventionen (`jtk-`, Struktur-Tasten über `jtk-structural-editing-bind`) |
+| Rechtschreibvorschläge in der Vervollständigung | Beim Schreiben (Kommentare, Markdown, Commit-Nachrichten, Org) sollen Wörter aus dem Wörterbuch in corfu erscheinen | Sprachen (Deutsch, Englisch), Quelle (Emacs' `ispell-completion-at-point`, cape-dict, jinx), in welchen Modi; ob auch Prüfen beim Tippen (Unterstreichen) dazugehört |
+| Theme | `doom-one` bleibt, bis eines der Alternativen aus 2.13 gewählt ist | Wahl |
+| Startzeit | Phase 3, nur bei Bedarf; zuletzt gemessen nach Phase 1 | ob der Start zu langsam ist |
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
