@@ -46,6 +46,21 @@
   (marginalia-mode))
 
 (declare-function consult-git-grep "consult")
+(declare-function compilation--ensure-parse "compile")
+
+;; NOTE: Replacing across a project: search (C-S-s), export the matches
+;; with C-o into a grep buffer, e to edit it, change the matches there
+;; (M-% as anywhere), C-c C-c to finish; every change goes straight to
+;; its file, which is then saved with C-x s.
+;; WATCHOUT: Emacs reads a grep buffer's matches only as it shows them,
+;; and `e' marks as editable only what it has read; a change further
+;; down a long list then reached no file.  So all of it is read first.
+(defun jtk-grep-read-all-matches (&rest _)
+  "Read every match of the current grep buffer, for editing all of them."
+  (compilation--ensure-parse (point-max)))
+
+(advice-add 'grep-change-to-grep-edit-mode :before
+            #'jtk-grep-read-all-matches)
 
 (defun jtk-git-grep-dwim ()
   "Search the git repository, starting with the active region if any."

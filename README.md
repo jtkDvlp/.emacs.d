@@ -203,6 +203,12 @@ login shell, which is slower for large ones.
 - A list exported with `C-o` into a buffer of its own (projects, for
   instance) takes the same action keys directly on the entry under the
   cursor: `e` on a project opens eshell there; `M-a` turns that off.
+- Replacing across the project: `C-S-s` searches it (with the region,
+  for that text), `C-o` exports the matches into a grep buffer, `e`
+  makes it editable, change the matches there (`M-%` as anywhere),
+  `C-c C-c` ends editing, and `C-x s` saves the changed files. For a
+  symbol of code, `M-r r` renames it through the language server
+  instead, also where the text alone would be ambiguous.
 - Each kind of project (Clojure, Babashka, npm) brings its commands, under
   `C-c M-j` in every buffer of the project and under `j` in the project
   commands.
