@@ -203,6 +203,8 @@ login shell, which is slower for large ones.
 - A list exported with `C-o` into a buffer of its own (projects, for
   instance) takes the same action keys directly on the entry under the
   cursor: `e` on a project opens eshell there; `M-a` turns that off.
+- In a search, a space separates terms that match in any order; two
+  spaces stand for one space within a term (`hello  world`).
 - Replacing across the project: `C-S-s` searches it (with the region,
   for that text), `C-o` exports the matches into a grep buffer, `e`
   makes it editable, change the matches there (`M-%`, then `!` for all
