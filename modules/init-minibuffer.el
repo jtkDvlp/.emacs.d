@@ -27,10 +27,28 @@
   :config
   (vertico-mode))
 
+;; NOTE: A space separates search terms; two spaces stand for one space
+;; within a term, as they did with ivy.  orderless and consult both keep
+;; a space escaped with a backslash, so two spaces become that.
+(defun jtk-minibuffer-double-space-as-space (input)
+  "Return INPUT with every two spaces written as one escaped space."
+  (string-replace "  " "\\ " input))
+
+(defun jtk-minibuffer-double-space-in-input (args)
+  "Return ARGS, whose first is an input, with its two spaces escaped.
+For advice around a function that splits an input at spaces."
+  (cons (jtk-minibuffer-double-space-as-space (car args)) (cdr args)))
+
+(defun jtk-minibuffer-split-terms (input)
+  "Split INPUT into the terms of an orderless search.
+Two spaces stand for one space within a term."
+  (orderless-escapable-split (jtk-minibuffer-double-space-as-space input)))
+
 (use-package
   orderless
   :demand t
   :custom
+  (orderless-component-separator #'jtk-minibuffer-split-terms)
   ;; NOTE: Space separates terms that match in any order, as with ivy.
   ;; File names keep `partial-completion', so that /u/s/l still expands
   ;; to /usr/share/local.
@@ -91,7 +109,13 @@
 
    ;; NOTE: Does nothing here; the global C-r would search the lines of
    ;; the prompt.
-   ("C-r" . ignore)))
+   ("C-r" . ignore))
+
+  :config
+  ;; NOTE: consult splits the input of its searches into terms itself,
+  ;; past orderless; two spaces stand for one space there as well.
+  (advice-add 'consult--split-escaped :filter-args
+              #'jtk-minibuffer-double-space-in-input))
 
 (use-package
   embark
