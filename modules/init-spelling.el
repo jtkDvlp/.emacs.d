@@ -77,6 +77,7 @@ answers."
   "Turn on `global-jinx-mode' if jinx's module loads, else say why not."
   (condition-case err
       (progn
+        (require 'jinx)
         (jinx--load-module)
         (global-jinx-mode 1))
     (error
