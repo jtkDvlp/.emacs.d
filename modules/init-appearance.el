@@ -14,6 +14,13 @@
 (defvar nerd-icons-font-family)
 (declare-function nerd-icons-install-fonts "nerd-icons")
 
+;; NOTE: early-init only keeps frames from getting a menu bar.  On macOS
+;; the menus sit in the system's bar, and a frame that got one after
+;; all left them there; switching the mode off clears them for every
+;; frame.  The "Emacs" menu itself, as every application's first menu,
+;; stays; `ns-auto-hide-menu-bar' would hide the whole bar instead.
+(menu-bar-mode -1)
+
 ;; NOTE: The icons of the mode line need a Nerd Font.  On a machine
 ;; without it, the first start in the GUI fetches it from nerd-icons'
 ;; repository into ~/Library/Fonts, without asking; then it is found and
