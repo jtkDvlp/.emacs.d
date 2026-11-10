@@ -31,6 +31,7 @@
 (require 'init-startup)
 (require 'init-structural-editing)
 (require 'init-completion)
+(require 'init-spelling)
 (require 'init-checking)
 (require 'init-lsp)
 (require 'init-tree-sitter)

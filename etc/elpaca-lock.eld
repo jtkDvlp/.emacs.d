@@ -408,6 +408,12 @@
                              jenkinsfile-mode :type git :protocol
                              https :inherit t :depth treeless :ref
                              "568865ee419e0592de0dd0717d6769a66d9df111"))
+ (jinx :source "elpaca-menu-lock-file" :recipe
+       (:package "jinx" :repo "minad/jinx" :files
+                 (:defaults "jinx-mod.c" "emacs-module.h") :fetcher
+                 github :source "elpaca-menu-lock-file" :id jinx :type
+                 git :protocol https :inherit t :depth treeless :ref
+                 "bccb08062a3372629015bcd2c197490b7d005f37"))
  (llama :source "elpaca-menu-lock-file" :recipe
         (:package "llama" :fetcher github :repo "tarsius/llama" :files
                   ("llama.el" ".dir-locals.el") :source
