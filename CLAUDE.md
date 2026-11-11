@@ -58,8 +58,9 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 | `elpaca/` | Paket-Klone und Builds. Löschbar; die Lockdatei stellt sie wieder her. | nein |
 | `local.el` | Maschinenspezifisches. | nein |
 | `scripts/check`, `scripts/check.el` | Prüfskript, siehe unten. | ja |
+| `scripts/cloud-setup.sh` | Einrichtung der Cloud-Umgebung, siehe unten. | ja |
 | `dev/plan.md` | Befund und Plan des Umbaus. | ja |
-| `dev/cloud/` | Nur für die Cloud-Umgebung: Einrichtung (`setup`) und Emacs-Aufruf mit Umgehung der gesperrten Hosts. | ja |
+| `dev/cloud/` | Nur für die Cloud-Umgebung: Emacs-Aufruf mit Umgehung der gesperrten Hosts. | ja |
 
 ## Arbeitsweise in diesem Projekt
 
@@ -114,14 +115,15 @@ Paket-Update fortzuschreiben (gleichwertig: in Emacs
 Fehler wie B3 und B4 aus dem Plan bleiben also auch mit grüner CI stehen.
 
 **In der Cloud-Umgebung gibt es kein Emacs, bis man es baut.**
-`dev/cloud/setup` (als root) richtet dort ein, was fehlt, und überspringt
+`scripts/cloud-setup.sh` richtet dort ein, was fehlt, und überspringt
 den Rest: Systempakete (Bauwerkzeuge, enchant, aspell, direnv), Emacs
 31.1 ohne GUI vom Spiegel `github.com/emacs-mirror/emacs` (die
 GNU-Server sind über den Proxy gesperrt) nach `/opt/emacs-31.1`, rund
 15 Minuten, und clojure-lsp in gepinnter Fassung nach `/opt/clojure-lsp`
-(für Proben mit eglot in den `PATH` nehmen). Bewusst kein Setup-Skript
-der Umgebung: Das liefe vor jeder Sitzung, auch denen, die kein Emacs
-brauchen.
+(verlinkt nach `/usr/local/bin`). Das Setup-Skript der Umgebung ruft
+jedes `scripts/cloud-setup.sh` der geklonten Repos als root auf, bevor
+die Sitzung beginnt; ein neuer Container startet also erst nach dem
+Bau.
 
 Erreichbar sind von dort GitHub und GitLab, nicht aber melpa.org,
 elpa.gnu.org, Codeberg, Sourcehut und paredit.org. `dev/cloud/emacs`

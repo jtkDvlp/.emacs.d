@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # Cloud sandbox only: installs what working on this configuration needs
-# there, skipping whatever is already in place.  Run as root:
-#   dev/cloud/setup
+# there, skipping whatever is already in place.  The environment's setup
+# script runs it as root when a fresh container starts; by hand:
+#   scripts/cloud-setup.sh
 #
 # - system packages: build tools for Emacs, enchant and aspell for
 #   spelling, direnv for envrc;
 # - Emacs 31.1 without GUI, built from the GitHub mirror (the GNU hosts
 #   are blocked) into $EMACS_PREFIX, about 15 minutes;
-# - clojure-lsp, pinned, into $CLOJURE_LSP_DIR (put it on PATH).
+# - clojure-lsp, pinned, into $CLOJURE_LSP_DIR, linked into
+#   /usr/local/bin.
 set -euo pipefail
 
 emacs_version=31.1
@@ -72,8 +74,14 @@ install_clojure_lsp() {
   rm "$clojure_lsp_dir/clojure-lsp.zip"
 }
 
+link_clojure_lsp() {
+  [[ "$clojure_lsp_dir" == /opt/clojure-lsp ]] || return 0
+  ln -sf "$clojure_lsp_dir/clojure-lsp" /usr/local/bin/clojure-lsp
+}
+
 install_packages
 build_emacs
 install_clojure_lsp
+link_clojure_lsp
 "$emacs_prefix/bin/emacs" --version | head -1
 "$clojure_lsp_dir/clojure-lsp" --version | head -1
