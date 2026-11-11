@@ -92,40 +92,41 @@
   (seq-remove (lambda (window) (window-parameter window 'window-side))
               (window-list nil 'nomini)))
 
+;; NOTE: A side window cannot be the only window of a frame, so its
+;; buffer moves into a main window for the time being.
+(defun jtk-window--show-alone (window)
+  "Show the buffer of WINDOW alone in the frame, side windows hidden.
+Return the window that shows it."
+  (let ((side-p (window-parameter window 'window-side))
+        (buffer (window-buffer window))
+        (start (window-start window))
+        (position (window-point window))
+        (main (if (window-parameter window 'window-side)
+                  (car (jtk-window--main-windows))
+                window)))
+    (dolist (other (window-list nil 'nomini))
+      (when (window-parameter other 'window-side)
+        (delete-window other)))
+    (delete-other-windows main)
+    (when side-p
+      (set-window-buffer main buffer)
+      (set-window-start main start)
+      (set-window-point main position))
+    (select-window main)))
+
 ;; NOTE: The configuration is kept by itself rather than going back in
 ;; the tab's history: that history leaves out a command repeated in a
 ;; row, so every other C-M-# would go back too far.
-;; NOTE: A side window cannot be the only window of a frame, so its
-;; buffer moves into a main window for the time being.
-(defun jtk-window--single-from-side (side-window)
-  "Show the buffer of SIDE-WINDOW alone in the frame.
-Return the window that shows it."
-  (let ((buffer (window-buffer side-window))
-        (start (window-start side-window))
-        (position (window-point side-window))
-        (main (car (jtk-window--main-windows))))
-    (dolist (window (window-list nil 'nomini))
-      (when (window-parameter window 'window-side)
-        (delete-window window)))
-    (delete-other-windows main)
-    (set-window-buffer main buffer)
-    (set-window-start main start)
-    (set-window-point main position)
-    (select-window main)))
-
 (defun jtk-window-toggle-single ()
   "Show only the selected window, or bring the other windows back.
-In a side window, its buffer alone fills the frame."
+Side windows are hidden too; in a side window, its buffer alone fills
+the frame."
   (interactive)
   (let ((window (selected-window)))
-    (cond ((window-parameter window 'window-side)
+    (cond ((length> (window-list nil 'nomini) 1)
            (let ((configuration (current-window-configuration)))
-             (puthash (jtk-window--single-from-side window) configuration
+             (puthash (jtk-window--show-alone window) configuration
                       jtk-window--before-single)))
-          ((length> (jtk-window--main-windows) 1)
-           (puthash window (current-window-configuration)
-                    jtk-window--before-single)
-           (delete-other-windows))
           ((gethash window jtk-window--before-single)
            (set-window-configuration
             (gethash window jtk-window--before-single))
@@ -157,9 +158,9 @@ In a side window, its buffer alone fills the frame."
 (keymap-set jtk-view-map "w" 'jtk-frame-map)
 
 ;; NOTE: The IDE-like layout: shells and compilation below the main
-;; windows, help, documentation and errors to the right of them.  Side
-;; windows stay when the other windows are deleted and C-x o passes them
-;; by; C-x w s hides and shows them all at once.
+;; windows; help, documentation and errors to the right of them.  Side windows stay when the other windows are
+;; deleted and C-x o passes them by; C-x w s hides and shows them all at
+;; once, C-M-# shows one window alone.
 (defvar jtk-window-side-parameters
   '(window-parameters (no-other-window . t)
                       (no-delete-other-windows . t)))
