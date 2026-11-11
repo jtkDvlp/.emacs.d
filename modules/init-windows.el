@@ -95,11 +95,34 @@
 ;; NOTE: The configuration is kept by itself rather than going back in
 ;; the tab's history: that history leaves out a command repeated in a
 ;; row, so every other C-M-# would go back too far.
+;; NOTE: A side window cannot be the only window of a frame, so its
+;; buffer moves into a main window for the time being.
+(defun jtk-window--single-from-side (side-window)
+  "Show the buffer of SIDE-WINDOW alone in the frame.
+Return the window that shows it."
+  (let ((buffer (window-buffer side-window))
+        (start (window-start side-window))
+        (position (window-point side-window))
+        (main (car (jtk-window--main-windows))))
+    (dolist (window (window-list nil 'nomini))
+      (when (window-parameter window 'window-side)
+        (delete-window window)))
+    (delete-other-windows main)
+    (set-window-buffer main buffer)
+    (set-window-start main start)
+    (set-window-point main position)
+    (select-window main)))
+
 (defun jtk-window-toggle-single ()
-  "Show only the selected window, or bring the other windows back."
+  "Show only the selected window, or bring the other windows back.
+In a side window, its buffer alone fills the frame."
   (interactive)
   (let ((window (selected-window)))
-    (cond ((length> (jtk-window--main-windows) 1)
+    (cond ((window-parameter window 'window-side)
+           (let ((configuration (current-window-configuration)))
+             (puthash (jtk-window--single-from-side window) configuration
+                      jtk-window--before-single)))
+          ((length> (jtk-window--main-windows) 1)
            (puthash window (current-window-configuration)
                     jtk-window--before-single)
            (delete-other-windows))
