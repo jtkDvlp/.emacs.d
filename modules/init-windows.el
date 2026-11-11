@@ -157,8 +157,9 @@ the frame."
   "#" #'toggle-frame-maximized)
 (keymap-set jtk-view-map "w" 'jtk-frame-map)
 
-;; NOTE: The IDE-like layout: shells and compilation below the main
-;; windows; help, documentation and errors to the right of them.  Side windows stay when the other windows are
+;; NOTE: The IDE-like layout: shells, compilation and, next to them,
+;; Clojure REPLs below the main windows; help, documentation and errors
+;; to the right of them.  Side windows stay when the other windows are
 ;; deleted and C-x o passes them by; C-x w s hides and shows them all at
 ;; once, C-M-# shows one window alone.
 (defvar jtk-window-side-parameters
@@ -176,6 +177,10 @@ the frame."
    `(("\\*\\(?:[^*]*-eshell\\|eshell [^*]*\\|compilation\\)\\*"
       display-buffer-in-side-window
       (side . bottom) (slot . 0) (window-height . 0.3)
+      ,jtk-window-side-parameters)
+     ("\\*cider-repl "
+      display-buffer-in-side-window
+      (side . bottom) (slot . 1) (window-height . 0.3)
       ,jtk-window-side-parameters)
      ("\\*\\(?:Help\\|cider-doc\\|grep\\|Completions\\)\\*"
       display-buffer-in-side-window
