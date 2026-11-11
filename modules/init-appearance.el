@@ -55,7 +55,10 @@
   '(:eval (when (window-parameter (selected-window) 'window-side) "IDE "))
   "Mode line construct that marks a side window.")
 
-(add-to-list 'mode-line-misc-info 'jtk-appearance-side-window-marker)
+;; WATCHOUT: At the end of the list, not at its head: a mode line list
+;; that starts with a symbol is a conditional, (SYMBOL THEN ELSE), and
+;; showed only the element after the marker, never the marker itself.
+(add-to-list 'mode-line-misc-info 'jtk-appearance-side-window-marker t)
 (put 'jtk-appearance-side-window-marker 'risky-local-variable t)
 
 ;; NOTE: Drawn by the display engine, so nearly free: a key press in a
