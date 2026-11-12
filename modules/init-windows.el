@@ -92,17 +92,41 @@
   (seq-remove (lambda (window) (window-parameter window 'window-side))
               (window-list nil 'nomini)))
 
+;; NOTE: A side window cannot be the only window of a frame, so its
+;; buffer moves into a main window for the time being.
+(defun jtk-window--show-alone (window)
+  "Show the buffer of WINDOW alone in the frame, side windows hidden.
+Return the window that shows it."
+  (let ((side-p (window-parameter window 'window-side))
+        (buffer (window-buffer window))
+        (start (window-start window))
+        (position (window-point window))
+        (main (if (window-parameter window 'window-side)
+                  (car (jtk-window--main-windows))
+                window)))
+    (dolist (other (window-list nil 'nomini))
+      (when (window-parameter other 'window-side)
+        (delete-window other)))
+    (delete-other-windows main)
+    (when side-p
+      (set-window-buffer main buffer)
+      (set-window-start main start)
+      (set-window-point main position))
+    (select-window main)))
+
 ;; NOTE: The configuration is kept by itself rather than going back in
 ;; the tab's history: that history leaves out a command repeated in a
 ;; row, so every other C-M-# would go back too far.
 (defun jtk-window-toggle-single ()
-  "Show only the selected window, or bring the other windows back."
+  "Show only the selected window, or bring the other windows back.
+Side windows are hidden too; in a side window, its buffer alone fills
+the frame."
   (interactive)
   (let ((window (selected-window)))
-    (cond ((length> (jtk-window--main-windows) 1)
-           (puthash window (current-window-configuration)
-                    jtk-window--before-single)
-           (delete-other-windows))
+    (cond ((length> (window-list nil 'nomini) 1)
+           (let ((configuration (current-window-configuration)))
+             (puthash (jtk-window--show-alone window) configuration
+                      jtk-window--before-single)))
           ((gethash window jtk-window--before-single)
            (set-window-configuration
             (gethash window jtk-window--before-single))
@@ -133,10 +157,11 @@
   "#" #'toggle-frame-maximized)
 (keymap-set jtk-view-map "w" 'jtk-frame-map)
 
-;; NOTE: The IDE-like layout: shells and compilation below the main
-;; windows, help, documentation and errors to the right of them.  Side
-;; windows stay when the other windows are deleted and C-x o passes them
-;; by; C-x w s hides and shows them all at once.
+;; NOTE: The IDE-like layout: shells, compilation and, next to them,
+;; Clojure REPLs below the main windows; help, documentation and errors
+;; to the right of them.  Side windows stay when the other windows are
+;; deleted and C-x o passes them by; C-x w s hides and shows them all at
+;; once, C-M-# shows one window alone.
 (defvar jtk-window-side-parameters
   '(window-parameters (no-other-window . t)
                       (no-delete-other-windows . t)))
@@ -148,16 +173,24 @@
   :custom
   (window-resize-pixelwise t)
   (fit-window-to-buffer-horizontally t)
+  ;; WATCHOUT: Each pattern from the start of the name.  treemacs names
+  ;; its buffer after the frame, whose title is the selected buffer, as
+  ;; " *Treemacs-Buffer-#<frame *.emacs.d-eshell* ...>"; matched anywhere,
+  ;; the shells' pattern put the file tree below.
   (display-buffer-alist
-   `(("\\*\\(?:[^*]*-eshell\\|eshell [^*]*\\|compilation\\)\\*"
+   `(("\\`\\*\\(?:[^*]*-eshell\\|eshell [^*]*\\|compilation\\)\\*"
       display-buffer-in-side-window
       (side . bottom) (slot . 0) (window-height . 0.3)
       ,jtk-window-side-parameters)
-     ("\\*\\(?:Help\\|cider-doc\\|grep\\|Completions\\)\\*"
+     ("\\`\\*cider-repl "
+      display-buffer-in-side-window
+      (side . bottom) (slot . 1) (window-height . 0.3)
+      ,jtk-window-side-parameters)
+     ("\\`\\*\\(?:Help\\|cider-doc\\|grep\\|Completions\\)\\*"
       display-buffer-in-side-window
       (side . right) (slot . 0) (window-width . 0.3)
       ,jtk-window-side-parameters)
-     ("\\*Flycheck error messages\\*"
+     ("\\`\\*Flycheck error messages\\*"
       display-buffer-in-side-window
       (side . right) (slot . 1) (window-width . 0.3)
       ,jtk-window-side-parameters))))

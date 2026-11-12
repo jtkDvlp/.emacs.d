@@ -24,6 +24,16 @@
   ;; NOTE: No hint that code actions are at hand: clojure-lsp offers some
   ;; nearly everywhere, so the hint marked every line.  M-r a lists them.
   (eglot-code-action-indications nil)
+  ;; NOTE: Not asked for, as the modes do it themselves:
+  ;; - semantic tokens, colours by the server: the modes colour already,
+  ;;   and clojure-lsp answers right after a change with tokens of the
+  ;;   text before it, which eglot paints shifted until the next change;
+  ;; - highlights of the symbol at point: symbol-overlay does that.  In a
+  ;;   Clojure file of 2,700 lines the server's took 19 ms per stop of
+  ;;   the cursor, 40 % of Emacs' time while typing and moving (clojure-lsp
+  ;;   2026.10.15, Emacs 31.1, cloud).
+  (eglot-ignored-server-capabilities
+   '(:semanticTokensProvider :documentHighlightProvider))
 
   :bind
   (:map eglot-mode-map

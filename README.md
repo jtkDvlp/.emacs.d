@@ -33,6 +33,7 @@ serves is simply missing.
 | Leiningen, Clojure CLI | `brew install leiningen clojure` | CIDER's jack-in |
 | node, npm | via nvm or `brew install node` | the npm commands under `C-c M-j` |
 | multimarkdown | `brew install multimarkdown` | markdown-mode's preview |
+| enchant, pkgconf, aspell | `brew install enchant pkgconf aspell` | spelling: jinx underlines misspelled words (it compiles a small module on first use, with the Xcode command line tools), aspell's German and English dictionaries give the words the completion offers |
 | a Nerd Font | installed by itself on the first start in the GUI (by hand: `M-x nerd-icons-install-fonts`) | the icons of the mode line and the start page |
 | babashka | `brew install borkdude/brew/babashka` | `bbe`/`clje` in eshell: Clojure on the command line, also on data from remote hosts; tasks of `bb.edn` under `C-c M-j`; the scratch REPL on `M-! b` |
 
@@ -203,9 +204,27 @@ login shell, which is slower for large ones.
 - A list exported with `C-o` into a buffer of its own (projects, for
   instance) takes the same action keys directly on the entry under the
   cursor: `e` on a project opens eshell there; `M-a` turns that off.
+- Where text is written (text modes, comments and strings of code),
+  misspelled words are underlined, German and English at once; `M-$`
+  offers corrections, `C-M-$` the languages, and the completion pop-up
+  offers words of both dictionaries.
+- In a search, a space separates terms that match in any order; two
+  spaces stand for one space within a term (`hello  world`).
+- Replacing across the project: `C-S-s` searches it (with the region,
+  for that text), `C-o` exports the matches into a grep buffer, `e`
+  makes it editable, change the matches there (`M-%`, then `!` for all
+  of them at once), `C-c C-c` ends editing, and `C-x s` saves the changed files. For a
+  symbol of code, `M-r r` renames it through the language server
+  instead, also where the text alone would be ambiguous.
 - Each kind of project (Clojure, Babashka, npm) brings its commands, under
   `C-c M-j` in every buffer of the project and under `j` in the project
   commands.
+- Org is set up for structured notes and to-do lists: headings and
+  list items move, indent and outdent with the keys above (`M-<arrows>`
+  for one, `C-M-<left>`/`C-M-<right>` for the whole subtree,
+  `C-M-<up>`/`C-M-<down>` drags it), `C-S-k` cuts the subtree,
+  `S-<right>` cycles TODO, STARTED, BLOCKED, DONE, DELEGATED and
+  CANCELED, and `M-j j` follows a link.  No agenda or capturing.
 - `M-X` lists the commands that fit the current buffer, with their
   keys; `C-h b` lists all keys of the buffer to search (with `C-u` the
   global ones too).
@@ -222,8 +241,8 @@ Same purpose, same key, in every language that has it:
 | evaluate the form at point / the last one / the buffer | `C-c C-c` / `C-M-x` / `C-c M-k` (Markdown: render) |
 | commands of the project's kind (REPL, bb tasks, npm) | `C-c M-j`, in every buffer of the project |
 | next / previous finding, list them | `C-c ! n` / `C-c ! p`, `C-c ! l` |
-| fold the block whose first line point is on / all blocks | `TAB` within the line's indentation / `S-TAB` |
-| narrow to the region or defun / widen | `C--` / `C-+` |
+| fold the block whose first line point is on / all blocks | `TAB` within the line's indentation (Org: on a heading or list item) / `S-TAB` |
+| narrow to the region or defun (Org: subtree) / widen | `C--` / `C-+` |
 | comment | `C-;` |
 
 | Prefix | Keymap | Module | For |

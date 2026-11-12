@@ -27,8 +27,9 @@ Conventional Commits trotzdem, damit die Historie lesbar bleibt.
   fallen beim jeweiligen Umbau weg.
 - Schwerpunkt: Clojure/ClojureScript mit CIDER; daneben SCSS, etwas CSS,
   HTML und JS, XML/XSLT, JSON, Jenkinsfile, Shell, Markdown, Elisp.
-  Weitere Sprachen sind bewusst entfernt (2.6, 2.8); Org nicht mehr
-  eigens eingerichtet (2.12).
+  Weitere Sprachen sind bewusst entfernt (2.6, 2.8). Org nur für
+  strukturierte Notizen und To-do-Listen (`init-lang-org`), ohne
+  Agenda, Erfassen oder GTD.
 
 ## Aufbau (Ist-Stand)
 
@@ -46,10 +47,10 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 | `init.el` | Nimmt `lisp/` und `modules/` in den `load-path` und lädt die Module in fester Reihenfolge — sonst nichts. | ja |
 | `modules/init-packages.el` | elpaca-Installer (gepinnt über die Lockdatei), `elpaca-use-package`, no-littering, diminish. | ja |
 | `modules/init-core.el` | Grundverhalten ohne eigenes Thema: `local.el`, PATH, Sicherungen, Kodierung, Auto-Revert, Scrollen, Rückfragen. | ja |
-| `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `startup`, `structural-editing`, `completion`, `checking`, `lsp`, `tree-sitter`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`, `tramp`. Jede Datei sagt im Kopf, was hineingehört. | ja |
+| `modules/init-<thema>.el` | Ein Thema je Datei: `keys`, `appearance`, `minibuffer`, `windows`, `editing`, `diff`, `project`, `treemacs`, `bookmarks`, `vc`, `startup`, `structural-editing`, `completion`, `checking`, `lsp`, `tree-sitter`, `snippets`, `restclient`, `sql`, `httpd`, `logview`, `shell`, `tramp`, `spelling`. Jede Datei sagt im Kopf, was hineingehört. | ja |
 | `modules/init-lang-<sprache>.el` | Je Sprache bzw. Dateiformat eine Datei. | ja |
 | `lisp/jtk-*.el` | **Eigene Bibliotheken** ohne Seiteneffekte beim Laden (`babashka`, `lsp-lens`, `narrow`, `project`, `zoom`), Symbole mit Präfix `jtk-`. | ja |
-| `etc/elpaca-lock.eld` | Commit jedes Pakets (75, mit Abhängigkeiten und elpaca selbst). | ja |
+| `etc/elpaca-lock.eld` | Commit jedes Pakets (76, mit Abhängigkeiten und elpaca selbst). | ja |
 | `etc/yasnippet/snippets/` | Handgeschriebene yasnippet-Vorlagen. | ja |
 | `etc/eshell/aliases` | Handgeschriebene eshell-Aliase. | ja |
 | `etc/mc-list.el` | Von multiple-cursors **erzeugt**, aber inhaltlich gepflegt — deshalb versioniert. | ja |
@@ -57,6 +58,7 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 | `elpaca/` | Paket-Klone und Builds. Löschbar; die Lockdatei stellt sie wieder her. | nein |
 | `local.el` | Maschinenspezifisches. | nein |
 | `scripts/check`, `scripts/check.el` | Prüfskript, siehe unten. | ja |
+| `scripts/cloud-setup.sh` | Einrichtung der Cloud-Umgebung, siehe unten. | ja |
 | `dev/plan.md` | Befund und Plan des Umbaus. | ja |
 | `dev/cloud/` | Nur für die Cloud-Umgebung: Emacs-Aufruf mit Umgehung der gesperrten Hosts. | ja |
 
@@ -112,12 +114,16 @@ Paket-Update fortzuschreiben (gleichwertig: in Emacs
 `:bind` oder `:commands`** — dort stehen sie als Daten, nicht als Aufruf.
 Fehler wie B3 und B4 aus dem Plan bleiben also auch mit grüner CI stehen.
 
-**In der Cloud-Umgebung gibt es kein Emacs, bis man es baut.** Der Weg,
-der funktioniert hat: Quellen per `git clone --depth 1 --branch
-emacs-31.1` vom Spiegel `github.com/emacs-mirror/emacs` (die GNU-Server
-sind über den Proxy gesperrt), Abhängigkeiten per `apt-get`, dann
-`./configure --without-x --with-tree-sitter --without-native-compilation`
-und `make`, nach `/opt/emacs-31.1`. Dauer rund 15 Minuten.
+**In der Cloud-Umgebung gibt es kein Emacs, bis man es baut.**
+`scripts/cloud-setup.sh` richtet dort ein, was fehlt, und überspringt
+den Rest: Systempakete (Bauwerkzeuge, enchant, aspell, direnv), Emacs
+31.1 ohne GUI vom Spiegel `github.com/emacs-mirror/emacs` (die
+GNU-Server sind über den Proxy gesperrt) nach `/opt/emacs-31.1`, rund
+15 Minuten, und clojure-lsp in gepinnter Fassung nach `/opt/clojure-lsp`
+(verlinkt nach `/usr/local/bin`). Das Setup-Skript der Umgebung ruft
+jedes `scripts/cloud-setup.sh` der geklonten Repos als root auf, bevor
+die Sitzung beginnt; ein neuer Container startet also erst nach dem
+Bau.
 
 Erreichbar sind von dort GitHub und GitLab, nicht aber melpa.org,
 elpa.gnu.org, Codeberg, Sourcehut und paredit.org. `dev/cloud/emacs`
@@ -260,6 +266,7 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 | nach 2.9, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 71 Einträgen reproduziert | 0 | 12 |
 | nach 2.10–2.12, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 71 Einträgen reproduziert | 0 | 5 |
 | nach 2.13, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 75 Einträgen reproduziert | 0 | 3 |
+| nach dem Aufräumen der Warnungen, Cloud, Emacs 31.1 ohne GUI | ok | alle installiert, Lockdatei mit 75 Einträgen reproduziert | 0 | 0 |
 
 Der Unterschied von 3 Warnungen bis 2.1: Die `ns-*`- und `mac-*`-Variablen
 gibt es nur unter macOS; in der Cloud meldete der Byte-Compiler sie als

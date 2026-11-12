@@ -1352,6 +1352,18 @@ eingerichteten zsh.
 
 **Offen für die Sichtung in der GUI:** die Modeline selbst (nur dort sichtbar), das selbsttätige Holen der Nerd Font (im Batch geprüft: ohne GUI nichts, in der GUI ohne Schrift einmal, mit Schrift nichts), rainbow-mode in `css-ts-mode` (in der Cloud fehlt die Grammatik).
 
+### Offene Punkte nach Phase 2 (aufgenommen 2026-11-10)
+
+| Punkt | Worum es geht | Zu klären |
+|---|---|---|
+| ✅ Org wieder einrichten (umgesetzt 2026-11-10 in `init-lang-org`: nur strukturierte Notizen und To-do-Listen, ohne Agenda, Erfassen, GTD; Listen falten wie Überschriften, Struktur-Tasten über `jtk-structural-editing-bind` mit Orgs Befehlen, `C--` verengt auf den Teilbaum, TODO-Schlüsselwörter und Anzeige wie zuvor; geprüft im Batch: Tasten in `org-mode-map`, Verengen auf Teilbaum und Region. Dabei behoben: `C--` scheiterte ohne gesetzte Marke, auch das globale `jtk-narrow-dwim`) | 2.12 hat die eigene Org-Konfiguration entfernt (GTD, Agenda, Erfassen auf `C-M--`); sie wird doch gebraucht | Welcher Teil: Notizen, Aufgaben, Agenda, Erfassen? Die alte GTD-Konfiguration zurück oder schlanker neu, nach den Konventionen (`jtk-`, Struktur-Tasten über `jtk-structural-editing-bind`) |
+| ✅ Rechtschreibvorschläge in der Vervollständigung (umgesetzt 2026-11-10 in `init-spelling`: jinx unterstreicht Deutsch und Englisch, `M-$` korrigiert; `cape-dict` mit Wortlisten aus aspell, beim ersten Bedarf nach `var/dict/` erzeugt, in Textmodi überall, im Code nur in Kommentaren und Strings; geprüft: Vorschläge im Kommentar, String und Markdown, keine im Code; jinx streicht im Code nur Kommentar und String an) | Beim Schreiben (Kommentare, Markdown, Commit-Nachrichten, Org) sollen Wörter aus dem Wörterbuch in corfu erscheinen | Sprachen (Deutsch, Englisch), Quelle (Emacs' `ispell-completion-at-point`, cape-dict, jinx), in welchen Modi; ob auch Prüfen beim Tippen (Unterstreichen) dazugehört |
+| ✅ Leerzeichen in der Suche (umgesetzt 2026-11-10: zwei Leerzeichen werden vor dem Zerlegen zu `\ `, in orderless über `orderless-component-separator`, in consults eigenem Zerlegen über eine Advice auf `consult--split-escaped`; geprüft: `hello world` findet beide Reihenfolgen, `hello  world` nur die mit Leerzeichen, die Projektsuche sucht `foo bar`) | Ein Leerzeichen trennt Suchbegriffe (orderless; in der Projektsuche verbindet consult sie mit „und“). Mit ivy standen zwei Leerzeichen für ein echtes Leerzeichen; das geht nicht mehr. Nach der Doku von orderless und consult hilft heute ein Backslash davor (`\ `), ungeprüft | Zwei Leerzeichen wieder als echtes Leerzeichen, in `consult-line` wie in der Projektsuche (`C-S-s`); prüfen, ob `\ ` an beiden Stellen greift |
+| ✅ Verschobenes Highlighting in Clojure (behoben 2026-11-11 in `init-lsp`: eglot fragt keine Semantic Tokens mehr; clojure-lsp antwortete direkt nach einer Änderung mit Tokens des alten Texts, eglot malte sie bis zur nächsten Änderung versetzt; nachgestellt im Batch, 3 von 3 Läufen, mit Referenzen wie ohne; danach 0 falsch gefärbte Stellen) | Farben um einige Zeichen verschoben | Ursache; ob die eingeblendeten Referenzen beteiligt sind (nein) |
+| ✅ Unnötig Mitlaufendes (2026-11-11 in `init-lsp`: auch die Hervorhebung des Symbols durch den Server aus, `symbol-overlay` tut das schon. CPU von Emacs für 80 Zeichen Tippen und 60 Cursorhalte in 2 700 Zeilen Clojure: 2,48–2,86 s vorher, 1,33 s nachher; aggressive-indent, symbol-overlay, jinx, rainbow-delimiters je unter 0,3 s, im Rauschen) | Emacs soll performant sein | Was läuft doppelt oder unnötig |
+| Theme | `doom-one` bleibt, bis eines der Alternativen aus 2.13 gewählt ist | Wahl |
+| Startzeit | Phase 3, nur bei Bedarf; zuletzt gemessen nach Phase 1 | ob der Start zu langsam ist |
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -1395,7 +1407,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | **entfernt** (2.9), nicht benutzt | |
 | treemacs (+ -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt; treemacs-projectile **entfernt** (2.3), treemacs fragt project.el | Ja |
 | simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | **ersetzt** (2.9) durch bookmark.el und `consult-bookmark`; Passwörter aus auth-source | Ja |
-| org | e | organisation | GTD | eigene Konfiguration **entfernt** (2.12), nicht mehr benutzt; Org selbst bleibt mit Emacs' Vorgaben | |
+| org | e | organisation | GTD | eigene Konfiguration **entfernt** (2.12), dann schlank **neu** (2026-11-10, `init-lang-org`): Notizen und To-do-Listen, ohne Agenda und Erfassen | Ja |
 | dashboard (+ page-break-lines) | M | startup | Startbildschirm | **entfernt** (2.12), dann **wieder aufgenommen** (2.13): aufgehübscht mit Logo, nerd-icons, zentriert, Projekte, letzte Dateien, Lesezeichen; `*empty*` als Start-Buffer entfällt | |
 | smartparens | M | development | Klammern, sexp-Editieren | bleibt (2.5), gepflegt; Sprachregeln über `smartparens-config` | Ja |
 | aggressive-indent | M | development | Einrücken beim Tippen | bleibt (2.5), global ab dem Start | Ja |

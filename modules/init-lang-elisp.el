@@ -35,9 +35,10 @@
                           '("early-init.el" "init.el" "modules/" "lisp/"))
                   (and (listp trusted-content) trusted-content))))
 
-(defun dump (data)
-  (setq dump-buffer (get-buffer-create "*dump*"))
-  (print data dump-buffer))
+(defun jtk-elisp-dump (data)
+  "Print DATA at the end of the buffer *dump*, for a look at it.
+Meant for M-: while trying things out."
+  (print data (get-buffer-create "*dump*")))
 
 (provide 'init-lang-elisp)
 

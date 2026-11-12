@@ -14,6 +14,13 @@
 (defvar nerd-icons-font-family)
 (declare-function nerd-icons-install-fonts "nerd-icons")
 
+;; NOTE: early-init only keeps frames from getting a menu bar.  On macOS
+;; the menus sit in the system's bar, and a frame that got one after
+;; all left them there; switching the mode off clears them for every
+;; frame.  The "Emacs" menu itself, as every application's first menu,
+;; stays; `ns-auto-hide-menu-bar' would hide the whole bar instead.
+(menu-bar-mode -1)
+
 ;; NOTE: The icons of the mode line need a Nerd Font.  On a machine
 ;; without it, the first start in the GUI fetches it from nerd-icons'
 ;; repository into ~/Library/Fonts, without asking; then it is found and
@@ -48,7 +55,10 @@
   '(:eval (when (window-parameter (selected-window) 'window-side) "IDE "))
   "Mode line construct that marks a side window.")
 
-(add-to-list 'mode-line-misc-info 'jtk-appearance-side-window-marker)
+;; WATCHOUT: At the end of the list, not at its head: a mode line list
+;; that starts with a symbol is a conditional, (SYMBOL THEN ELSE), and
+;; showed only the element after the marker, never the marker itself.
+(add-to-list 'mode-line-misc-info 'jtk-appearance-side-window-marker t)
 (put 'jtk-appearance-side-window-marker 'risky-local-variable t)
 
 ;; NOTE: Drawn by the display engine, so nearly free: a key press in a
