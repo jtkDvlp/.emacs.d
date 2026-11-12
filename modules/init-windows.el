@@ -173,20 +173,24 @@ the frame."
   :custom
   (window-resize-pixelwise t)
   (fit-window-to-buffer-horizontally t)
+  ;; WATCHOUT: Each pattern from the start of the name.  treemacs names
+  ;; its buffer after the frame, whose title is the selected buffer, as
+  ;; " *Treemacs-Buffer-#<frame *.emacs.d-eshell* ...>"; matched anywhere,
+  ;; the shells' pattern put the file tree below.
   (display-buffer-alist
-   `(("\\*\\(?:[^*]*-eshell\\|eshell [^*]*\\|compilation\\)\\*"
+   `(("\\`\\*\\(?:[^*]*-eshell\\|eshell [^*]*\\|compilation\\)\\*"
       display-buffer-in-side-window
       (side . bottom) (slot . 0) (window-height . 0.3)
       ,jtk-window-side-parameters)
-     ("\\*cider-repl "
+     ("\\`\\*cider-repl "
       display-buffer-in-side-window
       (side . bottom) (slot . 1) (window-height . 0.3)
       ,jtk-window-side-parameters)
-     ("\\*\\(?:Help\\|cider-doc\\|grep\\|Completions\\)\\*"
+     ("\\`\\*\\(?:Help\\|cider-doc\\|grep\\|Completions\\)\\*"
       display-buffer-in-side-window
       (side . right) (slot . 0) (window-width . 0.3)
       ,jtk-window-side-parameters)
-     ("\\*Flycheck error messages\\*"
+     ("\\`\\*Flycheck error messages\\*"
       display-buffer-in-side-window
       (side . right) (slot . 1) (window-width . 0.3)
       ,jtk-window-side-parameters))))
