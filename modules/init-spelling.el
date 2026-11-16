@@ -48,11 +48,29 @@ For `cape-dict-file'."
                   (jtk-spelling--make-word-list language file))
           (push file files))))))
 
+;; NOTE: Text modes whose markup is not prose: only these faces are.
+;; nxml-mode is a text mode, so tag and attribute names were checked.
+(defconst jtk-spelling-prose-faces
+  '((nxml-mode nxml-text font-lock-comment-face))
+  "Faces of prose per mode, for modes whose other text is markup.")
+
+(defun jtk-spelling--prose-faces ()
+  "Return the faces of prose in the current mode, or nil if not listed."
+  (cdr (seq-find (lambda (entry) (derived-mode-p (car entry)))
+                 jtk-spelling-prose-faces)))
+
+(defun jtk-spelling--face-before-point ()
+  "Return the faces of the character before point, as a list."
+  (ensure-list (get-text-property (max (point-min) (1- (point))) 'face)))
+
 (defun jtk-spelling-prose-p ()
   "Return non-nil if point is in prose: a text mode, or a comment or
-string of code."
-  (or (derived-mode-p 'text-mode)
-      (nth 8 (syntax-ppss))))
+string of code.  In a mode of `jtk-spelling-prose-faces', only text in
+one of its faces."
+  (if-let* ((faces (jtk-spelling--prose-faces)))
+      (seq-intersection faces (jtk-spelling--face-before-point))
+    (or (derived-mode-p 'text-mode)
+        (nth 8 (syntax-ppss)))))
 
 (defun jtk-spelling-complete-word ()
   "Complete a word in prose from the open buffers and the dictionaries.
@@ -90,6 +108,9 @@ answers."
   jinx
   :custom
   (jinx-languages "de_DE en_US")
+  :config
+  (dolist (entry jtk-spelling-prose-faces)
+    (add-to-list 'jinx-include-faces entry))
   :hook
   (elpaca-after-init . jtk-spelling-enable-checking)
   :bind
