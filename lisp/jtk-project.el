@@ -47,13 +47,17 @@ keymap of a package that may not be loaded yet.")
              (symbol-value (nth 2 kind)))
            kinds)))
 
-(defun jtk-project-run-kind-command ()
+(defun jtk-project-run-kind-command (&optional fallback)
   "Run a command for the kinds of the current project, chosen by its key.
-C-h instead lists the commands with their keys to choose from."
+C-h instead lists the commands with their keys to choose from.
+FALLBACK, names of kinds, stands in where the project has no kind, or
+outside a project."
   (interactive)
   (let* ((kinds
           (or (when-let* ((root (jtk-project-root)))
                 (jtk-project-kinds-of root))
+              (seq-filter (lambda (kind) (member (car kind) fallback))
+                          jtk-project-kinds)
               (user-error "No commands for this kind of project")))
 
          (keymap
