@@ -8,7 +8,10 @@
    projectile-file-exists-remote-cache-expire 300
    projectile-file-exists-local-cache-expire nil
    projectile-enable-idle-timer t
-   projectile-mode-line-prefix " ")
+   projectile-mode-line-prefix " "
+   projectile-git-command
+   (concat "git ls-files -zoi --exclude-from=\"$(git rev-parse --git-path info/exclude)\"; "
+           "git ls-files -zco --exclude-standard"))
   (counsel-projectile-mode)
   (add-to-list 'projectile-globally-ignored-directories "node_modules")
   (add-to-list 'projectile-globally-ignored-directories "dist")

@@ -90,6 +90,10 @@
        (list source target)))
     (magit-git-command-topdir (concat "git push origin " source (concat ":refs/for/" target))))
 
+  (defun magit-push-to-gerrit-master-current-branch ()
+    (interactive)
+    (magit-push-to-gerrit-local-branch-or-commit-to-branch (magit-get-current-branch) "master"))
+
   (defun magit-push-to-gerrit-local-branch-or-commit (source)
     (interactive
      (let ((source (magit-read-local-branch-or-commit "Push")))
@@ -101,13 +105,19 @@
     (magit-push-to-gerrit-local-branch-or-commit (magit-get-current-branch)))
 
   :config
-  (setq magit-completing-read-function 'ivy-completing-read)
+  (setq
+   magit-completing-read-function 'ivy-completing-read
+   magit-diff-fontify-hunk t)
+
   (transient-append-suffix 'magit-push "e"
     '("P" "Push current branch to Gerrit" magit-push-to-gerrit-current-branch))
+  (transient-append-suffix 'magit-push "e"
+    '("M" "Push current branch to Gerrit on master" magit-push-to-gerrit-master-current-branch))
   (transient-append-suffix 'magit-push "e"
     '("U" "Push branch / commit to Gerrit" magit-push-to-gerrit-local-branch-or-commit))
   (transient-append-suffix 'magit-push "e"
     '("A" "Push branch / commit to Gerrit on branch" magit-push-to-gerrit-local-branch-or-commit-to-branch))
+
   (fullframe magit-status magit-mode-quit-window)
   (fullframe magit-log-all magit-mode-quit-window)
   (fullframe magit-log-current magit-mode-quit-window))
