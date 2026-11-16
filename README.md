@@ -183,6 +183,46 @@ login shell, which is slower for large ones.
 
 ## Keys
 
+### How the keys are laid out
+
+Four rules carry the whole layout; the lists below are their details.
+
+1. **A key means the same everywhere.** Global keys are for global
+   tasks (files, buffers, windows, search, organising work), and no mode
+   takes them over. Where a mode has a better command for the same
+   task, it binds that command to the same key: `M-j d` jumps to the
+   definition through the language server, CIDER or Elisp alike, `C--`
+   narrows to the defun in code and to the subtree in Org.
+2. **The modifier says what a key does to the structure.** With the
+   arrows, `C-` moves point (along a level with left and right, between
+   levels with up and down) and `M-` changes the structure (slurp, barf,
+   raise; in Org promote, demote, move). `C-M-` with up and down moves
+   the thing itself (transposes, drags a heading), with left and right
+   it changes more at once (the list's other end, a whole subtree).
+   `C-k` kills the thing at point, `C-S-k` takes away what wraps it (in
+   Org: cuts the subtree). Clojure, Elisp, JavaScript and Org share
+   these keys (`init-structural-editing`); HTML puts its element
+   commands on the same ones.
+3. **Topics have a prefix of their own, named for what they do:**
+   `M-j` jump, `M-r` refactor, `M-!` run, `M-+` view, `M-'` tabs, `M-v`
+   version control, `M--` bookmarks, `M-c` multiple cursors, `M-m`
+   symbol at point, `C-x x` projects, `C-c M-j` the project's kind. The
+   table at the end lists them with their keymaps.
+4. **Nothing has to be learnt by heart.** C-h after any prefix lists
+   its keys, searchable, and `@` with a key runs it; `M-X` lists the
+   commands that fit the buffer; `M-x` on an entry of a list offers what
+   can be done with it. Keys of a repeating prefix work alone after the
+   first one (`M-+ f + + -`).
+
+Windows: `M-#` jumps to a window by a letter, side windows and the
+file tree included, `C-#` back to the previous one, `C-M-#` shows the
+selected window alone and brings the others back, `C-x w s` hides and
+shows the side windows (shells and REPLs below, help to the right).
+`C-c <left>` and `C-c <right>` go back and forth in the tab's window
+history.
+
+### Details
+
 - Global keys are for global tasks: files, buffers, windows, search,
   organising work. Modes do not override them; where a mode has a
   better command for the same task, it binds it to the same key.
@@ -213,8 +253,8 @@ login shell, which is slower for large ones.
 - Replacing across the project: `C-S-s` searches it (with the region,
   for that text), `C-o` exports the matches into a grep buffer, `e`
   makes it editable, change the matches there (`M-%`, then `!` for all
-  of them at once), `C-c C-c` ends editing, and `C-x s` saves the changed files. For a
-  symbol of code, `M-r r` renames it through the language server
+  of them at once), `C-c C-c` ends editing, and `C-x s` saves the
+  changed files. For a symbol of code, `M-r r` renames it through the language server
   instead, also where the text alone would be ambiguous.
 - Each kind of project (Clojure, Babashka, npm) brings its commands, under
   `C-c M-j` in every buffer of the project and under `j` in the project
@@ -259,6 +299,6 @@ Same purpose, same key, in every language that has it:
 | `M-v` | `jtk-vc-map` | `init-vc` | git |
 | `C-x x` | `ctl-x-x-map` (Emacs) | `init-project`, `init-treemacs` | switching projects (`f`), file tree (`d`) |
 | `C-x x p` | `jtk-project-map` | `init-project`, languages | project commands: Emacs' `C-x p` with consult for buffers (`b`) and grep (`g`), Magit (`v`, `m`), commands of the project's kinds (`j`) |
-| `C-c M-j` in a project of a known kind | `jtk-project-run-kind-command`, in Clojure buffers `jtk-clojure-project-map` | `init-project`, languages | starting or connecting a REPL; a task of `bb.edn` (`t`); npm install, run, update |
+| `C-c M-j` in a project of a known kind | `jtk-project-run-kind-command`, the maps of the project's kinds (`jtk-clojure-project-map`, `jtk-babashka-project-map`, `jtk-npm-project-map`) | `init-project`, languages | starting or connecting a REPL; a task of `bb.edn` (`t`); npm install, run, update; in Clojure buffers outside a project, the REPL commands |
 | `C-a` in HTML | `jtk-html-attribute-map` | `init-lang-html` | editing attributes (repeats) |
 
