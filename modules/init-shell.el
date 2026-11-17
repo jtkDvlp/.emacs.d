@@ -246,7 +246,8 @@ would cost a round trip on every key."
 ;; built again when an update of ghostel asks for a newer one.
 (use-package
   ghostel
-  :commands (ghostel ghostel-exec)
+  ;; NOTE: ghostel-module-compile has no autoload of its own.
+  :commands (ghostel ghostel-exec ghostel-module-compile)
 
   :hook
   (eshell-load . ghostel-eshell-visual-command-mode)
