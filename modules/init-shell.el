@@ -256,9 +256,15 @@ would cost a round trip on every key."
   (setq ghostel-module-directory
         (no-littering-expand-var-file-name "ghostel/"))
 
+  ;; WATCHOUT: Not ghostel's own terminal type, xterm-ghostty: macOS'
+  ;; programs (top, and those of zsh) failed with "Error opening
+  ;; terminal: xterm-ghostty", although TERMINFO pointed at ghostel's
+  ;; compiled entry.  Every system and server knows xterm-256color;
+  ;; given up are extras such as synchronized output.
   :custom
   (ghostel-module-auto-install 'compile)
   (ghostel-shell "/bin/zsh")
+  (ghostel-term "xterm-256color")
 
   :config
   ;; NOTE: /remote: (init-tramp) starts the server's login shell, as
