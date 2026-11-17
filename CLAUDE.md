@@ -252,6 +252,12 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
   kommt über `TERMINFO`, das ncurses in solchen Programmen ignoriert
   (macOS' `top`). `jtk-shell-ghostel-exec-privileged` gibt ihnen aus
   eshell `xterm-256color`; für zsh steht der Alias in der README.
+- **envrc setzt in eshell bei jedem `cd` den `PATH` zurück**, auf die
+  Variable `exec-path` dieses Rechners, auch auf einem Server; eshell
+  merkt ihn sich dann als `PATH` des Servers. `jtk-shell-path-on-server`
+  (nach `envrc--clear`, einer internen Funktion) setzt dort den des
+  Servers. Ohne das suchte eshell `htop` auf dem Server in
+  `~/.local/bin` des Macs.
 - **Externe Programme stehen in der README** (Abschnitt „External
   tools“). Wer einen Language-Server oder ein Hilfsprogramm einbindet,
   trägt es dort mit Installationsbefehl ein.

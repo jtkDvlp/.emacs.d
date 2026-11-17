@@ -29,6 +29,7 @@
 (declare-function mistty "mistty")
 (declare-function mistty-in-project "mistty-project")
 (declare-function eshell-insert-buffer-name "esh-arg")
+(declare-function eshell-set-path "esh-util")
 
 (defun jtk-shell-eshell (arg)
   "Open eshell in the current project's root, or as `eshell' outside one.
@@ -179,6 +180,8 @@ would cost a round trip on every key."
   (setq pcomplete-exit-function #'jtk-shell-pcomplete-exit)
   (add-to-list 'eshell-variable-aliases-list '("TERM" jtk-shell-term t))
   (advice-add 'eshell/cd :filter-args #'jtk-shell-cd-on-server)
+  (with-eval-after-load 'envrc
+    (advice-add 'envrc--clear :after #'jtk-shell-path-on-server))
   (add-hook 'eshell-named-command-hook #'jtk-babashka-eshell-command)
   (dolist (name jtk-babashka-eshell-commands)
     (defalias (intern (concat "eshell/" name))
@@ -210,6 +213,18 @@ would cost a round trip on every key."
     (if (or (string= dir home) (string-prefix-p (concat home "/") dir))
         (concat "~" (substring dir (length home)))
       dir)))
+
+;; WATCHOUT: envrc resets eshell's $PATH at every cd, to the variable
+;; `exec-path' of this machine, also in a directory on a server; eshell
+;; then keeps it as the server's $PATH.  htop was looked for in
+;; ~/.local/bin on the server, and TRAMP failed on it.  On a server the
+;; server's own $PATH replaces it, from the function `exec-path'.
+(defun jtk-shell-path-on-server ()
+  "Give an eshell on a server that server's $PATH.
+Meant to run after `envrc--clear'."
+  (when (and (derived-mode-p 'eshell-mode)
+             (file-remote-p default-directory))
+    (eshell-set-path (butlast (exec-path)))))
 
 ;; NOTE: On a server, cd stays there as in a shell on the server: an
 ;; absolute directory, ~ and cd alone are the server's, where eshell
