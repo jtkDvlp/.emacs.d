@@ -35,6 +35,7 @@ serves is simply missing.
 | multimarkdown | `brew install multimarkdown` | markdown-mode's preview |
 | enchant, pkgconf, aspell | `brew install enchant pkgconf aspell` | spelling: jinx underlines misspelled words (it compiles a small module on first use, with the Xcode command line tools), aspell's German and English dictionaries give the words the completion offers |
 | a Nerd Font | installed by itself on the first start in the GUI (by hand: `M-x nerd-icons-install-fonts`) | the icons of the mode line and the start page |
+| Zig 0.17 | `brew install zig` (check `zig version`; other minor versions do not build), then `M-x ghostel-module-compile` once, and again when an update of ghostel asks for it | the terminal (ghostel): its native module is built here from source rather than downloaded unchecked |
 | babashka | `brew install borkdude/brew/babashka` | `bbe`/`clje` in eshell: Clojure on the command line, also on data from remote hosts; tasks of `bb.edn` under `C-c M-j`; the scratch REPL on `M-! b` |
 
 ## Per-project environment (direnv)
@@ -121,8 +122,8 @@ tasks.
 It is the real zsh with your `~/.zshrc` (nvm, direnv, plugins), but its
 command line is edited with Emacs' keys, and earlier output is ordinary
 text. Programs that need the full screen (`top`, `less`) take over the
-terminal while they run. `M-! s t` is zsh in a plain terminal (eat),
-`M-! s s` eshell.
+terminal while they run. `M-! s t` is zsh in a plain terminal
+(ghostel), `M-! s s` eshell.
 
 Optional, once per mistty version: `M-x mistty-install` and "Download"
 fetch the faster terminal (alacritty) for mistty; without it, mistty
@@ -150,6 +151,10 @@ face of their own (eshell-syntax-highlighting; not on a server, where
 each check would cost a round trip). Programs see
 `TERM=dumb-emacs-ansi`, a terminal that shows colors but cannot move
 the cursor, so git, grep and others color their output again.
+Programs that need a full terminal (`htop`, `less`, …) open in a
+terminal buffer of their own (ghostel); `v` in front of any command does
+the same for it (v for visual, eshell's word for such programs):
+`v npm install`.
 
 ## Servers (TRAMP)
 
@@ -171,8 +176,6 @@ login shell, which is slower for large ones.
   goes to `DIR` on this machine, `cd /local:` to its home directory.
   Other commands keep eshell's rule: an absolute file name in a Lisp
   command such as `ls` or `cat` means this machine.
-- Full-screen programs such as `htop` run on the server in eat, which
-  announces itself there as `xterm-256color`.
 - Programs start through ssh directly, over the connection TRAMP keeps
   open. The first access to a server asks for a password or passphrase
   in the minibuffer, if the login needs one; programs then start without
@@ -254,8 +257,8 @@ history.
   for that text), `C-o` exports the matches into a grep buffer, `e`
   makes it editable, change the matches there (`M-%`, then `!` for all
   of them at once), `C-c C-c` ends editing, and `C-x s` saves the
-  changed files. For a symbol of code, `M-r r` renames it through the language server
-  instead, also where the text alone would be ambiguous.
+  changed files. For a symbol of code, `M-r r` renames it through the
+  language server instead, also where the text alone would be ambiguous.
 - Each kind of project (Clojure, Babashka, npm) brings its commands, under
   `C-c M-j` in every buffer of the project and under `j` in the project
   commands.

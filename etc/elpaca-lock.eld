@@ -195,13 +195,6 @@
                         doom-themes :type git :protocol https :inherit
                         t :depth treeless :ref
                         "a59202912ad55014e53a685eee6cd94130bdd4fd"))
- (eat :source "elpaca-menu-lock-file" :recipe
-      (:package "eat" :repo
-                ("https://codeberg.org/akib/emacs-eat" . "eat") :tar
-                nil :host nongnu :files ("*" (:exclude ".git"))
-                :source "elpaca-menu-lock-file" :id eat :type git
-                :protocol https :inherit t :depth treeless :ref
-                "3a6f418f55d183b9d86f99c140caed4ba3d44f93"))
  (elpaca :source
    "elpaca-menu-lock-file" :recipe
    (:source "Init file" :package "elpaca" :id elpaca :repo
@@ -337,6 +330,14 @@
               :source "elpaca-menu-lock-file" :id f :type git
               :protocol https :inherit t :depth treeless :ref
               "931b6d0667fe03e7bf1c6c282d6d8d7006143c52"))
+ (ghostel :source "elpaca-menu-lock-file" :recipe
+          (:package "ghostel" :fetcher github :repo "dakra/ghostel"
+                    :files
+                    (:defaults "etc" "src" "vendor" "build.zig"
+                               "build.zig.zon" "symbols.map")
+                    :source "elpaca-menu-lock-file" :id ghostel :type
+                    git :protocol https :inherit t :depth treeless
+                    :ref "bc0346ec249b61d0ff27905caf4400c399325c93"))
  (groovy-mode :source "elpaca-menu-lock-file" :recipe
               (:package "groovy-mode" :fetcher github :repo
                         "Groovy-Emacs-Modes/groovy-emacs-modes" :files

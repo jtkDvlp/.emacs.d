@@ -4,9 +4,9 @@
 
 ;; eshell with a project-aware prompt, history and commands, a
 ;; suggestion from the history while typing, highlighting of the input
-;; and colors from programs; aliases are in etc/eshell/aliases.  eat is
-;; the terminal: zsh on its own, and the display of programs in eshell
-;; that need a terminal (top, less, ...).
+;; and colors from programs; aliases are in etc/eshell/aliases.  ghostel
+;; is the terminal: zsh on its own, programs in eshell that need a
+;; terminal (top, less, ...), and any command with v in front.
 ;; mistty runs zsh too, but edits its command line with Emacs' keys.
 ;; In eshell, bbe and clje evaluate Clojure with a local Babashka, also
 ;; on data from a remote host (jtk-babashka).
@@ -24,7 +24,7 @@
 (declare-function eshell/pwd "em-dirs")
 (declare-function magit-anything-modified-p "magit-git")
 (declare-function magit-get-current-branch "magit-git")
-(declare-function eat "eat")
+(declare-function ghostel "ghostel")
 (declare-function mistty "mistty")
 (declare-function mistty-in-project "mistty-project")
 (declare-function eshell-insert-buffer-name "esh-arg")
@@ -67,7 +67,7 @@ ARG is passed on as to `eshell'."
 (defun jtk-shell-terminal ()
   "Open zsh in a terminal."
   (interactive)
-  (eat "/bin/zsh"))
+  (ghostel))
 
 (defun jtk-shell-mistty ()
   "Open zsh in mistty, in the current project's root if there is one."
@@ -93,7 +93,7 @@ on any other input this is `eshell-insert-buffer-name'."
 ;; NOTE: Programs see a terminal that shows colors but cannot move the
 ;; cursor, so git, grep and others color their output again, which
 ;; eshell turns into faces.  Under TERM=dumb, or none at all, as from a
-;; GUI Emacs, they leave it plain.  Full-screen programs run in eat,
+;; GUI Emacs, they leave it plain.  Full-screen programs run in ghostel,
 ;; which sets its own TERM.
 ;; WATCHOUT: Through `eshell-variable-aliases-list', which eshell reads
 ;; at every program start, not through the buffer's
@@ -201,34 +201,6 @@ would cost a round trip on every key."
     "Open FILE with the program the system has for it."
     (browse-url-of-file file)))
 
-;; WATCHOUT: eat runs a program of eshell on a server with its full
-;; remote name (/remote:host:/bin/htop), and a script with its remote
-;; name as argument; the server finds neither and needs the names as it
-;; sees them.  And TRAMP sets TERM=dumb for every program there, over
-;; eat's own type, which a server would not know anyway; htop then
-;; refuses the terminal.  So on a server the program starts through
-;; env with a type servers know.
-(defconst jtk-shell-eat-server-term "xterm-256color"
-  "Terminal type eat announces to programs on a server.")
-
-(defun jtk-shell--local-name (arg)
-  "Return ARG named as on its host, if it is a remote file name."
-  (if (and (stringp arg) (file-remote-p arg))
-      (file-local-name arg)
-    arg))
-
-(defun jtk-shell-eat-server-command (args)
-  "Return the ARGS of `eat-exec' fit for a program on a server.
-ARGS are BUFFER NAME COMMAND STARTFILE SWITCHES; locally they stay."
-  (pcase-let ((`(,buffer ,name ,command ,startfile ,switches) args))
-    (if (not (file-remote-p default-directory))
-        args
-      (list buffer name "env" startfile
-            (append (list "-u" "TERMINFO"
-                          (concat "TERM=" jtk-shell-eat-server-term)
-                          (jtk-shell--local-name command))
-                    (mapcar #'jtk-shell--local-name switches))))))
-
 ;; WATCHOUT: eshell replaces ~ by this machine's home before cd sees
 ;; it, so on a server ~ has to be told by that name.
 (defun jtk-shell--home-as-tilde (dir)
@@ -260,19 +232,39 @@ ARGS are BUFFER NAME COMMAND STARTFILE SWITCHES; locally they stay."
       (cons (concat server (jtk-shell--home-as-tilde dir)) (cdr args)))
      (t args))))
 
-;; NOTE: Only the programs in `eshell-visual-commands' and their kin run
-;; in eat; the rest of eshell's output stays plain text.
-;; `eat-eshell-mode' would put all of it through the terminal, which
-;; is slower.
+;; NOTE: Programs that need a terminal run in ghostel: those of
+;; `eshell-visual-commands' and their kin by themselves, any other with
+;; v (for visual) in front.  The rest of eshell's output stays plain
+;; text; through a terminal it took 45 times as long (100,000 lines:
+;; 1.9 s with eat instead of 0.04 s) and kept only the last 131 KB.  As
+;; a terminal ghostel is 15 times as fast as eat (0.1 s against 1.6 s;
+;; Emacs 31.1, cloud, batch).
+;; WATCHOUT: The native module is built from source on this machine
+;; (Zig 0.17, `M-x ghostel-module-compile'), never downloaded: ghostel
+;; loads a downloaded one without checking a hash or signature.  It
+;; lives under var/, where elpaca's rebuilds leave it, and has to be
+;; built again when an update of ghostel asks for a newer one.
 (use-package
-  eat
-  :commands (eat)
+  ghostel
+  :commands (ghostel ghostel-exec)
 
   :hook
-  (eshell-load . eat-eshell-visual-command-mode)
+  (eshell-load . ghostel-eshell-visual-command-mode)
+
+  :init
+  (setq ghostel-module-directory
+        (no-littering-expand-var-file-name "ghostel/"))
+
+  :custom
+  (ghostel-module-auto-install 'compile)
+  (ghostel-shell "/bin/zsh")
 
   :config
-  (advice-add 'eat-exec :filter-args #'jtk-shell-eat-server-command))
+  ;; NOTE: /remote: (init-tramp) starts the server's login shell, as
+  ;; ssh and scp do.
+  (add-to-list 'ghostel-tramp-shells '("remote" login-shell)))
+
+(defalias 'eshell/v #'eshell/ghostel)
 
 ;; NOTE: Without its module mistty uses Emacs' own terminal (eterm).
 ;; `M-x mistty-install' fetches the faster one (alacritty) into the

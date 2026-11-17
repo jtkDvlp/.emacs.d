@@ -18,7 +18,6 @@ mirror() {
 mirror https://paredit.org/paredit paredit
 mirror https://codeberg.org/fourier/ztree ztree
 mirror https://git.sr.ht/~tomterl/fullframe fullframe
-mirror https://codeberg.org/akib/emacs-eat eat
 export GIT_CONFIG_COUNT=$n
 
 # Arguments as scripts/check passes them: --batch, --init-directory, then
