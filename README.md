@@ -12,7 +12,10 @@ Personal Emacs configuration for the latest stable Emacs on macOS.
 - `lisp/`: own libraries, prefixed `jtk-`.
 - `etc/`: hand-kept files packages read (snippets, eshell aliases) and
   `elpaca-lock.eld`, which pins every package to a commit.
-- `var/`, `elpaca/`: generated, not versioned.
+- `var/`, `elpaca/`: generated, not versioned. `elpaca/` can be deleted
+  (the lock file restores it), `var/` not as a whole: it holds the
+  bookmarks (`bookmark-default.el`) and `custom.el`. Its caches, such as
+  `var/eln-cache/`, can go.
 - `scripts/check`: loads and byte-compiles the configuration in batch
   mode; CI runs it on every push.
 

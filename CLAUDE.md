@@ -55,7 +55,7 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 | `etc/eshell/aliases` | Handgeschriebene eshell-Aliase. | ja |
 | `etc/eshell/visual-commands.eld` | Programme, die eshell in einem eigenen Terminal öffnet; von `v` **geschrieben**, aber inhaltlich gepflegt — deshalb versioniert. | ja |
 | `etc/mc-list.el` | Von multiple-cursors **erzeugt**, aber inhaltlich gepflegt — deshalb versioniert. | ja |
-| `var/` | Zustand und Caches (no-littering), `custom.el`, native Kompilate. Löschbar; verloren gehen nur Verläufe. | nein |
+| `var/` | Zustand und Caches (no-littering), `custom.el`, native Kompilate. **Nicht als Ganzes löschbar:** die Lesezeichen (`bookmark-default.el`, seit 2.9) und `custom.el` gibt es nur hier; das ghostel-Modul (`ghostel/`) muss sonst neu gebaut werden. Gefahrlos löschbar sind `eln-cache/` und die übrigen Caches; verloren gehen dann nur Verläufe. | nein |
 | `elpaca/` | Paket-Klone und Builds. Löschbar; die Lockdatei stellt sie wieder her. | nein |
 | `local.el` | Maschinenspezifisches. | nein |
 | `scripts/check`, `scripts/check.el` | Prüfskript, siehe unten. | ja |
