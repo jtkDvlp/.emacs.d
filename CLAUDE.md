@@ -242,6 +242,16 @@ Fallstricke im Ist-Stand, die beim Umbau nicht verloren gehen dürfen:
 - **`:requires` überspringt die ganze Deklaration**, wenn das Feature beim
   Auswerten noch nicht geladen ist — still, ohne Meldung. `:after` ist fast
   immer das Gemeinte.
+- **ghostels Modul wird gebaut, nie geladen** (`ghostel-module-auto-install`
+  `compile`, Zig 0.17). Ein geladenes Modul prüft ghostel weder per
+  Prüfsumme noch per Signatur. In der Cloud lässt es sich nicht bauen:
+  ghostty holt seine Abhängigkeiten von `release.files.ghostty.org` und
+  `deps.files.ghostty.org`, die der Proxy sperrt; ghostel läuft dort
+  also nicht.
+- **`xterm-ghostty` sehen Programme mit setuid nicht.** Sein Eintrag
+  kommt über `TERMINFO`, das ncurses in solchen Programmen ignoriert
+  (macOS' `top`). `jtk-shell-ghostel-exec-privileged` gibt ihnen aus
+  eshell `xterm-256color`; für zsh steht der Alias in der README.
 - **Externe Programme stehen in der README** (Abschnitt „External
   tools“). Wer einen Language-Server oder ein Hilfsprogramm einbindet,
   trägt es dort mit Installationsbefehl ein.

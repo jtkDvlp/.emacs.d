@@ -151,10 +151,46 @@ face of their own (eshell-syntax-highlighting; not on a server, where
 each check would cost a round trip). Programs see
 `TERM=dumb-emacs-ansi`, a terminal that shows colors but cannot move
 the cursor, so git, grep and others color their output again.
-Programs that need a full terminal (`htop`, `less`, …) open in a
-terminal buffer of their own (ghostel); `v` in front of any command does
-the same for it (v for visual, eshell's word for such programs):
-`v npm install`.
+Programs that need a full terminal open in ghostel, see below.
+
+## The terminal (ghostel)
+
+ghostel is the terminal, built on libghostty, the engine of the Ghostty
+terminal:
+
+- `M-! s t` opens zsh in it.
+- In eshell, programs that need a full terminal (`top`, `htop`, `less`,
+  …) open in a ghostel buffer of their own; `v` in front of any other
+  command does the same for it, e.g. `v npm install` (v for visual,
+  eshell's word for such programs). When the program ends, its output
+  stays; `q` closes the buffer.
+- The rest of eshell's output stays plain text, deliberately: through a
+  terminal (`eat-eshell-mode`) 100,000 lines took 1.9 s instead of
+  0.04 s, and only the last 131 KB were kept.
+
+**Native module.** ghostel needs a module compiled for this machine.
+It is built from source, never downloaded, since ghostel would load a
+downloaded one without checking it: install Zig 0.17 (`brew install
+zig`, check `zig version`), then `M-x ghostel-module-compile`. Opening
+a terminal without the module builds it too. The module lives in
+`var/ghostel/`; when an update of ghostel needs a newer one, it says so,
+and the same command builds it again.
+
+**Terminal type.** Programs see `TERM=xterm-ghostty`, with ghostty's
+extras (smooth redrawing, its keyboard protocol). Its entry comes with
+ghostel and is found through `TERMINFO`, which programs with raised
+rights (setuid, such as macOS' `top`) ignore; they would fail with
+"Error opening terminal: xterm-ghostty". From eshell, such a program
+gets `xterm-256color` by itself. In zsh, zsh starts the programs, so
+add to `~/.zshrc`:
+
+```zsh
+# Programs with raised rights do not see ghostel's terminal type.
+[[ $TERM == xterm-ghostty ]] && alias top='TERM=xterm-256color top'
+```
+
+On a server, ghostel checks whether the server knows `xterm-ghostty`
+and announces `xterm-256color` otherwise.
 
 ## Servers (TRAMP)
 
