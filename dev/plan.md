@@ -1352,6 +1352,19 @@ eingerichteten zsh.
 
 **Offen für die Sichtung in der GUI:** die Modeline selbst (nur dort sichtbar), das selbsttätige Holen der Nerd Font (im Batch geprüft: ohne GUI nichts, in der GUI ohne Schrift einmal, mit Schrift nichts), rainbow-mode in `css-ts-mode` (in der Cloud fehlt die Grammatik).
 
+### Offene Punkte nach Phase 2 (aufgenommen 2026-11-10)
+
+| Punkt | Worum es geht | Zu klären |
+|---|---|---|
+| ✅ Org wieder einrichten (umgesetzt 2026-11-10 in `init-lang-org`: nur strukturierte Notizen und To-do-Listen, ohne Agenda, Erfassen, GTD; Listen falten wie Überschriften, Struktur-Tasten über `jtk-structural-editing-bind` mit Orgs Befehlen, `C--` verengt auf den Teilbaum, TODO-Schlüsselwörter und Anzeige wie zuvor; geprüft im Batch: Tasten in `org-mode-map`, Verengen auf Teilbaum und Region. Dabei behoben: `C--` scheiterte ohne gesetzte Marke, auch das globale `jtk-narrow-dwim`) | 2.12 hat die eigene Org-Konfiguration entfernt (GTD, Agenda, Erfassen auf `C-M--`); sie wird doch gebraucht | Welcher Teil: Notizen, Aufgaben, Agenda, Erfassen? Die alte GTD-Konfiguration zurück oder schlanker neu, nach den Konventionen (`jtk-`, Struktur-Tasten über `jtk-structural-editing-bind`) |
+| ✅ Rechtschreibvorschläge in der Vervollständigung (umgesetzt 2026-11-10 in `init-spelling`: jinx unterstreicht Deutsch und Englisch, `M-$` korrigiert; `cape-dict` mit Wortlisten aus aspell, beim ersten Bedarf nach `var/dict/` erzeugt, in Textmodi überall, im Code nur in Kommentaren und Strings; geprüft: Vorschläge im Kommentar, String und Markdown, keine im Code; jinx streicht im Code nur Kommentar und String an) | Beim Schreiben (Kommentare, Markdown, Commit-Nachrichten, Org) sollen Wörter aus dem Wörterbuch in corfu erscheinen | Sprachen (Deutsch, Englisch), Quelle (Emacs' `ispell-completion-at-point`, cape-dict, jinx), in welchen Modi; ob auch Prüfen beim Tippen (Unterstreichen) dazugehört |
+| ✅ Leerzeichen in der Suche (umgesetzt 2026-11-10: zwei Leerzeichen werden vor dem Zerlegen zu `\ `, in orderless über `orderless-component-separator`, in consults eigenem Zerlegen über eine Advice auf `consult--split-escaped`; geprüft: `hello world` findet beide Reihenfolgen, `hello  world` nur die mit Leerzeichen, die Projektsuche sucht `foo bar`) | Ein Leerzeichen trennt Suchbegriffe (orderless; in der Projektsuche verbindet consult sie mit „und“). Mit ivy standen zwei Leerzeichen für ein echtes Leerzeichen; das geht nicht mehr. Nach der Doku von orderless und consult hilft heute ein Backslash davor (`\ `), ungeprüft | Zwei Leerzeichen wieder als echtes Leerzeichen, in `consult-line` wie in der Projektsuche (`C-S-s`); prüfen, ob `\ ` an beiden Stellen greift |
+| ✅ Verschobenes Highlighting in Clojure (behoben 2026-11-11 in `init-lsp`: eglot fragt keine Semantic Tokens mehr; clojure-lsp antwortete direkt nach einer Änderung mit Tokens des alten Texts, eglot malte sie bis zur nächsten Änderung versetzt; nachgestellt im Batch, 3 von 3 Läufen, mit Referenzen wie ohne; danach 0 falsch gefärbte Stellen) | Farben um einige Zeichen verschoben | Ursache; ob die eingeblendeten Referenzen beteiligt sind (nein) |
+| ✅ Unnötig Mitlaufendes (2026-11-11 in `init-lsp`: auch die Hervorhebung des Symbols durch den Server aus, `symbol-overlay` tut das schon. CPU von Emacs für 80 Zeichen Tippen und 60 Cursorhalte in 2 700 Zeilen Clojure: 2,48–2,86 s vorher, 1,33 s nachher; aggressive-indent, symbol-overlay, jinx, rainbow-delimiters je unter 0,3 s, im Rauschen) | Emacs soll performant sein | Was läuft doppelt oder unnötig |
+| ✅ Terminal: ghostel statt eat (2026-11-17, Issues #16 und #20). Gemessen in Emacs 31.1 ohne GUI, je zwei Läufe, bis die Ausgabe ganz im Buffer steht: 100 000 Zeilen (589 KB) eshell 0,04 s, eshell mit `eat-eshell-mode` 1,83–1,90 s (behält 131 KB), eat 1,58–1,65 s (131 KB), ghostel 0,10–0,11 s; 20 000 rote Zeilen (469 KB) eshell 0,32–0,33 s, mit `eat-eshell-mode` 0,56–0,59 s, eat 0,55–0,61 s, ghostel 0,06–0,07 s. Entschieden: ghostel für `M-! s t`, die Vollbild-Programme aus eshell und `v BEFEHL`; `eat-eshell-mode` nicht global; eat entfernt. Modul aus den Quellen (Zig 0.17), nie geladen. `TERM=xterm-ghostty`, Programme mit setuid bekommen `xterm-256color` (macOS' `top` scheiterte, weil ncurses dort `TERMINFO` ignoriert; mit `ls -l /usr/bin/top` bestätigt). Offen: Vollbild-Programme aus eshell auf einem Server; in der Cloud läuft ghostel nicht (Modul nicht baubar, Hosts gesperrt) | Alle externen Befehle in eshell durch ein Terminal (#16); ghostel einbinden (#20) | — |
+| Theme | `doom-one` bleibt, bis eines der Alternativen aus 2.13 gewählt ist | Wahl |
+| Startzeit | Phase 3, nur bei Bedarf; zuletzt gemessen nach Phase 1 | ob der Start zu langsam ist |
+
 ### Phase 3 – Startzeit (nur bei Bedarf)
 
 Gegen die Baseline aus Phase 0 messen. Erst wenn eine Zahl stört,
@@ -1395,7 +1408,7 @@ im Review wird der aktuelle Pflegestand nachgesehen.
 | git-auto-commit-mode | M | filemanagement | Auto-Commit (wofür?) | **entfernt** (2.9), nicht benutzt | |
 | treemacs (+ -icons-dired, -magit) | M | filemanagement | Dateibaum | gepflegt; treemacs-projectile **entfernt** (2.3), treemacs fragt project.el | Ja |
 | simple-bookmarks | M? | filemanagement | Lesezeichen, MySQL-Verbindungen | **ersetzt** (2.9) durch bookmark.el und `consult-bookmark`; Passwörter aus auth-source | Ja |
-| org | e | organisation | GTD | eigene Konfiguration **entfernt** (2.12), nicht mehr benutzt; Org selbst bleibt mit Emacs' Vorgaben | |
+| org | e | organisation | GTD | eigene Konfiguration **entfernt** (2.12), dann schlank **neu** (2026-11-10, `init-lang-org`): Notizen und To-do-Listen, ohne Agenda und Erfassen | Ja |
 | dashboard (+ page-break-lines) | M | startup | Startbildschirm | **entfernt** (2.12), dann **wieder aufgenommen** (2.13): aufgehübscht mit Logo, nerd-icons, zentriert, Projekte, letzte Dateien, Lesezeichen; `*empty*` als Start-Buffer entfällt | |
 | smartparens | M | development | Klammern, sexp-Editieren | bleibt (2.5), gepflegt; Sprachregeln über `smartparens-config` | Ja |
 | aggressive-indent | M | development | Einrücken beim Tippen | bleibt (2.5), global ab dem Start | Ja |
@@ -1444,9 +1457,9 @@ Noch nicht in der Konfiguration; aufgenommen auf deinen Wunsch
 | typescript-language-server | Language-Server (npm) | 2.8 JS | JavaScript | **verworfen** (2.8): kann TypeScript 7 nicht nutzen; dessen `tsc --lsp --stdio` ersetzt ihn |
 | basedpyright bzw. pyright, dazu ruff | Language-Server | 2.8 Python | Python | ersetzt elpy |
 | vscode-langservers-extracted | Language-Server (npm) | 2.8 HTML/CSS | HTML, CSS/SCSS, JSON | scss ist als benutzt markiert |
-| eat | Emacs-Paket, NonGNU ELPA | 2.9 Werkzeuge | Terminal-Emulator in Emacs; kann in eshell Programme mit Vollbild-Ausgabe zeigen (`eat-eshell-mode`) | **aufgenommen** (2.9) als Terminal und für Vollbild-Programme in eshell |
+| eat | Emacs-Paket, NonGNU ELPA | 2.9 Werkzeuge | Terminal-Emulator in Emacs; kann in eshell Programme mit Vollbild-Ausgabe zeigen (`eat-eshell-mode`) | **aufgenommen** (2.9), **ersetzt** (2026-11-17) durch ghostel |
 | mistty | Emacs-Paket, MELPA, Modul optional | 2.9 Werkzeuge | zsh mit Emacs-Editieren an der Eingabezeile | **aufgenommen** (2.9) auf `M-! s z` |
-| ghostel | Emacs-Paket, MELPA, mit Modul (libghostty) | später | schnelleres Terminal, ebenfalls mit eshell-Anbindung | Kandidat; der Nutzer sieht es sich an |
+| ghostel | Emacs-Paket, MELPA, mit Modul (libghostty) | 2026-11-17 | Terminal, Vollbild-Programme aus eshell, `v BEFEHL` | **aufgenommen** (2026-11-17); Modul mit Zig 0.17 aus den Quellen |
 | lemminx | Language-Server | 2.8 XML | XML Schema, DTD, Formatieren | **aufgenommen** (2.8), startet nur, wo installiert |
 | envrc | Emacs-Paket, MELPA | 2.8 | direnv je Buffer | **aufgenommen** (2.8) |
 | md-mode | Emacs-Paket (GitHub) | 2.8 Markdown | gerenderte Ansicht mit Tabellen | **zum Ausprobieren** (2.8) |

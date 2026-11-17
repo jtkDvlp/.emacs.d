@@ -32,6 +32,11 @@ Meant as advice around `toggle-truncate-lines'."
   :mode
   ("\\.\\(md\\|markdown\\)\\'" . md-mode)
 
+  ;; NOTE: The rendered view wraps long lines, as one reads it; the edit
+  ;; view keeps them whole, so table rows stay on one line.
+  :custom
+  (md-render-wrap-lines t)
+
   ;; NOTE: Rendering is to Markdown what evaluating the buffer is to
   ;; code, so it takes that key as well as md-mode's own C-c C-v.
   :bind

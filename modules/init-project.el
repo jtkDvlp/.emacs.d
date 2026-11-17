@@ -74,8 +74,8 @@
 (keymap-set ctl-x-x-map "p" 'jtk-project-map)
 
 ;; NOTE: The commands of the project's kinds in every buffer of the
-;; project, the same as j in the project commands; Clojure buffers bind
-;; their kind's map directly (init-lang-clojure).
+;; project, the same as j in the project commands; Clojure buffers fall
+;; back to the Clojure commands outside a project (init-lang-clojure).
 (keymap-global-set "C-c M-j" #'jtk-project-run-kind-command)
 
 (defvar marginalia-command-categories)

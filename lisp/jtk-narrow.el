@@ -8,7 +8,9 @@
 
 (defun jtk-narrow-dwim (beginning end)
   "Narrow to the region from BEGINNING to END if active, else to the defun."
-  (interactive "r")
+  (interactive (if (use-region-p)
+                   (list (region-beginning) (region-end))
+                 (list nil nil)))
   (if (use-region-p)
       (narrow-to-region beginning end)
     (narrow-to-defun t)))

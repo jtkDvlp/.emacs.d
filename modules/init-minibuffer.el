@@ -27,10 +27,28 @@
   :config
   (vertico-mode))
 
+;; NOTE: A space separates search terms; two spaces stand for one space
+;; within a term, as they did with ivy.  orderless and consult both keep
+;; a space escaped with a backslash, so two spaces become that.
+(defun jtk-minibuffer-double-space-as-space (input)
+  "Return INPUT with every two spaces written as one escaped space."
+  (string-replace "  " "\\ " input))
+
+(defun jtk-minibuffer-double-space-in-input (args)
+  "Return ARGS, whose first is an input, with its two spaces escaped.
+For advice around a function that splits an input at spaces."
+  (cons (jtk-minibuffer-double-space-as-space (car args)) (cdr args)))
+
+(defun jtk-minibuffer-split-terms (input)
+  "Split INPUT into the terms of an orderless search.
+Two spaces stand for one space within a term."
+  (orderless-escapable-split (jtk-minibuffer-double-space-as-space input)))
+
 (use-package
   orderless
   :demand t
   :custom
+  (orderless-component-separator #'jtk-minibuffer-split-terms)
   ;; NOTE: Space separates terms that match in any order, as with ivy.
   ;; File names keep `partial-completion', so that /u/s/l still expands
   ;; to /usr/share/local.
@@ -46,6 +64,21 @@
   (marginalia-mode))
 
 (declare-function consult-git-grep "consult")
+(declare-function compilation--ensure-parse "compile")
+
+;; NOTE: Replacing across a project: search (C-S-s), export the matches
+;; with C-o into a grep buffer, e to edit it, change the matches there
+;; (M-%, then ! for all), C-c C-c to finish; every change goes straight to
+;; its file, which is then saved with C-x s.
+;; WATCHOUT: Emacs reads a grep buffer's matches only as it shows them,
+;; and `e' marks as editable only what it has read; a change further
+;; down a long list then reached no file.  So all of it is read first.
+(defun jtk-grep-read-all-matches (&rest _)
+  "Read every match of the current grep buffer, for editing all of them."
+  (compilation--ensure-parse (point-max)))
+
+(advice-add 'grep-change-to-grep-edit-mode :before
+            #'jtk-grep-read-all-matches)
 
 (defun jtk-git-grep-dwim ()
   "Search the git repository, starting with the active region if any."
@@ -76,7 +109,13 @@
 
    ;; NOTE: Does nothing here; the global C-r would search the lines of
    ;; the prompt.
-   ("C-r" . ignore)))
+   ("C-r" . ignore))
+
+  :config
+  ;; NOTE: consult splits the input of its searches into terms itself,
+  ;; past orderless; two spaces stand for one space there as well.
+  (advice-add 'consult--split-escaped :filter-args
+              #'jtk-minibuffer-double-space-in-input))
 
 (use-package
   embark

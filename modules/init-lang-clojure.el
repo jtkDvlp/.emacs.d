@@ -95,8 +95,13 @@
   ;; loads, and again when cider.el itself loads.  Bound once in :bind,
   ;; the key lost against the second, and C-c M-j only ever jacked in.
   ;; So it is set again after each of the two.
+  (defun jtk-clojure-run-kind-command ()
+    "Run a command of the project's kinds, the Clojure ones outside one.
+Those of npm too, in a project with a package.json."
+    (interactive)
+    (jtk-project-run-kind-command '("Clojure")))
   (defun jtk-clojure-bind-project-keys ()
-    (keymap-set clojure-mode-map "C-c M-j" 'jtk-clojure-project-map))
+    (keymap-set clojure-mode-map "C-c M-j" #'jtk-clojure-run-kind-command))
   (with-eval-after-load 'clojure-mode
     (jtk-clojure-bind-project-keys))
   (with-eval-after-load 'cider

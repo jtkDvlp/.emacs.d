@@ -7,6 +7,8 @@
 
 ;;; Code:
 
+(declare-function ediff-setup-windows-plain "ediff-wind")
+
 (use-package
   ediff
   :ensure nil

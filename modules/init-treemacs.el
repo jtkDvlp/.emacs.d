@@ -17,7 +17,7 @@
   (defun treemacs-select-current-project-file ()
     (interactive)
     (save-excursion
-      (treemacs-add-and-display-current-project))
+      (treemacs-add-and-display-current-project-exclusively))
     (treemacs-find-file)
     (treemacs-select-window))
 
@@ -70,6 +70,17 @@
         treemacs-tag-follow-delay              1.5
         treemacs-width                         40
         treemacs-width-is-initially-locked     nil)
+
+  ;; NOTE: Only the current project, and the tree follows to another
+  ;; project's buffer (after 1.5 s).  Other projects are removed from
+  ;; the workspace.
+  (treemacs-project-follow-mode 1)
+
+  ;; NOTE: treemacs keeps itself out of ace-window's choice; M-# reaches
+  ;; it like every other side window.  Registered after treemacs' own
+  ;; `with-eval-after-load', so it runs after it.
+  (with-eval-after-load 'ace-window
+    (setq aw-ignored-buffers (delq 'treemacs-mode aw-ignored-buffers)))
 
   :bind
   (("C-x x d" . treemacs-dwim)

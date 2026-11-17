@@ -33,7 +33,9 @@ serves is simply missing.
 | Leiningen, Clojure CLI | `brew install leiningen clojure` | CIDER's jack-in |
 | node, npm | via nvm or `brew install node` | the npm commands under `C-c M-j` |
 | multimarkdown | `brew install multimarkdown` | markdown-mode's preview |
+| enchant, pkgconf, aspell | `brew install enchant pkgconf aspell` | spelling: jinx underlines misspelled words (it compiles a small module on first use, with the Xcode command line tools), aspell's German and English dictionaries give the words the completion offers |
 | a Nerd Font | installed by itself on the first start in the GUI (by hand: `M-x nerd-icons-install-fonts`) | the icons of the mode line and the start page |
+| Zig 0.17 | `brew install zig` (check `zig version`; other minor versions do not build), then `M-x ghostel-module-compile` once, and again when an update of ghostel asks for it | the terminal (ghostel): its native module is built here from source rather than downloaded unchecked |
 | babashka | `brew install borkdude/brew/babashka` | `bbe`/`clje` in eshell: Clojure on the command line, also on data from remote hosts; tasks of `bb.edn` under `C-c M-j`; the scratch REPL on `M-! b` |
 
 ## Per-project environment (direnv)
@@ -120,8 +122,8 @@ tasks.
 It is the real zsh with your `~/.zshrc` (nvm, direnv, plugins), but its
 command line is edited with Emacs' keys, and earlier output is ordinary
 text. Programs that need the full screen (`top`, `less`) take over the
-terminal while they run. `M-! s t` is zsh in a plain terminal (eat),
-`M-! s s` eshell.
+terminal while they run. `M-! s t` is zsh in a plain terminal
+(ghostel), `M-! s s` eshell.
 
 Optional, once per mistty version: `M-x mistty-install` and "Download"
 fetch the faster terminal (alacritty) for mistty; without it, mistty
@@ -149,6 +151,51 @@ face of their own (eshell-syntax-highlighting; not on a server, where
 each check would cost a round trip). Programs see
 `TERM=dumb-emacs-ansi`, a terminal that shows colors but cannot move
 the cursor, so git, grep and others color their output again.
+Programs that need a full terminal open in ghostel, see below.
+
+## The terminal (ghostel)
+
+ghostel is the terminal, built on libghostty, the engine of the Ghostty
+terminal:
+
+- `M-! s t` opens zsh in it.
+- In eshell, programs that need a full terminal (`top`, `htop`, `less`,
+  …) open in a ghostel buffer of their own; `v` in front of any other
+  command does the same for it, e.g. `v ncdu` (v for visual, eshell's
+  word for such programs). For a program not yet among them, `v` asks
+  whether to run it so always; on yes it joins the list in
+  `etc/eshell/visual-commands.eld` and needs no `v` from then on, on no
+  it asks again next time. When the program ends, its buffer closes,
+  output included; a command whose output is to be read afterwards
+  runs without `v`. Programs built into eshell, such as `ls`, never
+  open in a terminal by themselves.
+- The rest of eshell's output stays plain text, deliberately: through a
+  terminal (`eat-eshell-mode`) 100,000 lines took 1.9 s instead of
+  0.04 s, and only the last 131 KB were kept.
+
+**Native module.** ghostel needs a module compiled for this machine.
+It is built from source, never downloaded, since ghostel would load a
+downloaded one without checking it: install Zig 0.17 (`brew install
+zig`, check `zig version`), then `M-x ghostel-module-compile`. Opening
+a terminal without the module builds it too. The module lives in
+`var/ghostel/`; when an update of ghostel needs a newer one, it says so,
+and the same command builds it again.
+
+**Terminal type.** Programs see `TERM=xterm-ghostty`, with ghostty's
+extras (smooth redrawing, its keyboard protocol). Its entry comes with
+ghostel and is found through `TERMINFO`, which programs with raised
+rights (setuid, such as macOS' `top`) ignore; they would fail with
+"Error opening terminal: xterm-ghostty". From eshell, such a program
+gets `xterm-256color` by itself. In zsh, zsh starts the programs, so
+add to `~/.zshrc`:
+
+```zsh
+# Programs with raised rights do not see ghostel's terminal type.
+[[ $TERM == xterm-ghostty ]] && alias top='TERM=xterm-256color top'
+```
+
+On a server, ghostel checks whether the server knows `xterm-ghostty`
+and announces `xterm-256color` otherwise.
 
 ## Servers (TRAMP)
 
@@ -170,8 +217,6 @@ login shell, which is slower for large ones.
   goes to `DIR` on this machine, `cd /local:` to its home directory.
   Other commands keep eshell's rule: an absolute file name in a Lisp
   command such as `ls` or `cat` means this machine.
-- Full-screen programs such as `htop` run on the server in eat, which
-  announces itself there as `xterm-256color`.
 - Programs start through ssh directly, over the connection TRAMP keeps
   open. The first access to a server asks for a password or passphrase
   in the minibuffer, if the login needs one; programs then start without
@@ -181,6 +226,46 @@ login shell, which is slower for large ones.
   lock files; magit works there all the same.
 
 ## Keys
+
+### How the keys are laid out
+
+Four rules carry the whole layout; the lists below are their details.
+
+1. **A key means the same everywhere.** Global keys are for global
+   tasks (files, buffers, windows, search, organising work), and no mode
+   takes them over. Where a mode has a better command for the same
+   task, it binds that command to the same key: `M-j d` jumps to the
+   definition through the language server, CIDER or Elisp alike, `C--`
+   narrows to the defun in code and to the subtree in Org.
+2. **The modifier says what a key does to the structure.** With the
+   arrows, `C-` moves point (along a level with left and right, between
+   levels with up and down) and `M-` changes the structure (slurp, barf,
+   raise; in Org promote, demote, move). `C-M-` with up and down moves
+   the thing itself (transposes, drags a heading), with left and right
+   it changes more at once (the list's other end, a whole subtree).
+   `C-k` kills the thing at point, `C-S-k` takes away what wraps it (in
+   Org: cuts the subtree). Clojure, Elisp, JavaScript and Org share
+   these keys (`init-structural-editing`); HTML puts its element
+   commands on the same ones.
+3. **Topics have a prefix of their own, named for what they do:**
+   `M-j` jump, `M-r` refactor, `M-!` run, `M-+` view, `M-'` tabs, `M-v`
+   version control, `M--` bookmarks, `M-c` multiple cursors, `M-m`
+   symbol at point, `C-x x` projects, `C-c M-j` the project's kind. The
+   table at the end lists them with their keymaps.
+4. **Nothing has to be learnt by heart.** C-h after any prefix lists
+   its keys, searchable, and `@` with a key runs it; `M-X` lists the
+   commands that fit the buffer; `M-x` on an entry of a list offers what
+   can be done with it. Keys of a repeating prefix work alone after the
+   first one (`M-+ f + + -`).
+
+Windows: `M-#` jumps to a window by a letter, side windows and the
+file tree included, `C-#` back to the previous one, `C-M-#` shows the
+selected window alone and brings the others back, `C-x w s` hides and
+shows the side windows (shells and REPLs below, help to the right).
+`C-c <left>` and `C-c <right>` go back and forth in the tab's window
+history.
+
+### Details
 
 - Global keys are for global tasks: files, buffers, windows, search,
   organising work. Modes do not override them; where a mode has a
@@ -203,9 +288,27 @@ login shell, which is slower for large ones.
 - A list exported with `C-o` into a buffer of its own (projects, for
   instance) takes the same action keys directly on the entry under the
   cursor: `e` on a project opens eshell there; `M-a` turns that off.
+- Where text is written (text modes, comments and strings of code),
+  misspelled words are underlined, German and English at once; `M-$`
+  offers corrections, `C-M-$` the languages, and the completion pop-up
+  offers words of both dictionaries.
+- In a search, a space separates terms that match in any order; two
+  spaces stand for one space within a term (`hello  world`).
+- Replacing across the project: `C-S-s` searches it (with the region,
+  for that text), `C-o` exports the matches into a grep buffer, `e`
+  makes it editable, change the matches there (`M-%`, then `!` for all
+  of them at once), `C-c C-c` ends editing, and `C-x s` saves the
+  changed files. For a symbol of code, `M-r r` renames it through the
+  language server instead, also where the text alone would be ambiguous.
 - Each kind of project (Clojure, Babashka, npm) brings its commands, under
   `C-c M-j` in every buffer of the project and under `j` in the project
   commands.
+- Org is set up for structured notes and to-do lists: headings and
+  list items move, indent and outdent with the keys above (`M-<arrows>`
+  for one, `C-M-<left>`/`C-M-<right>` for the whole subtree,
+  `C-M-<up>`/`C-M-<down>` drags it), `C-S-k` cuts the subtree,
+  `S-<right>` cycles TODO, STARTED, BLOCKED, DONE, DELEGATED and
+  CANCELED, and `M-j j` follows a link.  No agenda or capturing.
 - `M-X` lists the commands that fit the current buffer, with their
   keys; `C-h b` lists all keys of the buffer to search (with `C-u` the
   global ones too).
@@ -222,8 +325,8 @@ Same purpose, same key, in every language that has it:
 | evaluate the form at point / the last one / the buffer | `C-c C-c` / `C-M-x` / `C-c M-k` (Markdown: render) |
 | commands of the project's kind (REPL, bb tasks, npm) | `C-c M-j`, in every buffer of the project |
 | next / previous finding, list them | `C-c ! n` / `C-c ! p`, `C-c ! l` |
-| fold the block whose first line point is on / all blocks | `TAB` within the line's indentation / `S-TAB` |
-| narrow to the region or defun / widen | `C--` / `C-+` |
+| fold the block whose first line point is on / all blocks | `TAB` within the line's indentation (Org: on a heading or list item) / `S-TAB` |
+| narrow to the region or defun (Org: subtree) / widen | `C--` / `C-+` |
 | comment | `C-;` |
 
 | Prefix | Keymap | Module | For |
@@ -240,6 +343,6 @@ Same purpose, same key, in every language that has it:
 | `M-v` | `jtk-vc-map` | `init-vc` | git |
 | `C-x x` | `ctl-x-x-map` (Emacs) | `init-project`, `init-treemacs` | switching projects (`f`), file tree (`d`) |
 | `C-x x p` | `jtk-project-map` | `init-project`, languages | project commands: Emacs' `C-x p` with consult for buffers (`b`) and grep (`g`), Magit (`v`, `m`), commands of the project's kinds (`j`) |
-| `C-c M-j` in a project of a known kind | `jtk-project-run-kind-command`, in Clojure buffers `jtk-clojure-project-map` | `init-project`, languages | starting or connecting a REPL; a task of `bb.edn` (`t`); npm install, run, update |
+| `C-c M-j` in a project of a known kind | `jtk-project-run-kind-command`, the maps of the project's kinds (`jtk-clojure-project-map`, `jtk-babashka-project-map`, `jtk-npm-project-map`) | `init-project`, languages | starting or connecting a REPL; a task of `bb.edn` (`t`); npm install, run, update; in Clojure buffers outside a project, the REPL commands |
 | `C-a` in HTML | `jtk-html-attribute-map` | `init-lang-html` | editing attributes (repeats) |
 
