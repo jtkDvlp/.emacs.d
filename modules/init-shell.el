@@ -193,6 +193,9 @@ would cost a round trip on every key."
         eshell-hist-ignoredups t
         eshell-history-size 1024
         eshell-rc-script "~/.eshellrc"
+        ;; NOTE: A program in a terminal of its own (ghostel) closes
+        ;; that buffer when it ends; with v, its output goes with it.
+        eshell-destroy-buffer-when-process-dies t
         eshell-prompt-function #'jtk-shell-prompt)
 
   (defun eshell/repl (&rest profile)

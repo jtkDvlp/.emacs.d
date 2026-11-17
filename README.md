@@ -161,9 +161,10 @@ terminal:
 - `M-! s t` opens zsh in it.
 - In eshell, programs that need a full terminal (`top`, `htop`, `less`,
   …) open in a ghostel buffer of their own; `v` in front of any other
-  command does the same for it, e.g. `v npm install` (v for visual,
-  eshell's word for such programs). When the program ends, its output
-  stays; `q` closes the buffer.
+  command does the same for it, e.g. `v ncdu` (v for visual, eshell's
+  word for such programs). When the program ends, its buffer closes,
+  output included; a command whose output is to be read afterwards
+  runs without `v`.
 - The rest of eshell's output stays plain text, deliberately: through a
   terminal (`eat-eshell-mode`) 100,000 lines took 1.9 s instead of
   0.04 s, and only the last 131 KB were kept.
