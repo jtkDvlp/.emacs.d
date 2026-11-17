@@ -30,6 +30,8 @@
 (declare-function mistty-in-project "mistty-project")
 (declare-function eshell-insert-buffer-name "esh-arg")
 (declare-function eshell-set-path "esh-util")
+(declare-function eshell/ghostel "ghostel-eshell")
+(defvar eshell-visual-commands)
 
 (defun jtk-shell-eshell (arg)
   "Open eshell in the current project's root, or as `eshell' outside one.
@@ -285,7 +287,44 @@ Meant to run after `envrc--clear'."
   (add-to-list 'ghostel-tramp-shells '("remote" login-shell))
   (advice-add 'ghostel-exec :around #'jtk-shell-ghostel-exec-privileged))
 
-(defalias 'eshell/v #'eshell/ghostel)
+;; NOTE: The programs eshell opens in a terminal by themselves grow with
+;; use: v asks whether to add a program not yet among them, asking again
+;; each time the answer was no.  The list is kept under etc/ and
+;; versioned, written by Emacs but tended by hand, like etc/mc-list.el.
+(defconst jtk-shell-visual-commands-file
+  (no-littering-expand-etc-file-name "eshell/visual-commands.eld")
+  "File of the programs added to `eshell-visual-commands' with v.")
+
+(defun jtk-shell--read-visual-commands ()
+  "Return the programs in `jtk-shell-visual-commands-file'."
+  (when (file-exists-p jtk-shell-visual-commands-file)
+    (with-temp-buffer
+      (insert-file-contents jtk-shell-visual-commands-file)
+      (read (current-buffer)))))
+
+(defun jtk-shell--save-visual-command (program)
+  "Add PROGRAM to `jtk-shell-visual-commands-file', sorted."
+  (let ((programs (sort (cons program (jtk-shell--read-visual-commands))
+                        #'string<)))
+    (with-temp-file jtk-shell-visual-commands-file
+      (insert ";; Programs eshell opens in a terminal of their own.  "
+              "Added by v\n;; (init-shell).\n")
+      (pp programs (current-buffer)))))
+
+(defun eshell/v (&rest args)
+  "Run ARGS as a program in a terminal of its own (ghostel).
+For a program that is not yet among `eshell-visual-commands', ask
+whether eshell should always run it so."
+  (let ((program (file-name-nondirectory (format "%s" (car args)))))
+    (when (and (not (member program eshell-visual-commands))
+               (y-or-n-p (format "Always run `%s' in a terminal? " program)))
+      (add-to-list 'eshell-visual-commands program t)
+      (jtk-shell--save-visual-command program))
+    (apply #'eshell/ghostel args)))
+
+(with-eval-after-load 'em-term
+  (dolist (program (jtk-shell--read-visual-commands))
+    (add-to-list 'eshell-visual-commands program t)))
 
 ;; WATCHOUT: ghostel's own terminal type, xterm-ghostty, is found only
 ;; through TERMINFO, which ncurses ignores in a program with raised

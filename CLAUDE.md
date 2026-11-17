@@ -53,6 +53,7 @@ Pakete Block für Block; erledigt sind 2.1 (Vervollständigung), 2.2
 | `etc/elpaca-lock.eld` | Commit jedes Pakets (76, mit Abhängigkeiten und elpaca selbst). | ja |
 | `etc/yasnippet/snippets/` | Handgeschriebene yasnippet-Vorlagen. | ja |
 | `etc/eshell/aliases` | Handgeschriebene eshell-Aliase. | ja |
+| `etc/eshell/visual-commands.eld` | Programme, die eshell in einem eigenen Terminal öffnet; von `v` **geschrieben**, aber inhaltlich gepflegt — deshalb versioniert. | ja |
 | `etc/mc-list.el` | Von multiple-cursors **erzeugt**, aber inhaltlich gepflegt — deshalb versioniert. | ja |
 | `var/` | Zustand und Caches (no-littering), `custom.el`, native Kompilate. Löschbar; verloren gehen nur Verläufe. | nein |
 | `elpaca/` | Paket-Klone und Builds. Löschbar; die Lockdatei stellt sie wieder her. | nein |

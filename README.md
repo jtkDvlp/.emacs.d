@@ -162,9 +162,13 @@ terminal:
 - In eshell, programs that need a full terminal (`top`, `htop`, `less`,
   …) open in a ghostel buffer of their own; `v` in front of any other
   command does the same for it, e.g. `v ncdu` (v for visual, eshell's
-  word for such programs). When the program ends, its buffer closes,
+  word for such programs). For a program not yet among them, `v` asks
+  whether to run it so always; on yes it joins the list in
+  `etc/eshell/visual-commands.eld` and needs no `v` from then on, on no
+  it asks again next time. When the program ends, its buffer closes,
   output included; a command whose output is to be read afterwards
-  runs without `v`.
+  runs without `v`. Programs built into eshell, such as `ls`, never
+  open in a terminal by themselves.
 - The rest of eshell's output stays plain text, deliberately: through a
   terminal (`eat-eshell-mode`) 100,000 lines took 1.9 s instead of
   0.04 s, and only the last 131 KB were kept.
