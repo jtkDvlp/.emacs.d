@@ -20,6 +20,7 @@
 (declare-function cape-history "cape")
 (defvar pcomplete-exit-function)
 (defvar eshell-variable-aliases-list)
+(defvar ghostel-term)
 (declare-function pcomplete-default-exit-function "pcomplete")
 (declare-function eshell/pwd "em-dirs")
 (declare-function magit-anything-modified-p "magit-git")
@@ -256,23 +257,45 @@ would cost a round trip on every key."
   (setq ghostel-module-directory
         (no-littering-expand-var-file-name "ghostel/"))
 
-  ;; WATCHOUT: Not ghostel's own terminal type, xterm-ghostty: its
-  ;; entry is found only through TERMINFO, which ncurses ignores in
-  ;; privileged programs.  macOS' top failed with "Error opening
-  ;; terminal: xterm-ghostty", while infocmp read the entry there.
-  ;; Every system and server knows xterm-256color; given up are extras
-  ;; such as synchronized output.
   :custom
   (ghostel-module-auto-install 'compile)
   (ghostel-shell "/bin/zsh")
-  (ghostel-term "xterm-256color")
 
   :config
   ;; NOTE: /remote: (init-tramp) starts the server's login shell, as
   ;; ssh and scp do.
-  (add-to-list 'ghostel-tramp-shells '("remote" login-shell)))
+  (add-to-list 'ghostel-tramp-shells '("remote" login-shell))
+  (advice-add 'ghostel-exec :around #'jtk-shell-ghostel-exec-privileged))
 
 (defalias 'eshell/v #'eshell/ghostel)
+
+;; WATCHOUT: ghostel's own terminal type, xterm-ghostty, is found only
+;; through TERMINFO, which ncurses ignores in a program with raised
+;; rights (setuid or setgid).  macOS' top is one and failed with "Error
+;; opening terminal: xterm-ghostty".  Such a program gets a type the
+;; system knows; the rest keep ghostty's extras (synchronized output,
+;; its keyboard protocol).  In the zsh of M-! s t, zsh starts programs,
+;; so an alias in ~/.zshrc does the same there (README).
+(defconst jtk-shell-plain-term "xterm-256color"
+  "Terminal type for programs that cannot see ghostel's own.")
+
+(defun jtk-shell--privileged-p (program)
+  "Return non-nil if PROGRAM is a local program run with raised rights."
+  (when-let* (((not (file-remote-p program)))
+              (file (if (file-name-absolute-p program)
+                        program
+                      (executable-find program)))
+              (modes (file-modes file)))
+    (/= 0 (logand modes #o6000))))
+
+(defun jtk-shell-ghostel-exec-privileged (exec buffer program &rest args)
+  "Call EXEC with BUFFER, PROGRAM and ARGS, as `ghostel-exec'.
+A privileged PROGRAM gets `jtk-shell-plain-term' as its terminal type.
+Meant as advice around `ghostel-exec'."
+  (let ((ghostel-term (if (jtk-shell--privileged-p program)
+                          jtk-shell-plain-term
+                        ghostel-term)))
+    (apply exec buffer program args)))
 
 ;; NOTE: Without its module mistty uses Emacs' own terminal (eterm).
 ;; `M-x mistty-install' fetches the faster one (alacritty) into the
