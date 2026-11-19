@@ -21,6 +21,9 @@
 (defvar pcomplete-exit-function)
 (defvar eshell-variable-aliases-list)
 (defvar ghostel-term)
+(defvar ghostel-identity)
+(defvar ghostel-kill-buffer-on-exit)
+(defvar eshell-last-output-end)
 (declare-function pcomplete-default-exit-function "pcomplete")
 (declare-function eshell/pwd "em-dirs")
 (declare-function magit-anything-modified-p "magit-git")
@@ -196,7 +199,8 @@ would cost a round trip on every key."
         eshell-history-size 1024
         eshell-rc-script "~/.eshellrc"
         ;; NOTE: A program in a terminal of its own (ghostel) closes
-        ;; that buffer when it ends; with v, its output goes with it.
+        ;; that buffer when it ends; with v, its output goes with it,
+        ;; unless it fails (`jtk-shell-ghostel-keep-failure').
         eshell-destroy-buffer-when-process-dies t
         eshell-prompt-function #'jtk-shell-prompt)
 
@@ -285,7 +289,12 @@ Meant to run after `envrc--clear'."
   ;; NOTE: /remote: (init-tramp) starts the server's login shell, as
   ;; ssh and scp do.
   (add-to-list 'ghostel-tramp-shells '("remote" login-shell))
-  (advice-add 'ghostel-exec :around #'jtk-shell-ghostel-exec-privileged))
+  (advice-add 'ghostel-exec :around #'jtk-shell-ghostel-exec-privileged)
+  (advice-add 'ghostel-exec :around #'jtk-shell-ghostel-exec-from-eshell)
+  ;; NOTE: Outermost, around ghostel's own override.
+  (advice-add 'eshell-exec-visual :around #'jtk-shell-note-eshell-origin
+              '((depth . -100)))
+  (add-hook 'ghostel-exit-functions #'jtk-shell-ghostel-keep-failure))
 
 ;; NOTE: The programs eshell opens in a terminal by themselves grow with
 ;; use: v asks whether to add a program not yet among them, asking again
@@ -353,6 +362,82 @@ Meant as advice around `ghostel-exec'."
                           jtk-shell-plain-term
                         ghostel-term)))
     (apply exec buffer program args)))
+
+;; NOTE: A program in a terminal of its own closes the buffer when it
+;; ends, and its last output goes with it.  When it fails, the output
+;; stays: from eshell it goes into eshell above the prompt, run by
+;; itself (`ghostel-exec') its buffer stays open.  C-c (SIGINT) ends a
+;; program rather than failing it.  zsh in a terminal (`ghostel')
+;; closes either way: its exit status is that of the last command
+;; typed, so a failed `ls' before C-d would keep it open.
+(defconst jtk-shell-ended-events
+  '("finished\n" "interrupt\n" "exited abnormally with code 130\n")
+  "Process events of a program that ended rather than failed.
+130 is 128 + SIGINT, as ghostel reports C-c on its own terminal.")
+
+(defvar jtk-shell--eshell-origin nil
+  "The eshell buffer a program in ghostel was started from.")
+;; NOTE: Set before `ghostel-mode' clears the buffer's variables: a
+;; program that fails at once ends before `ghostel-exec' returns.
+(put 'jtk-shell--eshell-origin 'permanent-local t)
+
+(defun jtk-shell-note-eshell-origin (exec-visual &rest args)
+  "Call EXEC-VISUAL with ARGS, the current eshell buffer noted.
+Meant as advice around `eshell-exec-visual'."
+  (let ((jtk-shell--eshell-origin (current-buffer)))
+    (apply exec-visual args)))
+
+(defun jtk-shell-ghostel-exec-from-eshell (exec buffer &rest args)
+  "Call EXEC with BUFFER and ARGS, the eshell it comes from noted there.
+Meant as advice around `ghostel-exec'."
+  (when jtk-shell--eshell-origin
+    (with-current-buffer buffer
+      (setq-local jtk-shell--eshell-origin jtk-shell--eshell-origin)))
+  (apply exec buffer args))
+
+(defun jtk-shell--terminal-text ()
+  "Return the text of the current ghostel buffer, blank ends removed."
+  (string-trim (replace-regexp-in-string
+                "[ \t]+$" "" (buffer-substring-no-properties
+                              (point-min) (point-max)))
+               "\n+" "\n+"))
+
+(defun jtk-shell--failure-report (event)
+  "Return the output of the current ghostel buffer and EVENT, its end."
+  (let ((text (jtk-shell--terminal-text))
+        (program (car (alist-get 'command ghostel-identity))))
+    (concat text
+            (unless (string-empty-p text) "\n")
+            (format "%s: %s" (file-name-nondirectory program)
+                    (string-trim-right event)))))
+
+(defun jtk-shell--print-above-prompt (eshell text)
+  "Insert TEXT in the buffer ESHELL, above its last prompt."
+  (when (buffer-live-p eshell)
+    (with-current-buffer eshell
+      (let ((inhibit-read-only t))
+        (save-excursion
+          (goto-char (or (previous-single-property-change
+                          eshell-last-output-end 'field)
+                         eshell-last-output-end))
+          (insert text "\n"))))))
+
+(defun jtk-shell-ghostel-keep-failure (buffer event)
+  "Keep the output of a program in BUFFER that failed with EVENT.
+Meant for `ghostel-exit-functions'."
+  (with-current-buffer buffer
+    (when (and ghostel-kill-buffer-on-exit
+               (not (member event jtk-shell-ended-events)))
+      (pcase (alist-get 'kind ghostel-identity)
+        ;; WATCHOUT: Deferred: a program that fails at once (as over
+        ;; TRAMP) ends before eshell writes its next prompt, and the
+        ;; text would land above the command line.
+        ((guard (buffer-live-p jtk-shell--eshell-origin))
+         (run-at-time 0 nil #'jtk-shell--print-above-prompt
+                      jtk-shell--eshell-origin
+                      (jtk-shell--failure-report event)))
+        ((or 'eshell 'exec)
+         (setq-local ghostel-kill-buffer-on-exit nil))))))
 
 ;; NOTE: Without its module mistty uses Emacs' own terminal (eterm).
 ;; `M-x mistty-install' fetches the faster one (alacritty) into the

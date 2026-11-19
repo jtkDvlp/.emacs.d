@@ -170,8 +170,13 @@ terminal:
   `etc/eshell/visual-commands.eld` and needs no `v` from then on, on no
   it asks again next time. When the program ends, its buffer closes,
   output included; a command whose output is to be read afterwards
-  runs without `v`. Programs built into eshell, such as `ls`, never
-  open in a terminal by themselves.
+  runs without `v`. When it fails, though (any exit status but 0, C-c
+  aside), its last output and the status go into eshell above the
+  prompt. Programs built into eshell, such as `ls`, never open in a
+  terminal by themselves.
+- A program started in ghostel by itself (`ghostel-exec`) keeps its
+  buffer open when it fails. zsh closes its buffer either way: its exit
+  status is that of the last command typed.
 - The rest of eshell's output stays plain text, deliberately: through a
   terminal (`eat-eshell-mode`) 100,000 lines took 1.9 s instead of
   0.04 s, and only the last 131 KB were kept.
