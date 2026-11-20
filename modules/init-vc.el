@@ -2,7 +2,8 @@
 
 ;;; Commentary:
 
-;; magit, including pushes for review to Gerrit.
+;; magit, including pushes for review to Gerrit; magit-blame colours
+;; its headings (and in the GUI the fringe) by the age of the commit.
 
 ;;; Code:
 
@@ -64,6 +65,17 @@
   (transient-append-suffix 'magit-push "e"
     '("A" "Push branch / commit to Gerrit on branch"
       jtk-vc-gerrit-push-to-branch)))
+
+;; NOTE: Enabled once magit-blame is loaded rather than on
+;; `magit-blame-mode-hook', as its README has it: the mode puts its own
+;; function on that hook while the hook runs, so the first blame would
+;; stay uncoloured.
+(use-package
+  magit-blame-color-by-age
+  :ensure (:host github :repo "jdtsmith/magit-blame-color-by-age")
+  :after magit-blame
+  :config
+  (magit-blame-color-by-age-mode))
 
 (provide 'init-vc)
 

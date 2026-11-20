@@ -448,6 +448,15 @@
                   :source "elpaca-menu-lock-file" :id magit :type git
                   :protocol https :inherit t :depth treeless :ref
                   "afa6095d723c9557d781d648cc9b0b6ad624d9ca"))
+ (magit-blame-color-by-age :source "elpaca-menu-lock-file" :recipe
+                           (:source "Init file" :package
+                                    "magit-blame-color-by-age" :id
+                                    magit-blame-color-by-age :host
+                                    github :repo
+                                    "jdtsmith/magit-blame-color-by-age"
+                                    :type git :protocol https :inherit
+                                    t :depth treeless :ref
+                                    "784d78647e2ee511923d8e8d67d1d19f24ff5a0a"))
  (magit-section :source "elpaca-menu-lock-file" :recipe
                 (:package "magit-section" :fetcher github :repo
                           "magit/magit" :files

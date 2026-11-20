@@ -1461,6 +1461,7 @@ Noch nicht in der Konfiguration; aufgenommen auf deinen Wunsch
 | eat | Emacs-Paket, NonGNU ELPA | 2.9 Werkzeuge | Terminal-Emulator in Emacs; kann in eshell Programme mit Vollbild-Ausgabe zeigen (`eat-eshell-mode`) | **aufgenommen** (2.9), **ersetzt** (2026-11-17) durch ghostel |
 | mistty | Emacs-Paket, MELPA, Modul optional | 2.9 Werkzeuge | zsh mit Emacs-Editieren an der Eingabezeile | **aufgenommen** (2.9) auf `M-! s z` |
 | ghostel | Emacs-Paket, MELPA, mit Modul (libghostty) | 2026-11-17 | Terminal, Vollbild-Programme aus eshell, `v BEFEHL` | **aufgenommen** (2026-11-17); Modul mit Zig 0.17 aus den Quellen |
+| magit-blame-color-by-age | Emacs-Paket, nur GitHub (jdtsmith) | 2026-11-20 | Färbt die Überschriften von `magit-blame` (in der GUI auch den Rand) nach dem Alter des Commits | **aufgenommen** (2026-11-20) auf Wunsch; eingeschaltet, sobald magit-blame geladen ist, nicht über `magit-blame-mode-hook` wie in seiner README: so blieb der erste Blame ungefärbt (nachgemessen: 0 statt 4 Altersfarben in `init-vc.el`) |
 | lemminx | Language-Server | 2.8 XML | XML Schema, DTD, Formatieren | **aufgenommen** (2.8), startet nur, wo installiert |
 | envrc | Emacs-Paket, MELPA | 2.8 | direnv je Buffer | **aufgenommen** (2.8) |
 | md-mode | Emacs-Paket (GitHub) | 2.8 Markdown | gerenderte Ansicht mit Tabellen | **zum Ausprobieren** (2.8) |
